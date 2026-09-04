@@ -2,10 +2,11 @@
   "name": "backend",
   "scripts": {
     "start": "bun run src/index.ts",
+    "build": "bun run typecheck && bun run build ./src/index.ts --outdir ./dist --target bun",
     "dev": "bun run --watch src/index.ts",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "bunx tsc --noEmit",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "bun run src/db/migrate.ts",
+    "db:migrate": "drizzle-kit migrate",
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
