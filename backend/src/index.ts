@@ -1,9 +1,23 @@
-import { Hono } from 'hono'
+import { Hono } from "hono";
+import { env } from "./config/env";
+import { errorHandler } from "./middleware/error.middleware";
+import { corsConfig } from "./config/cors";
+import { cors } from "hono/cors";
 
-const app = new Hono()
+const app = new Hono();
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+// cors
+app.use("*", cors(corsConfig));
 
-export default app
+// global error handler middleware
+app.onError(errorHandler);
+
+// routes
+app.get("/ping", (c) => {
+  return c.json({ success: true, message: "pong" });
+});
+
+export default {
+  port: env.PORT,
+  fetch: app.fetch,
+};
