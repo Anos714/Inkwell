@@ -1,23 +1,21 @@
 import { z } from "zod";
 
-const envSchema = z
-  .object({
-    PORT: z
-      .string()
-      .default("8000")
-      .transform((val) => parseInt(val, 10)),
-    BUN_ENV: z
-      .enum(["development", "production", "test"])
-      .default("development"),
+const envSchema = z.object({
+  PORT: z
+    .string()
+    .default("8000")
+    .transform((val) => parseInt(val, 10)),
+  BUN_ENV: z.enum(["development", "production", "test"]).default("development"),
 
-    DATABASE_URL: z.url("DATABASE_URL must be a valid connection string"),
+  DATABASE_URL: z.url("DATABASE_URL must be a valid connection string"),
 
-    REDIS_URL: z.url("REDIS_URL must be a valid connection string"),
+  REDIS_URL: z.url("REDIS_URL must be a valid connection string"),
 
-    ACCESS_TOKEN_SECRET_KEY: z.string(),
-    REFRESH_TOKEN_SECRET_KEY: z.string(),
-  })
-  .strict();
+  ACCESS_TOKEN_SECRET_KEY: z.string(),
+  REFRESH_TOKEN_SECRET_KEY: z.string(),
+
+  FRONTEND_URL: z.url("FRONTEND_URL must be a valid URL"),
+});
 
 const parsedEnv = envSchema.safeParse(Bun.env);
 
