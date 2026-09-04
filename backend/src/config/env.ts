@@ -15,6 +15,10 @@ const envSchema = z.object({
   REFRESH_TOKEN_SECRET_KEY: z.string(),
 
   FRONTEND_URL: z.url("FRONTEND_URL must be a valid URL"),
+
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
+  GOOGLE_REDIRECT_URI: z.url("GOOGLE_REDIRECT_URI must be a valid URL"),
 });
 
 const parsedEnv = envSchema.safeParse(Bun.env);
