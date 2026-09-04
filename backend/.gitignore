@@ -1,2 +1,55 @@
-# deps
+# Core Dependencies
 node_modules/
+.pnpm-store/
+.yarn/
+
+# Environment and Secret Files (CRITICAL to ignore)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+.dev.vars            # Cloudflare Workers environment variables
+
+# Build and Production Outputs
+dist/
+build/
+.next/
+.nuxt/
+out/
+.output/
+
+# Logs and Runtime Artifacts
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm
+.eslintcache
+.stylelintcache
+.prettiercache
+
+# Drizzle ORM and Database specific overrides (Optional)
+# Un-comment the line below ONLY if you don't want to commit SQLite local database files
+# *.db
+# *.db-journal
+
+# Testing and Coverage
+coverage/
+.nyc_output/
+.playwright/
+htmlreport/
+
+# IDE, Editors, and System Files
+.DS_Store
+Thumbs.db
+.vscode/
+!.vscode/extensions.json  # Allow sharing recommended extensions
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
