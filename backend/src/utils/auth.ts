@@ -2,9 +2,10 @@ import { env } from "../config/env";
 import { sign, verify } from "hono/jwt";
 import crypto from "crypto";
 
-export const generateAccessToken = async (userId: string) => {
+export const generateAccessToken = async (userId: string, userRole: string) => {
   const payload = {
     id: userId,
+    role: userRole,
     type: "access",
     exp: Math.floor(Date.now() / 1000) + 60 * 15, //15 min.
   };
