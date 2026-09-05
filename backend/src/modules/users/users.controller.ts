@@ -51,7 +51,7 @@ export const googleAuthController = async (c: GoogleAuthContext) => {
   }
 
   // tokens
-  const accessToken = await authUtils.generateAccessToken(user.id);
+  const accessToken = await authUtils.generateAccessToken(user.id, user.role);
   const refreshToken = await authUtils.generateRefreshToken(user.id);
 
   const hashedRefreshToken = authUtils.hashRefreshToken(refreshToken);
@@ -97,6 +97,7 @@ export const refreshTokenController = async (c: Context) => {
 
   const payload = await authUtils.verifyRefreshToken(refreshToken);
   const userId = payload.id as unknown as string;
+  const userRole = payload.role as unknown as string;
 
   const storedHashedRefreshToken = await redisClient.get(`refresh:${userId}`);
 
@@ -111,7 +112,7 @@ export const refreshTokenController = async (c: Context) => {
     throw AppError.Unauthorized("Invalid refresh token");
   }
 
-  const newAccessToken = await authUtils.generateAccessToken(userId);
+  const newAccessToken = await authUtils.generateAccessToken(userId, userRole);
 
   return c.json<AuthSuccessResponse>(
     {
