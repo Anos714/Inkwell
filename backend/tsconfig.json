@@ -1,8 +1,42 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "types": ["bun"],
+    /* Target Ecosystem & Environment */
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ESNext"],
+    "types": ["bun-types"],
+    /* Hono Natively Powered JSX Engine Settings */
     "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
-  }
+    "jsxImportSource": "hono/jsx",
+
+    /* Strict Type-Checking & Bulletproof Guards */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
+    /* Code Sanitation & Production Readiness Rules */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+
+    /* Modern Interop & Performance Optimizations */
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+
+    /* Compilation Metadata Control */
+    "removeComments": true,
+    "emitDeclarationOnly": false,
+    "noEmit": true,
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", ".build"],
 }

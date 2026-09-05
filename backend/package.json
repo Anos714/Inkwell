@@ -2,13 +2,15 @@
   "name": "backend",
   "scripts": {
     "start": "bun run src/index.ts",
+    "build": "bun run typecheck && bun run build ./src/index.ts --outdir ./dist --target bun",
     "dev": "bun run --watch src/index.ts",
-    "typecheck": "tsc --noEmit",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "bun run src/db/migrate.ts",
+    "typecheck": "bunx tsc --noEmit",
+    "db:generate": "bun --bun drizzle-kit generate",
+    "db:migrate": "bun --bun drizzle-kit migrate",
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
+    "@hono/zod-validator": "^0.9.1",
     "@neondatabase/serverless": "^1.1.0",
     "drizzle-orm": "^1.0.0-rc.4",
     "google-auth-library": "^11.0.2",
