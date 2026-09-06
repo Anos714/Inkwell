@@ -4,6 +4,7 @@ import { errorHandler } from "./middleware/error.middleware";
 import { corsConfig } from "./config/cors";
 import { cors } from "hono/cors";
 import userRoutes from "./modules/users/users.route";
+import blogRoutes from "./modules/blogs/blogs.route";
 
 const app = new Hono();
 
@@ -18,6 +19,7 @@ app.get("/ping", (c) => {
   return c.json({ success: true, message: "pong" });
 });
 app.route("/api/v1/users", userRoutes);
+app.route("/api/v1/blogs", blogRoutes);
 
 export default {
   port: env.PORT,

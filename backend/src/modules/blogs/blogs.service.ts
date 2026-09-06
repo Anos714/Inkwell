@@ -3,6 +3,7 @@ import {
   createBlog,
   deleteBlog,
   findBlogById,
+  findPublishedBlogs,
   IsAdmin,
   patchBlog,
 } from "./blogs.repository";
@@ -11,6 +12,10 @@ import { CreateBlogInput, PatchBlogInput } from "./blogs.schema";
 export const getBlogByIdService = async (blogId: string) => {
   const blog = await findBlogById(blogId);
   return blog;
+};
+
+export const getPublishedBlogsService = async () => {
+  return findPublishedBlogs();
 };
 
 export const createBlogService = async (

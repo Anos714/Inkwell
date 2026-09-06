@@ -28,7 +28,10 @@ export const errorHandler = (err: Error, c: Context) => {
         };
       }
     });
-  } else if ((err as any).code === "23505") {
+  } else if (
+    (err as { code?: string }).code === "23505" ||
+    (err as { cause?: { code?: string } }).cause?.code === "23505"
+  ) {
     // 23505 = unique_violation in Postgres
     statusCode = 409;
     message = "This record or email already exists in our system";

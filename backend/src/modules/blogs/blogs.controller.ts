@@ -4,6 +4,7 @@ import {
   createBlogService,
   deleteBlogService,
   getBlogByIdService,
+  getPublishedBlogsService,
   patchBlogService,
 } from "./blogs.service";
 import {
@@ -26,7 +27,7 @@ export const createBlogController = async (c: CreateBlogContext) => {
 export const patchBlogController = async (c: PatchBlogContext) => {
   const data = c.req.valid("json");
   const payload = c.get("user");
-  const blogId = c.req.param("id");
+  const blogId = c.req.param("blogId");
 
   if (!blogId) {
     throw AppError.BadRequest("Blog id is required");
@@ -41,7 +42,7 @@ export const patchBlogController = async (c: PatchBlogContext) => {
 
 export const deleteBlogController = async (c: Context) => {
   const payload = c.get("user");
-  const blogId = c.req.param("id");
+  const blogId = c.req.param("blogId");
 
   if (!blogId) {
     throw AppError.BadRequest("Blog id is required");
@@ -56,7 +57,7 @@ export const deleteBlogController = async (c: Context) => {
 };
 
 export const getBlogByIdController = async (c: Context) => {
-  const blogId = c.req.param("id");
+  const blogId = c.req.param("blogId");
 
   if (!blogId) {
     throw AppError.BadRequest("Blog id is required");
@@ -71,16 +72,10 @@ export const getBlogByIdController = async (c: Context) => {
 };
 
 export const getBlogsController = async (c: Context) => {
-  const blogId = c.req.param("id");
-
-  if (!blogId) {
-    throw AppError.BadRequest("Blog id is required");
-  }
-
-  // const blog = await getBlogByIdService(blogId);
-  // return c.json<SuccessBlogResponse>({
-  //   success: true,
-  //   message: "Blog fetched successfully",
-  //   data: blog,
-  // });
+  const blogs = await getPublishedBlogsService();
+  return c.json({
+    success: true,
+    message: "Published blogs fetched successfully",
+    data: blogs,
+  });
 };
