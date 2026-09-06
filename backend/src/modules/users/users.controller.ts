@@ -96,8 +96,11 @@ export const refreshTokenController = async (c: Context) => {
   }
 
   const payload = await authUtils.verifyRefreshToken(refreshToken);
-  const userId = payload.id as unknown as string;
-  const userRole = payload.role as unknown as string;
+  if (payload.type !== "refresh" || typeof payload.id !== "string") {
+    throw AppError.Unauthorized("Invalid refresh token");
+  }
+
+  const userId = payload.id;
 
   const storedHashedRefreshToken = await redisClient.get(`refresh:${userId}`);
 
@@ -112,7 +115,8 @@ export const refreshTokenController = async (c: Context) => {
     throw AppError.Unauthorized("Invalid refresh token");
   }
 
-  const newAccessToken = await authUtils.generateAccessToken(userId, userRole);
+  const user = await getUserByIdService(userId);
+  const newAccessToken = await authUtils.generateAccessToken(user.id, user.role);
 
   return c.json<AuthSuccessResponse>(
     {
@@ -136,6 +140,7 @@ export const getMeController = async (c: Context) => {
         id: user.id,
         email: user.email,
         username: user.username,
+        avatarUrl:user.avatarUrl,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
