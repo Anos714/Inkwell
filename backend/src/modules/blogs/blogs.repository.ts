@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { db } from "../../db/db";
 import { blogs, users } from "../../db/schema";
 import { AppError } from "../../utils/AppError";
@@ -49,4 +49,12 @@ export const findBlogById = async (blogId: string) => {
     throw AppError.NotFound("Blog not found");
   }
   return blog;
+};
+
+export const findPublishedBlogs = async () => {
+  return db
+    .select()
+    .from(blogs)
+    .where(eq(blogs.isPublished, true))
+    .orderBy(desc(blogs.publishedAt), desc(blogs.createdAt));
 };

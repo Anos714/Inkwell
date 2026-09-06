@@ -6,9 +6,8 @@ import { requireAuth } from "../../middleware/auth.middleware";
 
 const blogsRoute = new Hono();
 
-blogsRoute.get("/:blogId", blogController.getBlogByIdController);
-
 blogsRoute.get("/", blogController.getBlogsController);
+blogsRoute.get("/:blogId", blogController.getBlogByIdController);
 
 blogsRoute.post(
   "/",
