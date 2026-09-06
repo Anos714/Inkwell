@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;1,500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Manrope', sans-serif;
+  --font-display: 'Playfair Display', serif;
+  --font-mono: 'DM Mono', monospace;
+  --color-inkwell-950: #121412;
+  --color-inkwell-900: #1c1f1c;
+  --color-inkwell-800: #263d30;
+  --color-inkwell-brown: #342921;
+  --color-inkwell-cream: #f3f0e9;
+  --color-inkwell-gold: #d9b47b;
+  --color-inkwell-light: #e5c38d;
+  --color-inkwell-muted: #a8aaa2;
+  --color-inkwell-dim: #737a70;
+}
+
+:root {
+  color: var(--color-inkwell-cream);
+  background: var(--color-inkwell-950);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button { font: inherit; }
