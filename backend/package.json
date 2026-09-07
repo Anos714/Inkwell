@@ -2,7 +2,7 @@
   "name": "backend",
   "scripts": {
     "start": "bun run src/index.ts",
-    "build": "bun run typecheck && bun run build ./src/index.ts --outdir ./dist --target bun",
+    "build": "bun run typecheck && bun build ./src/index.ts --outdir ./dist --target bun",
     "dev": "bun run --watch src/index.ts",
     "typecheck": "bunx tsc --noEmit",
     "db:generate": "bun --bun drizzle-kit generate",
