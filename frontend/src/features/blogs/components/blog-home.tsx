@@ -1,6 +1,6 @@
 import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getPublishedBlogs } from '../api/blog-api'
 import { useAuthStore } from '../../auth/store/auth-store'
@@ -30,7 +30,8 @@ export function BlogHome() {
   const user = useAuthStore((state) => state.user)
   const { isLoading, logout } = useAuth()
   const [profileOpen, setProfileOpen] = useState(false)
-  const blogsQuery = useQuery({ queryKey: ['blogs', 'published'], queryFn: getPublishedBlogs })
+  const profileMenuRef = useRef<HTMLDivElement>(null)
+  const blogsQuery = useQuery({ queryKey: ['blogs', 'published', { limit: 4 }], queryFn: () => getPublishedBlogs({ limit: 4 }) })
   const blogs = blogsQuery.data?.data ?? []
   const userInitials = user?.username
     .split(' ')
@@ -38,6 +39,24 @@ export function BlogHome() {
     .join('')
     .slice(0, 2)
     .toUpperCase()
+
+  useEffect(() => {
+    if (!profileOpen) return
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setProfileOpen(false)
+      }
+    }
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setProfileOpen(false)
+    }
+    document.addEventListener('mousedown', closeOnOutsideClick)
+    document.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.removeEventListener('mousedown', closeOnOutsideClick)
+      document.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [profileOpen])
 
   return (
     <main className="overflow-hidden bg-inkwell-950">
@@ -52,7 +71,7 @@ export function BlogHome() {
             <a href="#about" className="transition hover:text-inkwell-cream">About the blog</a>
           </div>
           {user ? (
-            <div className="relative">
+            <div ref={profileMenuRef} className="relative">
               <button
                 type="button"
                 aria-expanded={profileOpen}
@@ -74,6 +93,11 @@ export function BlogHome() {
                     <p className="truncate text-sm font-semibold text-inkwell-cream">{user.username}</p>
                     <p className="mt-1 truncate text-xs text-inkwell-muted">{user.email}</p>
                   </div>
+                  {user.role === 'admin' && (
+                    <Link to="/admin/blogs" className="mt-1 block rounded-xl px-3 py-2.5 text-sm text-inkwell-gold transition hover:bg-inkwell-brown/50">
+                      Admin dashboard
+                    </Link>
+                  )}
                   <button
                     type="button"
                     onClick={logout}
@@ -107,10 +131,10 @@ export function BlogHome() {
               Welcome to my personal corner of the internet. Read what I am learning, thinking about, and creating—and share what resonates with you.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Link to={user ? '/home' : '/login'} className="flex items-center gap-3 rounded-lg bg-inkwell-gold px-5 py-3.5 text-sm font-bold text-inkwell-950 transition hover:-translate-y-0.5 hover:bg-inkwell-light">
+              <Link to="/blogs" className="flex items-center gap-3 rounded-lg bg-inkwell-gold px-5 py-3.5 text-sm font-bold text-inkwell-950 transition hover:-translate-y-0.5 hover:bg-inkwell-light">
                 Read the blog <ArrowUpRight />
               </Link>
-              <a href="#journal" className="rounded-lg px-5 py-3.5 text-sm font-semibold text-inkwell-muted transition hover:text-inkwell-cream">Browse all posts ↓</a>
+              <Link to="/blogs" className="rounded-lg px-5 py-3.5 text-sm font-semibold text-inkwell-muted transition hover:text-inkwell-cream">Browse all posts ↓</Link>
             </div>
             <div className="mt-12 flex items-center gap-4 text-xs text-inkwell-dim">
               <span className="flex -space-x-2">
@@ -163,19 +187,26 @@ export function BlogHome() {
         <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8">
           <div className="mb-12 flex items-end justify-between gap-6">
             <div><span className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">From my blog</span><h2 className="mt-4 font-display text-4xl text-inkwell-cream sm:text-5xl">Recent posts.</h2></div>
-            <span className="hidden font-mono text-[10px] uppercase tracking-wider text-inkwell-dim sm:block">{blogs.length} published {blogs.length === 1 ? 'entry' : 'entries'}</span>
+            <Link to="/blogs" className="hidden font-mono text-[10px] uppercase tracking-wider text-inkwell-gold transition hover:text-inkwell-light sm:block">View all posts →</Link>
           </div>
           {blogsQuery.isLoading && <p className="text-sm text-inkwell-muted">Loading the journal…</p>}
           {blogsQuery.isError && <p className="text-sm text-red-300">The journal could not be loaded. Please try again.</p>}
           {!blogsQuery.isLoading && blogs.length === 0 && <div className="rounded-2xl border border-dashed border-inkwell-cream/15 p-10 text-center"><p className="font-display text-2xl text-inkwell-cream">The first entry is still being written.</p><p className="mt-3 text-sm text-inkwell-muted">Come back soon for new ideas.</p></div>}
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {blogs.map((blog, index) => (
+            {blogs.slice(0, 4).map((blog, index) => (
               <motion.article key={blog.id} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * .08 }} className="group overflow-hidden rounded-2xl border border-inkwell-cream/10 bg-inkwell-950/70 transition hover:-translate-y-1 hover:border-inkwell-gold/50">
                 {blog.coverImage && <img src={blog.coverImage} alt="" className="aspect-[16/9] w-full object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100" />}
-                <div className="p-6"><div className="flex flex-wrap gap-2">{blog.tags.slice(0, 3).map((tag) => <span key={tag} className="font-mono text-[10px] uppercase tracking-wider text-inkwell-gold">#{tag}</span>)}</div><h3 className="mt-4 font-display text-2xl leading-tight text-inkwell-cream">{blog.title}</h3>{blog.description && <p className="mt-3 line-clamp-3 text-sm leading-6 text-inkwell-muted">{blog.description}</p>}<p className="mt-6 font-mono text-[10px] uppercase tracking-wider text-inkwell-dim">{new Date(blog.publishedAt ?? blog.createdAt).toLocaleDateString()}</p></div>
+                <Link to={`/blogs/${blog.id}`} className="block p-6"><div className="flex flex-wrap gap-2">{blog.tags.slice(0, 3).map((tag) => <span key={tag} className="font-mono text-[10px] uppercase tracking-wider text-inkwell-gold">#{tag}</span>)}</div><h3 className="mt-4 font-display text-2xl leading-tight text-inkwell-cream">{blog.title}</h3>{blog.description && <p className="mt-3 line-clamp-3 text-sm leading-6 text-inkwell-muted">{blog.description}</p>}<p className="mt-6 font-mono text-[10px] uppercase tracking-wider text-inkwell-dim">{new Date(blog.publishedAt ?? blog.createdAt).toLocaleDateString()}</p></Link>
               </motion.article>
             ))}
           </div>
+          {blogs.length > 0 && (
+            <div className="mt-10 text-center">
+              <Link to="/blogs" className="inline-flex items-center gap-2 rounded-lg border border-inkwell-gold/60 px-5 py-3 text-sm font-semibold text-inkwell-gold transition hover:bg-inkwell-gold hover:text-inkwell-950">
+                Explore all posts <ArrowUpRight />
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
