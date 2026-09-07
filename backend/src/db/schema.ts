@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-// import { relations } from "drizzle-orm/_relations";
+import { relations } from "drizzle-orm/_relations";
 import {
   boolean,
   jsonb,
@@ -10,6 +10,7 @@ import {
   varchar,
   integer,
   pgEnum,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 
 export const roleEnum = pgEnum("role", ["user", "admin"]);
@@ -20,7 +21,7 @@ export const users = pgTable("users", {
     .default(sql`uuidv7()`),
   username: varchar("username", { length: 100 }).unique().notNull(),
   email: varchar("email", { length: 255 }).unique().notNull(),
-  avatarUrl: text("avatar_url").default("").notNull(),
+  avatarUrl: text("avatar_url"),
   googleId: text("google_id").unique().notNull(),
   role: roleEnum("role").default("user").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
@@ -54,97 +55,97 @@ export const blogs = pgTable("blogs", {
     .$onUpdateFn(() => new Date()),
 });
 
-// export const blogLikes = pgTable(
-//   "blog_likes",
-//   {
-//     userId: uuid("user_id")
-//       .notNull()
-//       .references(() => users.id, {
-//         onDelete: "cascade",
-//       }),
+export const blogLikes = pgTable(
+  "blog_likes",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, {
+        onDelete: "cascade",
+      }),
 
-//     blogId: uuid("blog_id")
-//       .notNull()
-//       .references(() => blogs.id, {
-//         onDelete: "cascade",
-//       }),
+    blogId: uuid("blog_id")
+      .notNull()
+      .references(() => blogs.id, {
+        onDelete: "cascade",
+      }),
 
-//     createdAt: timestamp("created_at", {
-//       withTimezone: true,
-//     })
-//       .defaultNow()
-//       .notNull(),
-//   },
-//   (table) => [
-//     primaryKey({
-//       columns: [table.userId, table.blogId],
-//     }),
-//   ],
-// );
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.userId, table.blogId],
+    }),
+  ],
+);
 
-// export const blogComments = pgTable("blog_comments", {
-//   id: uuid("id")
-//     .primaryKey()
-//     .default(sql`uuidv7()`),
+export const blogComments = pgTable("blog_comments", {
+  id: uuid("id")
+    .primaryKey()
+    .default(sql`uuidv7()`),
 
-//   blogId: uuid("blog_id")
-//     .notNull()
-//     .references(() => blogs.id, {
-//       onDelete: "cascade",
-//     }),
+  blogId: uuid("blog_id")
+    .notNull()
+    .references(() => blogs.id, {
+      onDelete: "cascade",
+    }),
 
-//   userId: uuid("user_id")
-//     .notNull()
-//     .references(() => users.id, {
-//       onDelete: "cascade",
-//     }),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, {
+      onDelete: "cascade",
+    }),
 
-//   content: text("content").notNull(),
+  content: text("content").notNull(),
 
-//   createdAt: timestamp("created_at", {
-//     withTimezone: true,
-//   })
-//     .defaultNow()
-//     .notNull(),
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
 
-//   updatedAt: timestamp("updated_at", {
-//     withTimezone: true,
-//   })
-//     .defaultNow()
-//     .notNull(),
-// });
+  updatedAt: timestamp("updated_at", {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+});
 
-// // relations
-// export const usersRelations = relations(users, ({ many }) => ({
-//   blogLikes: many(blogLikes),
-//   blogComments: many(blogComments),
-// }));
+// relations
+export const usersRelations = relations(users, ({ many }) => ({
+  blogLikes: many(blogLikes),
+  blogComments: many(blogComments),
+}));
 
-// export const blogsRelations = relations(blogs, ({ many }) => ({
-//   likes: many(blogLikes),
-//   comments: many(blogComments),
-// }));
+export const blogsRelations = relations(blogs, ({ many }) => ({
+  likes: many(blogLikes),
+  comments: many(blogComments),
+}));
 
-// export const blogLikesRelations = relations(blogLikes, ({ one }) => ({
-//   user: one(users, {
-//     fields: [blogLikes.userId],
-//     references: [users.id],
-//   }),
+export const blogLikesRelations = relations(blogLikes, ({ one }) => ({
+  user: one(users, {
+    fields: [blogLikes.userId],
+    references: [users.id],
+  }),
 
-//   blog: one(blogs, {
-//     fields: [blogLikes.blogId],
-//     references: [blogs.id],
-//   }),
-// }));
+  blog: one(blogs, {
+    fields: [blogLikes.blogId],
+    references: [blogs.id],
+  }),
+}));
 
-// export const blogCommentsRelations = relations(blogComments, ({ one }) => ({
-//   user: one(users, {
-//     fields: [blogComments.userId],
-//     references: [users.id],
-//   }),
+export const blogCommentsRelations = relations(blogComments, ({ one }) => ({
+  user: one(users, {
+    fields: [blogComments.userId],
+    references: [users.id],
+  }),
 
-//   blog: one(blogs, {
-//     fields: [blogComments.blogId],
-//     references: [blogs.id],
-//   }),
-// }));
+  blog: one(blogs, {
+    fields: [blogComments.blogId],
+    references: [blogs.id],
+  }),
+}));
