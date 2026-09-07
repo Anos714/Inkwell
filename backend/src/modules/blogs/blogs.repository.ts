@@ -3,6 +3,7 @@ import { db } from "../../db/db";
 import { blogs, users } from "../../db/schema";
 import { AppError } from "../../utils/AppError";
 import { CreateBlogInput, PatchBlogInput } from "./blogs.schema";
+import { countLikes } from "../blog_likes/blog-likes.repository";
 
 export const IsAdmin = async (userId: string) => {
   const [user] = await db.select().from(users).where(eq(users.id, userId));
@@ -48,7 +49,10 @@ export const findBlogById = async (blogId: string) => {
   if (!blog) {
     throw AppError.NotFound("Blog not found");
   }
-  return blog;
+
+  const likesCount = await countLikes(blogId);
+
+  return { ...blog, likesCount };
 };
 
 export const findPublishedBlogs = async (params: {
