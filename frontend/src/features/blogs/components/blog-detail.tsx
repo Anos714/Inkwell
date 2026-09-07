@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from 'react'
 import { BlogDetailSkeleton } from './blog-skeleton'
 import { BlogComments } from './blog-comments'
 import { ThemeToggle } from '../../../components/theme-toggle'
+import { BrandLogo } from '../../../components/brand-logo'
 
 export function BlogDetail() {
   const { blogId } = useParams()
@@ -91,14 +92,14 @@ export function BlogDetail() {
     ? DOMPurify.sanitize(blog.content)
     : `<pre>${DOMPurify.sanitize(JSON.stringify(blog?.content, null, 2) ?? '')}</pre>`
 
-  if (blogQuery.isLoading) return <main className="min-h-screen bg-inkwell-950 text-inkwell-cream"><header className="border-b border-inkwell-cream/10"><nav className="mx-auto flex max-w-4xl items-center justify-between px-6 py-5"><span className="font-display text-xl">Inkwell</span><div className="skeleton-shimmer h-8 w-20 rounded-full" /></nav></header><BlogDetailSkeleton /></main>
+  if (blogQuery.isLoading) return <main className="min-h-screen bg-inkwell-950 text-inkwell-cream"><header className="border-b border-inkwell-cream/10"><nav className="mx-auto flex max-w-4xl items-center justify-between px-6 py-5"><span className="flex items-center gap-3 font-display text-xl"><BrandLogo />Inkwell</span><div className="skeleton-shimmer h-8 w-20 rounded-full" /></nav></header><BlogDetailSkeleton /></main>
   if (blogQuery.isError || !blog) return <main className="min-h-screen bg-inkwell-950 px-6 py-24 text-center text-red-300">This entry could not be found.</main>
 
   return (
     <main className="min-h-screen bg-inkwell-950 text-inkwell-cream">
       <header className="border-b border-inkwell-cream/10">
         <nav className="mx-auto flex max-w-4xl items-center justify-between px-6 py-5">
-          <Link to="/" className="font-display text-xl text-inkwell-cream">Inkwell</Link>
+          <Link to="/" className="flex items-center gap-3 font-display text-xl text-inkwell-cream"><BrandLogo />Inkwell</Link>
           <div className="flex items-center gap-3"><ThemeToggle /><button type="button" onClick={() => navigate(-1)} className="rounded-full border border-inkwell-gold/60 px-4 py-2 font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold transition hover:bg-inkwell-gold hover:text-inkwell-950">← Back</button></div>
         </nav>
       </header>

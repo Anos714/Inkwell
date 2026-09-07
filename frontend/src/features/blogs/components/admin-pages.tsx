@@ -7,6 +7,7 @@ import { AdminBlogForm } from './admin-blog-form'
 import { AdminBlogManager } from './admin-blog-manager'
 import { BlogGridSkeleton } from './blog-skeleton'
 import { ThemeToggle } from '../../../components/theme-toggle'
+import { BrandLogo } from '../../../components/brand-logo'
 
 function AdminFrame({ title, children }: { title: string; children: ReactNode }) {
   const user = useAuthStore((state) => state.user)
@@ -16,7 +17,7 @@ function AdminFrame({ title, children }: { title: string; children: ReactNode })
     <main className="min-h-screen bg-inkwell-950 text-inkwell-cream">
       <header className="border-b border-inkwell-cream/10">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
-          <Link to="/admin/blogs" className="font-display text-xl">Inkwell <span className="text-inkwell-gold">/ Admin</span></Link>
+          <Link to="/admin/blogs" className="flex items-center gap-3 font-display text-xl"><BrandLogo />Inkwell <span className="text-inkwell-gold">/ Admin</span></Link>
           <div className="flex items-center gap-4"><ThemeToggle /><Link to="/" className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">View blog →</Link></div>
         </nav>
       </header>

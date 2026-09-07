@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { getPublishedBlogs } from '../api/blog-api'
 import { BlogGridSkeleton } from './blog-skeleton'
 import { ThemeToggle } from '../../../components/theme-toggle'
+import { BrandLogo } from '../../../components/brand-logo'
 
 export function BlogListPage() {
   const [searchInput, setSearchInput] = useState('')
@@ -30,7 +31,7 @@ export function BlogListPage() {
       <header className="border-b border-inkwell-cream/10">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
           <Link to="/" className="flex items-center gap-3">
-            <span className="grid size-9 place-items-center rounded-full border border-inkwell-gold text-lg text-inkwell-gold [font-family:var(--font-display)]">I</span>
+            <BrandLogo />
             <span className="font-display text-xl">Inkwell</span>
           </Link>
           <div className="flex items-center gap-4"><ThemeToggle /><Link to="/" className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold hover:text-inkwell-light">← Home</Link></div>

@@ -7,6 +7,7 @@ import { useAuthStore } from '../../auth/store/auth-store'
 import { useAuth } from '../../auth/hooks/use-auth'
 import { BlogGridSkeleton } from './blog-skeleton'
 import { ThemeToggle } from '../../../components/theme-toggle'
+import { BrandLogo } from '../../../components/brand-logo'
 
 function ArrowUpRight() {
   return <svg aria-hidden="true" className="size-4" fill="none" viewBox="0 0 16 16"><path d="M3 13 13 3M5 3h8v8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" /></svg>
@@ -65,7 +66,7 @@ export function BlogHome() {
       <header className="relative z-20 border-b border-inkwell-cream/10 bg-inkwell-950/80 backdrop-blur-xl">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
           <Link to="/" className="flex items-center gap-3">
-            <span className="grid size-9 place-items-center rounded-full border border-inkwell-gold text-lg text-inkwell-gold [font-family:var(--font-display)]">I</span>
+            <BrandLogo />
             <span className="font-display text-xl text-inkwell-cream">Inkwell</span>
           </Link>
           <div className="hidden items-center gap-8 text-sm text-inkwell-muted md:flex">
@@ -224,7 +225,7 @@ export function BlogHome() {
 
       <footer className="border-t border-inkwell-cream/10">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-6 py-8 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left lg:px-8">
-          <div className="flex items-center justify-center gap-3 sm:justify-start"><span className="grid size-7 place-items-center rounded-full border border-inkwell-gold text-sm text-inkwell-gold [font-family:var(--font-display)]">I</span><span className="font-display text-lg text-inkwell-cream">Inkwell</span></div>
+          <div className="flex items-center justify-center gap-3 sm:justify-start"><BrandLogo size="sm" /><span className="font-display text-lg text-inkwell-cream">Inkwell</span></div>
           <p className="font-mono text-[10px] uppercase tracking-wider text-inkwell-dim">Private by design · Made for the long draft</p>
         </div>
       </footer>
