@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router'
 import { authenticateWithGoogle, getCurrentUser, logout, refreshSession } from '../api/auth-api'
 import type { AuthResponse } from '../schemas'
 import { useAuthStore } from '../store/auth-store'

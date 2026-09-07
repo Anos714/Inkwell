@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useParams } from 'react-router'
 import type { ReactNode } from 'react'
 import { getBlog, getPublishedBlogs } from '../api/blog-api'
 import { useAuthStore } from '../../auth/store/auth-store'

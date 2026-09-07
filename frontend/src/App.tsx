@@ -1,10 +1,14 @@
-import { AuthPage } from './features/auth/components/auth-page'
-import { BlogHome } from './features/blogs/components/blog-home'
-import { BlogDetail } from './features/blogs/components/blog-detail'
-import { AdminDashboard } from './features/blogs/components/admin-dashboard'
-import { AdminCreatePage, AdminEditPage, AdminManagePage } from './features/blogs/components/admin-pages'
-import { BlogListPage } from './features/blogs/components/blog-list-page'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { AuthPage } from "./features/auth/components/auth-page";
+import { BlogHome } from "./features/blogs/components/blog-home";
+import { BlogDetail } from "./features/blogs/components/blog-detail";
+import { AdminDashboard } from "./features/blogs/components/admin-dashboard";
+import {
+  AdminCreatePage,
+  AdminEditPage,
+  AdminManagePage,
+} from "./features/blogs/components/admin-pages";
+import { BlogListPage } from "./features/blogs/components/blog-list-page";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 
 function App() {
   return (
@@ -23,7 +27,7 @@ function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

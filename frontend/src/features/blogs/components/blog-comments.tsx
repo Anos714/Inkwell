@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { FaRegTrashAlt } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { useAuthStore } from '../../auth/store/auth-store'
 import { createBlogComment, deleteBlogComment, getBlogComments } from '../api/blog-api'
 

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router'
 import { getBlog, getBlogLikeStatus, toggleBlogLike } from '../api/blog-api'
 import { useAuthStore } from '../../auth/store/auth-store'
 import DOMPurify from 'dompurify'

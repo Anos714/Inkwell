@@ -1,7 +1,7 @@
 import { motion } from 'motion/react'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { getPublishedBlogs } from '../api/blog-api'
 import { useAuthStore } from '../../auth/store/auth-store'
 import { useAuth } from '../../auth/hooks/use-auth'

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router'
 import { getPublishedBlogs } from '../api/blog-api'
 import { BlogGridSkeleton } from './blog-skeleton'
 import { ThemeToggle } from '../../../components/theme-toggle'

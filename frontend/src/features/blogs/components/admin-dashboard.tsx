@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router'
 import { getPublishedBlogs } from '../api/blog-api'
 import { useAuthStore } from '../../auth/store/auth-store'
 import { ThemeToggle } from '../../../components/theme-toggle'
