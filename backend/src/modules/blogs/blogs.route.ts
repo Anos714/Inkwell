@@ -1,12 +1,24 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import * as blogController from "./blogs.controller";
-import { createBlogSchema } from "./blogs.schema";
+import {
+  createBlogSchema,
+  getBlogsQuerySchema,
+  patchBlogSchema,
+} from "./blogs.schema";
 import { requireAuth } from "../../middleware/auth.middleware";
 
 const blogsRoute = new Hono();
 
-blogsRoute.get("/", blogController.getBlogsController);
+blogsRoute.get(
+  "/",
+  zValidator("query", getBlogsQuerySchema, (result, _) => {
+    if (!result.success) {
+      throw result.error;
+    }
+  }),
+  blogController.getBlogsController,
+);
 blogsRoute.get("/:blogId", blogController.getBlogByIdController);
 
 blogsRoute.post(
@@ -23,7 +35,7 @@ blogsRoute.post(
 blogsRoute.patch(
   "/:blogId",
   requireAuth,
-  zValidator("json", createBlogSchema, (result, _) => {
+  zValidator("json", patchBlogSchema, (result, _) => {
     if (!result.success) {
       throw result.error;
     }

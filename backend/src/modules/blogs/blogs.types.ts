@@ -1,5 +1,9 @@
 import { Context, Env } from "hono";
-import { CreateBlogInput, PatchBlogInput } from "./blogs.schema";
+import {
+  CreateBlogInput,
+  GetBlogsQueryInput,
+  PatchBlogInput,
+} from "./blogs.schema";
 
 // contexts
 export type CreateBlogContext = Context<
@@ -20,6 +24,15 @@ export type PatchBlogContext = Context<
   }
 >;
 
+export type GetBlogsContext = Context<
+  Env,
+  string,
+  {
+    in: { query: GetBlogsQueryInput };
+    out: { query: GetBlogsQueryInput };
+  }
+>;
+
 // req & res types
 
 type Blog = {
@@ -36,8 +49,24 @@ type Blog = {
   updatedAt: Date;
 };
 
+export interface PaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+}
+
 export interface SuccessBlogResponse {
   success: true;
   message: string;
   data?: Blog;
+}
+
+export interface PaginatedBlogsResponse {
+  success: true;
+  message: string;
+  data: Blog[];
+  pagination: PaginationMeta;
 }

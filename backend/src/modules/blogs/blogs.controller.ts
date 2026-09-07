@@ -9,6 +9,8 @@ import {
 } from "./blogs.service";
 import {
   CreateBlogContext,
+  GetBlogsContext,
+  PaginatedBlogsResponse,
   PatchBlogContext,
   SuccessBlogResponse,
 } from "./blogs.types";
@@ -71,11 +73,13 @@ export const getBlogByIdController = async (c: Context) => {
   });
 };
 
-export const getBlogsController = async (c: Context) => {
-  const blogs = await getPublishedBlogsService();
-  return c.json({
+export const getBlogsController = async (c: GetBlogsContext) => {
+  const query = c.req.valid("query");
+  const { blogs, pagination } = await getPublishedBlogsService(query);
+  return c.json<PaginatedBlogsResponse>({
     success: true,
     message: "Published blogs fetched successfully",
     data: blogs,
+    pagination,
   });
 };

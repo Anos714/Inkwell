@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, ilike, or } from "drizzle-orm";
 import { db } from "../../db/db";
 import { blogs, users } from "../../db/schema";
 import { AppError } from "../../utils/AppError";
@@ -51,10 +51,43 @@ export const findBlogById = async (blogId: string) => {
   return blog;
 };
 
-export const findPublishedBlogs = async () => {
-  return db
-    .select()
-    .from(blogs)
-    .where(eq(blogs.isPublished, true))
-    .orderBy(desc(blogs.publishedAt), desc(blogs.createdAt));
+export const findPublishedBlogs = async (params: {
+  page: number;
+  limit: number;
+  search?: string;
+}) => {
+  const { page, limit, search } = params;
+  const offset = (page - 1) * limit;
+
+  const conditions = [eq(blogs.isPublished, true)];
+
+  if (search && search.trim() !== "") {
+    const searchPattern = `%${search.trim()}%`;
+    conditions.push(
+      or(
+        ilike(blogs.title, searchPattern),
+        ilike(blogs.description, searchPattern),
+      )!,
+    );
+  }
+
+  const whereClause = and(...conditions);
+
+  const [blogList, totalResult] = await Promise.all([
+    db
+      .select()
+      .from(blogs)
+      .where(whereClause)
+      .orderBy(desc(blogs.publishedAt), desc(blogs.createdAt))
+      .limit(limit)
+      .offset(offset),
+    db.select({ total: count() }).from(blogs).where(whereClause),
+  ]);
+
+  const total = totalResult[0]?.total ?? 0;
+
+  return {
+    blogs: blogList,
+    total,
+  };
 };
