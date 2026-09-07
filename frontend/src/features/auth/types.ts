@@ -3,6 +3,7 @@ export type AuthUser = {
   email: string
   username: string
   avatarUrl?: string | null
+  role?: 'user' | 'admin'
   createdAt: string
   updatedAt: string
 }

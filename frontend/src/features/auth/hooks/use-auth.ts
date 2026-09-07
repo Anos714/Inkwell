@@ -10,6 +10,15 @@ const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ''
 const googleRedirectUri = import.meta.env.VITE_GOOGLE_REDIRECT_URI
   ?? `${window.location.origin}${googleCallbackPath}`
 
+function getTokenRole(token: string): 'user' | 'admin' | undefined {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1] ?? '')) as { role?: string }
+    return payload.role === 'admin' || payload.role === 'user' ? payload.role : undefined
+  } catch {
+    return undefined
+  }
+}
+
 export function useAuth() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
@@ -30,7 +39,7 @@ export function useAuth() {
   } = useMutation({
     mutationFn: refreshSession,
     onSuccess: (data: AuthResponse) => {
-      if (data.token) setSession(data.token, data.user ?? null)
+      if (data.token) setSession(data.token, data.user ? { ...data.user, role: getTokenRole(data.token) } : null)
     },
     onError: clearSession,
   })
@@ -41,7 +50,7 @@ export function useAuth() {
       if (!data.token || !data.user) {
         throw new Error('The server returned an incomplete authentication response.')
       }
-      setSession(data.token, data.user)
+      setSession(data.token, { ...data.user, role: getTokenRole(data.token) })
       setNotice('')
       navigate('/home', { replace: true })
     },
@@ -58,7 +67,9 @@ export function useAuth() {
   }, [refresh, token])
 
   useEffect(() => {
-    if (meQuery.data?.user && token) setSession(token, meQuery.data.user)
+    if (meQuery.data?.user && token) {
+      setSession(token, { ...meQuery.data.user, role: getTokenRole(token) })
+    }
     if (meQuery.error) clearSession()
   }, [clearSession, meQuery.data, meQuery.error, setSession, token])
 
