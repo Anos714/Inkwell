@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getPublishedBlogs } from '../api/blog-api'
+import { BlogGridSkeleton } from './blog-skeleton'
+import { ThemeToggle } from '../../../components/theme-toggle'
 
 export function BlogListPage() {
   const [searchInput, setSearchInput] = useState('')
@@ -31,7 +33,7 @@ export function BlogListPage() {
             <span className="grid size-9 place-items-center rounded-full border border-inkwell-gold text-lg text-inkwell-gold [font-family:var(--font-display)]">I</span>
             <span className="font-display text-xl">Inkwell</span>
           </Link>
-          <Link to="/" className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold hover:text-inkwell-light">← Home</Link>
+          <div className="flex items-center gap-4"><ThemeToggle /><Link to="/" className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold hover:text-inkwell-light">← Home</Link></div>
         </nav>
       </header>
       <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
@@ -46,7 +48,7 @@ export function BlogListPage() {
             <input value={searchInput} onChange={(event) => setSearchInput(event.target.value)} placeholder="Search title or description…" className="w-full rounded-xl border border-inkwell-cream/15 bg-inkwell-900/70 px-4 py-3 text-sm text-inkwell-cream outline-none placeholder:text-inkwell-dim focus:border-inkwell-gold" />
           </label>
         </div>
-        {blogsQuery.isLoading && <p className="py-16 text-sm text-inkwell-muted">Loading the journal…</p>}
+        {blogsQuery.isLoading && <div className="mt-12"><BlogGridSkeleton count={6} /></div>}
         {blogsQuery.isError && <p className="py-16 text-sm text-red-300">The journal could not be loaded. Please try again.</p>}
         {!blogsQuery.isLoading && !blogs.length && <div className="mt-12 rounded-2xl border border-dashed border-inkwell-cream/15 p-10 text-center"><p className="font-display text-2xl">No entries found.</p><p className="mt-3 text-sm text-inkwell-muted">Try a different search.</p></div>}
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">

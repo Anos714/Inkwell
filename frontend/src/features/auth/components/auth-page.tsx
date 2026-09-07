@@ -1,5 +1,6 @@
 import { useAuth } from '../hooks/use-auth'
 import { FcGoogle } from 'react-icons/fc'
+import { ThemeToggle } from '../../../components/theme-toggle'
 
 export function AuthPage() {
   const { isLoading, login, notice } = useAuth()
@@ -14,7 +15,7 @@ export function AuthPage() {
         </div>
       </section>
       <section className="auth-panel relative flex min-h-svh flex-col px-7 py-8 sm:px-14">
-        <button type="button" onClick={() => window.history.back()} className="self-start text-xs text-inkwell-muted transition hover:text-inkwell-cream">← Back</button>
+        <div className="flex items-center justify-between"><button type="button" onClick={() => window.history.back()} className="self-start text-xs text-inkwell-muted transition hover:text-inkwell-cream">← Back</button><ThemeToggle /></div>
         <div className="m-auto w-full max-w-[330px] text-center">
           <div className="mx-auto mb-8 grid size-12 place-items-center rounded-full border border-inkwell-gold text-xl text-inkwell-gold [font-family:var(--font-display)]">I</div>
           <p className="font-mono text-[10px] uppercase tracking-[.28em] text-inkwell-gold">Inkwell</p>

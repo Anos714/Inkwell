@@ -6,6 +6,9 @@ import DOMPurify from 'dompurify'
 import { FaHeart, FaLink, FaShareAlt, FaWhatsapp } from 'react-icons/fa'
 import { FaXTwitter } from 'react-icons/fa6'
 import { useEffect, useRef, useState } from 'react'
+import { BlogDetailSkeleton } from './blog-skeleton'
+import { BlogComments } from './blog-comments'
+import { ThemeToggle } from '../../../components/theme-toggle'
 
 export function BlogDetail() {
   const { blogId } = useParams()
@@ -88,7 +91,7 @@ export function BlogDetail() {
     ? DOMPurify.sanitize(blog.content)
     : `<pre>${DOMPurify.sanitize(JSON.stringify(blog?.content, null, 2) ?? '')}</pre>`
 
-  if (blogQuery.isLoading) return <main className="min-h-screen bg-inkwell-950 px-6 py-24 text-center text-inkwell-muted">Loading entry…</main>
+  if (blogQuery.isLoading) return <main className="min-h-screen bg-inkwell-950 text-inkwell-cream"><header className="border-b border-inkwell-cream/10"><nav className="mx-auto flex max-w-4xl items-center justify-between px-6 py-5"><span className="font-display text-xl">Inkwell</span><div className="skeleton-shimmer h-8 w-20 rounded-full" /></nav></header><BlogDetailSkeleton /></main>
   if (blogQuery.isError || !blog) return <main className="min-h-screen bg-inkwell-950 px-6 py-24 text-center text-red-300">This entry could not be found.</main>
 
   return (
@@ -96,7 +99,7 @@ export function BlogDetail() {
       <header className="border-b border-inkwell-cream/10">
         <nav className="mx-auto flex max-w-4xl items-center justify-between px-6 py-5">
           <Link to="/" className="font-display text-xl text-inkwell-cream">Inkwell</Link>
-          <button type="button" onClick={() => navigate(-1)} className="rounded-full border border-inkwell-gold/60 px-4 py-2 font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold transition hover:bg-inkwell-gold hover:text-inkwell-950">← Back</button>
+          <div className="flex items-center gap-3"><ThemeToggle /><button type="button" onClick={() => navigate(-1)} className="rounded-full border border-inkwell-gold/60 px-4 py-2 font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold transition hover:bg-inkwell-gold hover:text-inkwell-950">← Back</button></div>
         </nav>
       </header>
       <article className="mx-auto max-w-3xl px-6 py-16 sm:py-24">
@@ -150,9 +153,7 @@ export function BlogDetail() {
           className="blog-content mt-10 text-base leading-8 text-inkwell-cream/85"
           dangerouslySetInnerHTML={{ __html: content }}
         />
-        <div className="mt-14 border-t border-inkwell-cream/10 pt-6">
-          <span className="text-sm text-inkwell-dim">Comments will be available when the backend comments API is added.</span>
-        </div>
+        <BlogComments blogId={blog.id} />
       </article>
     </main>
   )

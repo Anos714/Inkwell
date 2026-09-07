@@ -108,11 +108,10 @@ export const blogComments = pgTable("blog_comments", {
     .defaultNow()
     .notNull(),
 
-  updatedAt: timestamp("updated_at", {
-    withTimezone: true,
-  })
+  updatedAt: timestamp("updated_at", { withTimezone: true })
     .defaultNow()
-    .notNull(),
+    .notNull()
+    .$onUpdateFn(() => new Date()),
 });
 
 // relations

@@ -26,7 +26,60 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 320px; }
+body, button, input, textarea { transition: background-color .3s ease, border-color .3s ease, color .3s ease, box-shadow .3s ease; }
+.theme-toggle {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--color-inkwell-gold) 55%, transparent);
+  border-radius: 999px;
+  color: var(--color-inkwell-gold);
+  cursor: pointer;
+  transition: transform .3s ease, background-color .3s ease, color .3s ease;
+}
+.theme-toggle:hover { transform: rotate(14deg) scale(1.06); background: var(--color-inkwell-gold); color: var(--color-inkwell-950); }
+[data-theme='light'] {
+  --color-inkwell-950: #f7f5ef;
+  --color-inkwell-900: #fffdf8;
+  --color-inkwell-800: #e9efe9;
+  --color-inkwell-brown: #eee9df;
+  --color-inkwell-cream: #20221f;
+  --color-inkwell-gold: #94682e;
+  --color-inkwell-light: #b17d38;
+  --color-inkwell-muted: #5f655e;
+  --color-inkwell-dim: #7d837b;
+  color: var(--color-inkwell-cream);
+  background: var(--color-inkwell-950);
+}
+[data-theme='light'] body { background: var(--color-inkwell-950); }
+[data-theme='light'] [class*='bg-inkwell-950'] { background-color: var(--color-inkwell-950) !important; }
+[data-theme='light'] [class*='bg-inkwell-900'] { background-color: var(--color-inkwell-900) !important; }
+[data-theme='light'] [class*='bg-inkwell-800'] { background-color: var(--color-inkwell-800) !important; }
+[data-theme='light'] [class*='bg-inkwell-brown'] { background-color: var(--color-inkwell-brown) !important; }
+[data-theme='light'] [class*='text-inkwell-cream'] { color: var(--color-inkwell-cream) !important; }
+[data-theme='light'] [class*='text-inkwell-muted'] { color: var(--color-inkwell-muted) !important; }
+[data-theme='light'] [class*='text-inkwell-dim'] { color: var(--color-inkwell-dim) !important; }
+[data-theme='light'] [class*='border-inkwell-cream'] { border-color: color-mix(in srgb, var(--color-inkwell-cream) 16%, transparent) !important; }
+[data-theme='light'] .auth-panel { background: #fffdf8; }
+[data-theme='light'] .auth-visual { background: radial-gradient(ellipse at 30% 40%, rgb(226 211 187 / 70%), transparent 45%), linear-gradient(135deg, #e8eee8, #f7f5ef 55%, #dce9df); }
 button { font: inherit; }
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--color-inkwell-cream) 8%, transparent);
+}
+.skeleton-shimmer::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgb(243 240 233 / 12%), transparent);
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+}
+@keyframes skeleton-shimmer {
+  100% { transform: translateX(100%); }
+}
 
 .toolbar-divider {
   width: 1px;

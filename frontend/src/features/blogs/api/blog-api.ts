@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { apiRequest } from '../../../lib/api'
 import type { BlogsResponse } from '../types'
-import type { Blog, BlogInput, LikeResponse } from '../types'
+import type { Blog, BlogInput, CommentsResponse, LikeResponse } from '../types'
 
 const blogSchema = z.object({
   id: z.string(),
@@ -43,6 +43,35 @@ const likeResponseSchema = z.object({
   liked: z.boolean(),
   totalLikes: z.number(),
   message: z.string(),
+})
+
+const commentSchema = z.object({
+  id: z.string(),
+  content: z.string(),
+  createdAt: z.string(),
+  user: z.object({
+    id: z.string(),
+    username: z.string(),
+    avatarUrl: z.string().nullable(),
+  }).nullable(),
+})
+
+const commentsResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.array(commentSchema),
+})
+
+const commentMutationResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.object({
+    id: z.string(),
+    userId: z.string(),
+    blogId: z.string(),
+    content: z.string(),
+    createdAt: z.string(),
+  }),
 })
 
 function authHeaders(token: string) {
@@ -99,4 +128,32 @@ export function getBlogLikeStatus(token: string, blogId: string) {
   return apiRequest<LikeResponse>(`/api/v1/blog-likes/${blogId}/like-status`, likeResponseSchema, {
     headers: authHeaders(token),
   })
+}
+
+export function getBlogComments(blogId: string) {
+  return apiRequest<CommentsResponse>(`/api/v1/blog-comments/${blogId}/comments`, commentsResponseSchema)
+}
+
+export function createBlogComment(token: string, blogId: string, content: string) {
+  return apiRequest<{
+    success: boolean
+    message: string
+    data: { id: string; userId: string; blogId: string; content: string; createdAt: string }
+  }>(
+    `/api/v1/blog-comments/${blogId}/comments`,
+    commentMutationResponseSchema,
+    { method: 'POST', headers: authHeaders(token), body: JSON.stringify({ content }) },
+  )
+}
+
+export function deleteBlogComment(token: string, commentId: string) {
+  return apiRequest<{
+    success: boolean
+    message: string
+    data: { id: string; userId: string; blogId: string; content: string; createdAt: string }
+  }>(
+    `/api/v1/blog-comments/comments/${commentId}`,
+    commentMutationResponseSchema,
+    { method: 'DELETE', headers: authHeaders(token) },
+  )
 }

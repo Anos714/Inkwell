@@ -35,7 +35,9 @@ function ToolbarButton({ label, active, disabled, onClick }: ToolbarButtonProps)
 }
 
 export function RichTextEditor({ value, onChange }: Props) {
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => (
+    document.documentElement.dataset.theme === 'light' ? 'light' : 'dark'
+  ))
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -57,6 +59,15 @@ export function RichTextEditor({ value, onChange }: Props) {
   useEffect(() => {
     if (editor && value !== editor.getHTML()) editor.commands.setContent(value, { emitUpdate: false })
   }, [editor, value])
+
+  useEffect(() => {
+    const root = document.documentElement
+    const syncTheme = () => setTheme(root.dataset.theme === 'light' ? 'light' : 'dark')
+    const observer = new MutationObserver(syncTheme)
+    observer.observe(root, { attributes: true, attributeFilter: ['data-theme'] })
+    syncTheme()
+    return () => observer.disconnect()
+  }, [])
 
   if (!editor) return <div className="min-h-56 rounded-xl border border-inkwell-cream/15 bg-inkwell-950 md:col-span-2" />
 
