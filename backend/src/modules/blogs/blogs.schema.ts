@@ -33,17 +33,17 @@ export const createBlogSchema = z
 export const patchBlogSchema = z
   .object({
     title: z
-      .string({ error: "Blog title is required" })
+      .string()
       .min(3, "Title must be at least 3 characters")
       .max(255, "Title must be at most 255 characters")
       .optional(),
     slug: z
-      .string({ error: "Slug is required" })
+      .string()
       .min(3, "Slug must be at least 3 characters")
       .max(255, "Slug must be at most 255 characters")
       .optional(),
     description: z
-      .string({ error: "Description is required" })
+      .string()
       .min(3, "Description must be at least 3 characters")
       .max(255, "Description must be at most 255 characters")
       .optional(),
@@ -72,5 +72,12 @@ export const patchBlogSchema = z
     }
   });
 
+export const getBlogsQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
+  search: z.string().trim().optional(),
+});
+
 export type CreateBlogInput = z.infer<typeof createBlogSchema>;
 export type PatchBlogInput = z.infer<typeof patchBlogSchema>;
+export type GetBlogsQueryInput = z.infer<typeof getBlogsQuerySchema>;

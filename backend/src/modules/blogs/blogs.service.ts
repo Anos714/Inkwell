@@ -7,15 +7,34 @@ import {
   IsAdmin,
   patchBlog,
 } from "./blogs.repository";
-import { CreateBlogInput, PatchBlogInput } from "./blogs.schema";
+import {
+  CreateBlogInput,
+  GetBlogsQueryInput,
+  PatchBlogInput,
+} from "./blogs.schema";
 
 export const getBlogByIdService = async (blogId: string) => {
   const blog = await findBlogById(blogId);
   return blog;
 };
 
-export const getPublishedBlogsService = async () => {
-  return findPublishedBlogs();
+export const getPublishedBlogsService = async (query: GetBlogsQueryInput) => {
+  const { page = 1, limit = 10, search } = query;
+  const { blogs, total } = await findPublishedBlogs({ page, limit, search });
+
+  const totalPages = Math.ceil(total / limit);
+
+  return {
+    blogs,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasNextPage: page < totalPages,
+      hasPrevPage: page > 1,
+    },
+  };
 };
 
 export const createBlogService = async (
