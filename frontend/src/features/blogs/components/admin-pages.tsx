@@ -5,6 +5,8 @@ import { getBlog, getPublishedBlogs } from '../api/blog-api'
 import { useAuthStore } from '../../auth/store/auth-store'
 import { AdminBlogForm } from './admin-blog-form'
 import { AdminBlogManager } from './admin-blog-manager'
+import { BlogGridSkeleton } from './blog-skeleton'
+import { ThemeToggle } from '../../../components/theme-toggle'
 
 function AdminFrame({ title, children }: { title: string; children: ReactNode }) {
   const user = useAuthStore((state) => state.user)
@@ -15,7 +17,7 @@ function AdminFrame({ title, children }: { title: string; children: ReactNode })
       <header className="border-b border-inkwell-cream/10">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-8">
           <Link to="/admin/blogs" className="font-display text-xl">Inkwell <span className="text-inkwell-gold">/ Admin</span></Link>
-          <Link to="/" className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">View blog →</Link>
+          <div className="flex items-center gap-4"><ThemeToggle /><Link to="/" className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">View blog →</Link></div>
         </nav>
       </header>
       <div className="mx-auto max-w-7xl px-6 py-14 lg:px-8">
@@ -42,12 +44,12 @@ export function AdminCreatePage() {
 export function AdminManagePage() {
   const token = useAuthStore((state) => state.token)
   const query = useQuery({ queryKey: ['blogs', 'admin-manage'], queryFn: () => getPublishedBlogs(), enabled: Boolean(token) })
-  return <AdminFrame title="Manage entries.">{query.isLoading ? <p className="text-sm text-inkwell-muted">Loading entries…</p> : <AdminBlogManager token={token ?? ''} blogs={query.data?.data ?? []} />}</AdminFrame>
+  return <AdminFrame title="Manage entries.">{query.isLoading ? <BlogGridSkeleton count={4} /> : <AdminBlogManager token={token ?? ''} blogs={query.data?.data ?? []} />}</AdminFrame>
 }
 
 export function AdminEditPage() {
   const token = useAuthStore((state) => state.token)
   const { blogId } = useParams()
   const query = useQuery({ queryKey: ['blog', blogId], queryFn: () => getBlog(blogId ?? ''), enabled: Boolean(token && blogId) })
-  return <AdminFrame title="Update an entry.">{query.isLoading ? <p className="text-sm text-inkwell-muted">Loading entry…</p> : query.data?.data ? <AdminBlogForm token={token ?? ''} blog={query.data.data} /> : <p className="text-sm text-red-300">Entry could not be loaded.</p>}</AdminFrame>
+  return <AdminFrame title="Update an entry.">{query.isLoading ? <div className="space-y-4"><div className="skeleton-shimmer h-12 rounded-xl" /><div className="skeleton-shimmer h-72 rounded-xl" /></div> : query.data?.data ? <AdminBlogForm token={token ?? ''} blog={query.data.data} /> : <p className="text-sm text-red-300">Entry could not be loaded.</p>}</AdminFrame>
 }

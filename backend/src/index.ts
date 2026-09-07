@@ -6,6 +6,7 @@ import { cors } from "hono/cors";
 import userRoutes from "./modules/users/users.route";
 import blogRoutes from "./modules/blogs/blogs.route";
 import blogLikesRoutes from "./modules/blog_likes/blog-likes.route";
+import blogCommentsRoutes from "./modules/blog-comments/blog-comments.route";
 
 const app = new Hono();
 
@@ -22,6 +23,7 @@ app.get("/ping", (c) => {
 app.route("/api/v1/users", userRoutes);
 app.route("/api/v1/blogs", blogRoutes);
 app.route("/api/v1/blog-likes", blogLikesRoutes);
+app.route("/api/v1/blog-comments", blogCommentsRoutes);
 
 export default {
   port: env.PORT,

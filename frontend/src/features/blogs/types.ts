@@ -43,3 +43,20 @@ export type LikeResponse = {
   totalLikes: number
   message: string
 }
+
+export type BlogComment = {
+  id: string
+  content: string
+  createdAt: string
+  user: {
+    id: string
+    username: string
+    avatarUrl: string | null
+  } | null
+}
+
+export type CommentsResponse = {
+  success: boolean
+  message: string
+  data: BlogComment[]
+}

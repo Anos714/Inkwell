@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, Navigate } from 'react-router-dom'
 import { getPublishedBlogs } from '../api/blog-api'
 import { useAuthStore } from '../../auth/store/auth-store'
+import { ThemeToggle } from '../../../components/theme-toggle'
 
 function StatCard({ label, value, detail }: { label: string; value: string | number; detail: string }) {
   return (
@@ -35,7 +36,7 @@ export function AdminDashboard() {
             <span className="grid size-9 place-items-center rounded-full border border-inkwell-gold text-lg text-inkwell-gold [font-family:var(--font-display)]">I</span>
             <span className="font-display text-xl">Inkwell</span>
           </Link>
-          <Link to="/" className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold hover:text-inkwell-light">View blog →</Link>
+          <div className="flex items-center gap-4"><ThemeToggle /><Link to="/" className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold hover:text-inkwell-light">View blog →</Link></div>
         </nav>
       </header>
       <div className="mx-auto max-w-7xl px-6 py-14 lg:px-8">

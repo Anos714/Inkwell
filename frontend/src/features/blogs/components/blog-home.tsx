@@ -5,6 +5,8 @@ import { Link } from 'react-router-dom'
 import { getPublishedBlogs } from '../api/blog-api'
 import { useAuthStore } from '../../auth/store/auth-store'
 import { useAuth } from '../../auth/hooks/use-auth'
+import { BlogGridSkeleton } from './blog-skeleton'
+import { ThemeToggle } from '../../../components/theme-toggle'
 
 function ArrowUpRight() {
   return <svg aria-hidden="true" className="size-4" fill="none" viewBox="0 0 16 16"><path d="M3 13 13 3M5 3h8v8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" /></svg>
@@ -71,7 +73,7 @@ export function BlogHome() {
             <a href="#about" className="transition hover:text-inkwell-cream">About the blog</a>
           </div>
           {user ? (
-            <div ref={profileMenuRef} className="relative">
+            <div className="flex items-center gap-3"><ThemeToggle /><div ref={profileMenuRef} className="relative">
               <button
                 type="button"
                 aria-expanded={profileOpen}
@@ -108,11 +110,11 @@ export function BlogHome() {
                   </button>
                 </div>
               )}
-            </div>
+            </div></div>
           ) : (
-            <Link to="/login" className="group flex items-center gap-2 rounded-full border border-inkwell-gold/70 px-4 py-2 text-xs font-semibold text-inkwell-gold transition hover:bg-inkwell-gold hover:text-inkwell-950">
+            <div className="flex items-center gap-3"><ThemeToggle /><Link to="/login" className="group flex items-center gap-2 rounded-full border border-inkwell-gold/70 px-4 py-2 text-xs font-semibold text-inkwell-gold transition hover:bg-inkwell-gold hover:text-inkwell-950">
               Sign in <ArrowUpRight />
-            </Link>
+            </Link></div>
           )}
         </nav>
       </header>
@@ -189,7 +191,7 @@ export function BlogHome() {
             <div><span className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">From my blog</span><h2 className="mt-4 font-display text-4xl text-inkwell-cream sm:text-5xl">Recent posts.</h2></div>
             <Link to="/blogs" className="hidden font-mono text-[10px] uppercase tracking-wider text-inkwell-gold transition hover:text-inkwell-light sm:block">View all posts →</Link>
           </div>
-          {blogsQuery.isLoading && <p className="text-sm text-inkwell-muted">Loading the journal…</p>}
+          {blogsQuery.isLoading && <BlogGridSkeleton count={4} />}
           {blogsQuery.isError && <p className="text-sm text-red-300">The journal could not be loaded. Please try again.</p>}
           {!blogsQuery.isLoading && blogs.length === 0 && <div className="rounded-2xl border border-dashed border-inkwell-cream/15 p-10 text-center"><p className="font-display text-2xl text-inkwell-cream">The first entry is still being written.</p><p className="mt-3 text-sm text-inkwell-muted">Come back soon for new ideas.</p></div>}
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
