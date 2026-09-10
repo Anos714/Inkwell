@@ -97,7 +97,7 @@ export function BlogHome() {
                     <p className="mt-1 truncate text-xs text-inkwell-muted">{user.email}</p>
                   </div>
                   <Link to="/profile" className="mt-1 block rounded-xl px-3 py-2.5 text-sm text-inkwell-muted transition hover:bg-inkwell-brown/50 hover:text-inkwell-gold">
-                    Profile settings
+                    Profile
                   </Link>
                   {user.role === 'admin' && (
                     <Link to="/admin/blogs" className="mt-1 block rounded-xl px-3 py-2.5 text-sm text-inkwell-gold transition hover:bg-inkwell-brown/50">

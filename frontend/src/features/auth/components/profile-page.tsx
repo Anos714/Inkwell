@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, Link, useNavigate } from 'react-router'
 import { BrandLogo } from '../../../components/brand-logo'
 import { ThemeToggle } from '../../../components/theme-toggle'
@@ -18,6 +18,18 @@ export function ProfilePage() {
   const [isSavingName, setIsSavingName] = useState(false)
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+
+  useEffect(() => {
+    if (!isDeleteModalOpen) return
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !isDeleting) setIsDeleteModalOpen(false)
+    }
+
+    document.addEventListener('keydown', closeOnEscape)
+    return () => document.removeEventListener('keydown', closeOnEscape)
+  }, [isDeleteModalOpen, isDeleting])
 
   if (!token || !user) return <Navigate to="/login" replace />
 
@@ -66,8 +78,6 @@ export function ProfilePage() {
   }
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm('Delete your account permanently? This action cannot be undone.')) return
-
     setError('')
     setIsDeleting(true)
     try {
@@ -133,10 +143,52 @@ export function ProfilePage() {
           <div className="rounded-2xl border border-red-400/20 bg-red-950/20 p-6">
             <h2 className="text-xl font-semibold text-red-200">Delete account</h2>
             <p className="mt-1 text-sm text-red-200/70">This permanently deletes your account and cannot be undone.</p>
-            <button type="button" onClick={handleDeleteAccount} disabled={isDeleting} className="mt-5 rounded-xl border border-red-300/40 px-5 py-3 text-sm font-semibold text-red-200 hover:bg-red-400/10 disabled:opacity-60">{isDeleting ? 'Deleting…' : 'Delete my account'}</button>
+            <button type="button" onClick={() => setIsDeleteModalOpen(true)} disabled={isDeleting} className="mt-5 rounded-xl border border-red-300/40 px-5 py-3 text-sm font-semibold text-red-200 hover:bg-red-400/10 disabled:opacity-60">Delete my account</button>
           </div>
         </div>
       </section>
+
+      {isDeleteModalOpen && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-black/65 px-5 backdrop-blur-md"
+          role="presentation"
+        >
+          <section
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-account-title"
+            aria-describedby="delete-account-description"
+            className="w-full max-w-md rounded-3xl border border-red-300/25 bg-inkwell-900 p-7 shadow-2xl shadow-black/60"
+          >
+            <div className="grid size-14 place-items-center rounded-2xl border border-red-300/25 bg-red-400/10 text-2xl text-red-200" aria-hidden="true">
+              !
+            </div>
+            <p className="mt-6 font-mono text-[10px] uppercase tracking-[.18em] text-red-200/70">Permanent action</p>
+            <h2 id="delete-account-title" className="mt-3 font-display text-3xl text-red-100">Delete your account?</h2>
+            <p id="delete-account-description" className="mt-3 text-sm leading-6 text-red-100/65">
+              Your profile and account access will be permanently removed. This action cannot be undone.
+            </p>
+            <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setIsDeleteModalOpen(false)}
+                disabled={isDeleting}
+                className="rounded-xl border border-inkwell-cream/15 px-5 py-3 text-sm font-semibold text-inkwell-muted hover:border-inkwell-cream/30 hover:text-inkwell-cream disabled:opacity-60"
+              >
+                Keep my account
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
+                className="rounded-xl bg-red-300 px-5 py-3 text-sm font-bold text-red-950 hover:bg-red-200 disabled:opacity-60"
+              >
+                {isDeleting ? 'Deleting…' : 'Yes, delete account'}
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   )
 }
