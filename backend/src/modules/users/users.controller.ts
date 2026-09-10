@@ -6,8 +6,13 @@ import { GoogleOAuthInput } from "./users.schema";
 import { deleteCookie, getCookie, setCookie } from "hono/cookie";
 import * as authUtils from "../../utils/auth";
 import { redisClient } from "../../config/redis";
-import { AuthSuccessResponse } from "./users.types";
-import { getUserByIdService, googleAuthService } from "./users.service";
+import { AuthSuccessResponse, UpdateProfileContext } from "./users.types";
+import {
+  getUserByIdService,
+  googleAuthService,
+  updateProfileService,
+  userProfileDeleteService,
+} from "./users.service";
 import { updateUserAvatar } from "./users.repository";
 import { z } from "zod";
 
@@ -118,7 +123,10 @@ export const refreshTokenController = async (c: Context) => {
   }
 
   const user = await getUserByIdService(userId);
-  const newAccessToken = await authUtils.generateAccessToken(user.id, user.role);
+  const newAccessToken = await authUtils.generateAccessToken(
+    user.id,
+    user.role,
+  );
 
   return c.json<AuthSuccessResponse>(
     {
@@ -142,7 +150,7 @@ export const getMeController = async (c: Context) => {
         id: user.id,
         email: user.email,
         username: user.username,
-        avatarUrl:user.avatarUrl,
+        avatarUrl: user.avatarUrl,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
@@ -193,6 +201,45 @@ export const logoutUserController = async (c: Context) => {
   });
   return c.json<AuthSuccessResponse>(
     { success: true, message: "Logged out successfully" },
+    200,
+  );
+};
+
+export const patchMeController = async (c: UpdateProfileContext) => {
+  const payload = c.get("user");
+  if (!payload) {
+    throw AppError.Unauthorized("Unauthorized");
+  }
+
+  const data = c.req.valid("json");
+  const updatedUser = await updateProfileService(payload.id, data);
+
+  return c.json({
+    success: true,
+    message: "Profile updated successfully",
+    data: {
+      id: updatedUser.id,
+      username: updatedUser.username,
+      avatarUrl: updatedUser.avatarUrl,
+      role: updatedUser.role,
+      updatedAt: updatedUser.updatedAt,
+    },
+  });
+};
+
+export const deleteMeController = async (c: Context) => {
+  const payload = c.get("user");
+  if (!payload) {
+    throw AppError.Unauthorized("Unauthorized");
+  }
+
+  await userProfileDeleteService(payload.id);
+
+  return c.json<AuthSuccessResponse>(
+    {
+      success: true,
+      message: "User deleted successfully",
+    },
     200,
   );
 };

@@ -8,6 +8,7 @@ import {
   AdminManagePage,
 } from "./features/blogs/components/admin-pages";
 import { BlogListPage } from "./features/blogs/components/blog-list-page";
+import { ProfilePage } from "./features/auth/components/profile-page";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<BlogHome />} />
         <Route path="/login" element={<AuthPage />} />
         <Route path="/home" element={<BlogHome />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/blogs/:blogId" element={<BlogDetail />} />
         <Route path="/blogs" element={<BlogListPage />} />
         <Route path="/admin/blogs" element={<AdminDashboard />} />

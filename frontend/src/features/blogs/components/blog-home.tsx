@@ -8,7 +8,6 @@ import { useAuth } from '../../auth/hooks/use-auth'
 import { BlogGridSkeleton } from './blog-skeleton'
 import { ThemeToggle } from '../../../components/theme-toggle'
 import { BrandLogo } from '../../../components/brand-logo'
-import { saveAvatar, uploadImage } from '../api/upload-api'
 
 function ArrowUpRight() {
   return <svg aria-hidden="true" className="size-4" fill="none" viewBox="0 0 16 16"><path d="M3 13 13 3M5 3h8v8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" /></svg>
@@ -32,12 +31,8 @@ function Bookmark() {
 
 export function BlogHome() {
   const user = useAuthStore((state) => state.user)
-  const token = useAuthStore((state) => state.token)
-  const setSession = useAuthStore((state) => state.setSession)
   const { isLoading, logout } = useAuth()
   const [profileOpen, setProfileOpen] = useState(false)
-  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
-  const [avatarError, setAvatarError] = useState('')
   const profileMenuRef = useRef<HTMLDivElement>(null)
   const blogsQuery = useQuery({ queryKey: ['blogs', 'published', { limit: 4 }], queryFn: () => getPublishedBlogs({ limit: 4 }) })
   const blogs = blogsQuery.data?.data ?? []
@@ -47,31 +42,6 @@ export function BlogHome() {
     .join('')
     .slice(0, 2)
     .toUpperCase()
-
-  const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    event.target.value = ''
-
-    if (!file || !token || !user) return
-
-    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-      setAvatarError('Only JPG, PNG and WebP images are allowed.')
-      return
-    }
-
-    setAvatarError('')
-    setIsUploadingAvatar(true)
-
-    try {
-      const uploaded = await uploadImage(token, file, 'avatar')
-      const response = await saveAvatar(token, uploaded.url)
-      setSession(token, { ...user, ...response.user })
-    } catch (error) {
-      setAvatarError(error instanceof Error ? error.message : 'Avatar upload failed.')
-    } finally {
-      setIsUploadingAvatar(false)
-    }
-  }
 
   useEffect(() => {
     if (!profileOpen) return
@@ -126,17 +96,9 @@ export function BlogHome() {
                     <p className="truncate text-sm font-semibold text-inkwell-cream">{user.username}</p>
                     <p className="mt-1 truncate text-xs text-inkwell-muted">{user.email}</p>
                   </div>
-                  <label className="mt-1 block cursor-pointer rounded-xl px-3 py-2.5 text-sm text-inkwell-muted transition hover:bg-inkwell-brown/50 hover:text-inkwell-gold">
-                    {isUploadingAvatar ? 'Uploading avatar…' : 'Change avatar'}
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      onChange={handleAvatarChange}
-                      disabled={isUploadingAvatar}
-                      className="sr-only"
-                    />
-                  </label>
-                  {avatarError && <p className="px-3 py-1 text-xs text-red-300">{avatarError}</p>}
+                  <Link to="/profile" className="mt-1 block rounded-xl px-3 py-2.5 text-sm text-inkwell-muted transition hover:bg-inkwell-brown/50 hover:text-inkwell-gold">
+                    Profile settings
+                  </Link>
                   {user.role === 'admin' && (
                     <Link to="/admin/blogs" className="mt-1 block rounded-xl px-3 py-2.5 text-sm text-inkwell-gold transition hover:bg-inkwell-brown/50">
                       Admin dashboard

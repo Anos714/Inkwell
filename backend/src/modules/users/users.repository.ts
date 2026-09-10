@@ -3,6 +3,7 @@ import { db } from "../../db/db";
 import { users } from "../../db/schema";
 import { AppError } from "../../utils/AppError";
 import { TokenPayload } from "google-auth-library";
+import { UpdateProfileInput } from "./users.schema";
 
 export const findUserById = async (id: string) => {
   const [user] = await db.select().from(users).where(eq(users.id, id));
@@ -15,12 +16,18 @@ export const findUserByEmail = async (email: string) => {
 };
 
 export const findUserByGoogleId = async (googleId: string) => {
-  const [user] = await db.select().from(users).where(eq(users.googleId, googleId));
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.googleId, googleId));
   return user;
 };
 
 export const findUserByUsername = async (username: string) => {
-  const [user] = await db.select().from(users).where(eq(users.username, username));
+  const [user] = await db
+    .select()
+    .from(users)
+    .where(eq(users.username, username));
   return user;
 };
 
@@ -31,7 +38,8 @@ export const createGoogleAuthUser = async (data: TokenPayload) => {
     );
   }
 
-  const baseUsername = data.name.trim().slice(0, 90) || `user-${data.sub.slice(-8)}`;
+  const baseUsername =
+    data.name.trim().slice(0, 90) || `user-${data.sub.slice(-8)}`;
   const usernameTaken = await findUserByUsername(baseUsername);
   const username = usernameTaken
     ? `${baseUsername}-${data.sub.slice(-8)}`
@@ -71,5 +79,28 @@ export const updateUserAvatar = async (userId: string, avatarUrl: string) => {
     .where(eq(users.id, userId))
     .returning();
 
+  return updatedUser;
+};
+
+export const deleteUserProfile = async (userId: string) => {
+  const [deletedUser] = await db
+    .delete(users)
+    .where(eq(users.id, userId))
+    .returning();
+  return deletedUser;
+};
+
+export const updateUserById = async (
+  userId: string,
+  data: UpdateProfileInput,
+) => {
+  const [updatedUser] = await db
+    .update(users)
+    .set({
+      ...data,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+    .returning();
   return updatedUser;
 };
