@@ -12,6 +12,7 @@
   "dependencies": {
     "@hono/zod-validator": "^0.9.1",
     "@neondatabase/serverless": "^1.1.0",
+    "cloudinary": "^2.11.0",
     "drizzle-orm": "^1.0.0-rc.4",
     "google-auth-library": "^11.0.2",
     "hono": "^4.13.5",

@@ -7,6 +7,7 @@ import userRoutes from "./modules/users/users.route";
 import blogRoutes from "./modules/blogs/blogs.route";
 import blogLikesRoutes from "./modules/blog_likes/blog-likes.route";
 import blogCommentsRoutes from "./modules/blog-comments/blog-comments.route";
+import uploadsRoute from "./modules/uploads/uploads.route";
 
 const app = new Hono();
 
@@ -24,6 +25,7 @@ app.route("/api/v1/users", userRoutes);
 app.route("/api/v1/blogs", blogRoutes);
 app.route("/api/v1/blog-likes", blogLikesRoutes);
 app.route("/api/v1/blog-comments", blogCommentsRoutes);
+app.route("/api/v1/uploads", uploadsRoute);
 
 export default {
   port: env.PORT,

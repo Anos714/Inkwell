@@ -58,9 +58,18 @@ export const updateGoogleAuthUser = async (
     .set({
       googleId: data.sub,
       username: data.name,
-      avatarUrl: data.picture,
     })
     .where(eq(users.id, userId))
     .returning();
+  return updatedUser;
+};
+
+export const updateUserAvatar = async (userId: string, avatarUrl: string) => {
+  const [updatedUser] = await db
+    .update(users)
+    .set({ avatarUrl })
+    .where(eq(users.id, userId))
+    .returning();
+
   return updatedUser;
 };

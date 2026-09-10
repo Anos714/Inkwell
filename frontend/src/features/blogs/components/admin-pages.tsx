@@ -52,5 +52,5 @@ export function AdminEditPage() {
   const token = useAuthStore((state) => state.token)
   const { blogId } = useParams()
   const query = useQuery({ queryKey: ['blog', blogId], queryFn: () => getBlog(blogId ?? ''), enabled: Boolean(token && blogId) })
-  return <AdminFrame title="Update an entry.">{query.isLoading ? <div className="space-y-4"><div className="skeleton-shimmer h-12 rounded-xl" /><div className="skeleton-shimmer h-72 rounded-xl" /></div> : query.data?.data ? <AdminBlogForm token={token ?? ''} blog={query.data.data} /> : <p className="text-sm text-red-300">Entry could not be loaded.</p>}</AdminFrame>
+  return <AdminFrame title="Update an entry.">{query.isLoading ? <div className="space-y-4"><div className="skeleton-shimmer h-12 rounded-xl" /><div className="skeleton-shimmer h-72 rounded-xl" /></div> : query.data?.data ? <AdminBlogForm key={query.data.data.id} token={token ?? ''} blog={query.data.data} /> : <p className="text-sm text-red-300">Entry could not be loaded.</p>}</AdminFrame>
 }
