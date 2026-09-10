@@ -66,7 +66,7 @@ export const googleAuthController = async (c: GoogleAuthContext) => {
   setCookie(c, "refreshToken", refreshToken, {
     httpOnly: true,
     secure: env.BUN_ENV === "production",
-    sameSite: "strict",
+    sameSite: env.BUN_ENV === "production" ? "none" : "lax",
     maxAge: 60 * 60 * 24 * 7, // 7 days
     path: "/",
   });
@@ -154,7 +154,7 @@ export const logoutUserController = async (c: Context) => {
   await redisClient.del(`refresh:${payload.id}`);
 
   deleteCookie(c, "refreshToken", {
-    sameSite: "strict",
+    sameSite: env.BUN_ENV === "production" ? "none" : "lax",
     path: "/",
     secure: env.BUN_ENV === "production",
   });
