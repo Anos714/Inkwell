@@ -8,6 +8,7 @@ const userRoutes = new Hono();
 
 userRoutes.post("/refresh", UserController.refreshTokenController);
 userRoutes.get("/me", requireAuth, UserController.getMeController);
+userRoutes.patch("/me/avatar", requireAuth, UserController.updateAvatarController);
 userRoutes.post("/logout", requireAuth, UserController.logoutUserController);
 
 userRoutes.post(

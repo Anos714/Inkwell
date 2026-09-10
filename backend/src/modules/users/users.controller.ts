@@ -8,6 +8,8 @@ import * as authUtils from "../../utils/auth";
 import { redisClient } from "../../config/redis";
 import { AuthSuccessResponse } from "./users.types";
 import { getUserByIdService, googleAuthService } from "./users.service";
+import { updateUserAvatar } from "./users.repository";
+import { z } from "zod";
 
 type GoogleAuthContext = Context<
   Env,
@@ -141,6 +143,37 @@ export const getMeController = async (c: Context) => {
         email: user.email,
         username: user.username,
         avatarUrl:user.avatarUrl,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    },
+    200,
+  );
+};
+
+export const updateAvatarController = async (c: Context) => {
+  const payload = c.get("user");
+  const result = z.object({ avatarUrl: z.url() }).safeParse(await c.req.json());
+
+  if (!result.success) {
+    throw AppError.BadRequest("A valid avatar URL is required");
+  }
+
+  const user = await updateUserAvatar(payload.id, result.data.avatarUrl);
+
+  if (!user) {
+    throw AppError.NotFound("User not found");
+  }
+
+  return c.json<AuthSuccessResponse>(
+    {
+      success: true,
+      message: "Avatar updated successfully",
+      user: {
+        id: user.id,
+        email: user.email,
+        username: user.username,
+        avatarUrl: user.avatarUrl,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
