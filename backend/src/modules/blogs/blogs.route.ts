@@ -19,6 +19,13 @@ blogsRoute.get(
   }),
   blogController.getBlogsController,
 );
+blogsRoute.get("/dashboard", requireAuth, blogController.getDashboardSummaryController);
+blogsRoute.get("/admin", requireAuth, blogController.getAdminBlogsController);
+blogsRoute.get(
+  "/admin/:slug",
+  requireAuth,
+  blogController.getAdminBlogBySlugController,
+);
 blogsRoute.post("/:slug/views", blogController.incrementBlogViewsController);
 blogsRoute.get("/:slug", blogController.getBlogBySlugController);
 

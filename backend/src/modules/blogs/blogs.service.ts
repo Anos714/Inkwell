@@ -4,7 +4,10 @@ import {
   deleteBlog,
   findBlogById,
   findBlogBySlug,
+  findAllBlogs,
+  findAnyBlogBySlug,
   findPublishedBlogs,
+  getDashboardSummary,
   incrementBlogViews,
   IsAdmin,
   patchBlog,
@@ -27,6 +30,30 @@ export const getBlogBySlugService = async (slug: string) => {
 
 export const incrementBlogViewsService = async (slug: string) => {
   return incrementBlogViews(slug);
+};
+
+export const getAdminBlogsService = async (userId: string) => {
+  if (!(await IsAdmin(userId))) {
+    throw AppError.Unauthorized("User not authorized");
+  }
+
+  return findAllBlogs();
+};
+
+export const getAdminBlogBySlugService = async (userId: string, slug: string) => {
+  if (!(await IsAdmin(userId))) {
+    throw AppError.Unauthorized("User not authorized");
+  }
+
+  return findAnyBlogBySlug(slug);
+};
+
+export const getDashboardSummaryService = async (userId: string) => {
+  if (!(await IsAdmin(userId))) {
+    throw AppError.Unauthorized("User not authorized");
+  }
+
+  return getDashboardSummary();
 };
 
 export const getPublishedBlogsService = async (query: GetBlogsQueryInput) => {

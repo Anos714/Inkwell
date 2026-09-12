@@ -1,6 +1,6 @@
 import { and, count, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { db } from "../../db/db";
-import { blogs, users } from "../../db/schema";
+import { blogComments, blogLikes, blogs, users } from "../../db/schema";
 import { AppError } from "../../utils/AppError";
 import { CreateBlogInput, PatchBlogInput } from "./blogs.schema";
 import { countLikes } from "../blog_likes/blog-likes.repository";
@@ -69,6 +69,17 @@ export const findBlogBySlug = async (slug: string) => {
   return { ...blog, likesCount };
 };
 
+export const findAnyBlogBySlug = async (slug: string) => {
+  const [blog] = await db.select().from(blogs).where(eq(blogs.slug, slug));
+  if (!blog) {
+    throw AppError.NotFound("Blog not found");
+  }
+
+  const likesCount = await countLikes(blog.id);
+
+  return { ...blog, likesCount };
+};
+
 export const incrementBlogViews = async (slug: string) => {
   const [blog] = await db
     .update(blogs)
@@ -121,5 +132,41 @@ export const findPublishedBlogs = async (params: {
   return {
     blogs: blogList,
     total,
+  };
+};
+
+export const findAllBlogs = async () => {
+  return db
+    .select()
+    .from(blogs)
+    .orderBy(desc(blogs.updatedAt), desc(blogs.createdAt));
+};
+
+export const getDashboardSummary = async () => {
+  const [totalBlogs, publishedBlogs, draftBlogs, totalLikes, totalComments, views] =
+    await Promise.all([
+      db.select({ total: count() }).from(blogs),
+      db
+        .select({ total: count() })
+        .from(blogs)
+        .where(eq(blogs.isPublished, true)),
+      db
+        .select({ total: count() })
+        .from(blogs)
+        .where(eq(blogs.isPublished, false)),
+      db.select({ total: count() }).from(blogLikes),
+      db.select({ total: count() }).from(blogComments),
+      db
+        .select({ total: sql<number>`coalesce(sum(${blogs.views}), 0)::int` })
+        .from(blogs),
+    ]);
+
+  return {
+    totalBlogs: totalBlogs[0]?.total ?? 0,
+    publishedBlogs: publishedBlogs[0]?.total ?? 0,
+    draftBlogs: draftBlogs[0]?.total ?? 0,
+    totalLikes: totalLikes[0]?.total ?? 0,
+    totalComments: totalComments[0]?.total ?? 0,
+    totalViews: views[0]?.total ?? 0,
   };
 };

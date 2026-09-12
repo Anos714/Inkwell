@@ -3,7 +3,10 @@ import { AppError } from "../../utils/AppError";
 import {
   createBlogService,
   deleteBlogService,
+  getAdminBlogBySlugService,
+  getAdminBlogsService,
   getBlogBySlugService,
+  getDashboardSummaryService,
   getPublishedBlogsService,
   incrementBlogViewsService,
   patchBlogService,
@@ -99,6 +102,44 @@ export const incrementBlogViewsController = async (c: Context) => {
     success: true,
     message: "Blog view recorded successfully",
     data: { views },
+  });
+};
+
+export const getAdminBlogsController = async (c: Context) => {
+  const payload = c.get("user");
+  const blogs = await getAdminBlogsService(payload.id);
+
+  return c.json({
+    success: true,
+    message: "Admin blogs fetched successfully",
+    data: blogs,
+  });
+};
+
+export const getAdminBlogBySlugController = async (c: Context) => {
+  const payload = c.get("user");
+  const slug = c.req.param("slug");
+
+  if (!slug) {
+    throw AppError.BadRequest("Blog slug is required");
+  }
+
+  const blog = await getAdminBlogBySlugService(payload.id, slug);
+  return c.json<SuccessBlogResponse>({
+    success: true,
+    message: "Admin blog fetched successfully",
+    data: blog,
+  });
+};
+
+export const getDashboardSummaryController = async (c: Context) => {
+  const payload = c.get("user");
+  const data = await getDashboardSummaryService(payload.id);
+
+  return c.json({
+    success: true,
+    message: "Dashboard summary fetched successfully",
+    data,
   });
 };
 
