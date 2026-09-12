@@ -22,7 +22,7 @@ export const requireAuth = async (c: Context, next: Next) => {
     }
     c.set("user", { id: payload.id, role: payload.role });
     await next();
-  } catch (error) {
+  } catch {
     throw AppError.Unauthorized("Invalid token");
   }
 };
