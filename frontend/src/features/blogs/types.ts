@@ -7,6 +7,7 @@ export type Blog = {
   coverImage: string | null
   tags: string[]
   isPublished: boolean
+  views: number
   publishedAt: string | null
   createdAt: string
   updatedAt: string

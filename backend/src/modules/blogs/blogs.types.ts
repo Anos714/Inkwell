@@ -44,6 +44,7 @@ type Blog = {
   coverImage: string | null;
   tags: string[] | null;
   isPublished: boolean;
+  views: number;
   publishedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;

@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import {
   getBlogBySlug,
   getBlogLikeStatus,
+  recordBlogView,
   toggleBlogLike,
 } from "../api/blog-api";
 import { useAuthStore } from "../../auth/store/auth-store";
@@ -22,6 +23,7 @@ export function BlogDetail() {
   const [shareOpen, setShareOpen] = useState(false);
   const [shareNotice, setShareNotice] = useState("");
   const shareMenuRef = useRef<HTMLDivElement>(null);
+  const hasRecordedView = useRef(false);
   const queryClient = useQueryClient();
 
   // 1. Fetch Blog by Slug
@@ -33,6 +35,19 @@ export function BlogDetail() {
 
   const blog = blogQuery.data?.data;
   const blogId = blog?.id;
+
+  const viewMutation = useMutation({
+    mutationFn: () => recordBlogView(slug ?? ""),
+    onSuccess: (result) => {
+      queryClient.setQueryData(
+        ["blog", slug],
+        (current: typeof blogQuery.data) =>
+          current
+            ? { ...current, data: { ...current.data, views: result.data.views } }
+            : current,
+      );
+    },
+  });
 
   // 2. Fetch Like status using the resolved blogId
   const likeQuery = useQuery({
@@ -89,6 +104,12 @@ export function BlogDetail() {
       );
     },
   });
+
+  useEffect(() => {
+    if (!slug || !blog || hasRecordedView.current) return;
+    hasRecordedView.current = true;
+    viewMutation.mutate();
+  }, [blog, slug, viewMutation]);
 
   const shareUrl = window.location.href;
   const shareText = `Read "${blog?.title ?? "this post"}" on Inkwell`;
@@ -190,7 +211,7 @@ export function BlogDetail() {
           ))}
         </div>
 
-        <h1 className="mt-6 font-display text-5xl leading-tight sm:text-7xl">
+        <h1 className="mt-6 break-words font-display text-4xl leading-tight sm:text-7xl">
           {blog.title}
         </h1>
         <p className="mt-6 text-sm text-inkwell-dim">
@@ -205,7 +226,7 @@ export function BlogDetail() {
           />
         )}
 
-        <div className="mt-4 flex items-center gap-3">
+        <div className="relative mt-4 flex min-h-9 flex-wrap items-center gap-3 pr-20">
           {token ? (
             <button
               type="button"
@@ -241,6 +262,9 @@ export function BlogDetail() {
 
           <span className="text-sm text-inkwell-muted">
             {likeQuery.data?.totalLikes ?? blog.likesCount ?? 0} likes
+          </span>
+          <span className="absolute right-0 top-1/2 -translate-y-1/2 text-sm text-inkwell-muted">
+            {blog.views} views
           </span>
 
           <div ref={shareMenuRef} className="relative ml-2">

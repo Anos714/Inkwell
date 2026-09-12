@@ -5,6 +5,7 @@ import {
   findBlogById,
   findBlogBySlug,
   findPublishedBlogs,
+  incrementBlogViews,
   IsAdmin,
   patchBlog,
 } from "./blogs.repository";
@@ -22,6 +23,10 @@ export const getBlogByIdService = async (blogId: string) => {
 export const getBlogBySlugService = async (slug: string) => {
   const blog = await findBlogBySlug(slug);
   return blog;
+};
+
+export const incrementBlogViewsService = async (slug: string) => {
+  return incrementBlogViews(slug);
 };
 
 export const getPublishedBlogsService = async (query: GetBlogsQueryInput) => {

@@ -5,6 +5,7 @@ import {
   deleteBlogService,
   getBlogBySlugService,
   getPublishedBlogsService,
+  incrementBlogViewsService,
   patchBlogService,
 } from "./blogs.service";
 import {
@@ -83,6 +84,21 @@ export const getBlogBySlugController = async (c: Context) => {
     success: true,
     message: "Blog fetched successfully",
     data: blog,
+  });
+};
+
+export const incrementBlogViewsController = async (c: Context) => {
+  const slug = c.req.param("slug");
+
+  if (!slug) {
+    throw AppError.BadRequest("Blog slug is required");
+  }
+
+  const views = await incrementBlogViewsService(slug);
+  return c.json({
+    success: true,
+    message: "Blog view recorded successfully",
+    data: { views },
   });
 };
 

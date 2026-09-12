@@ -12,6 +12,7 @@ const blogSchema = z.object({
   coverImage: z.string().nullable(),
   tags: z.array(z.string()),
   isPublished: z.boolean(),
+  views: z.number(),
   publishedAt: z.string().nullable(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -45,6 +46,12 @@ const likeResponseSchema = z.object({
   liked: z.boolean(),
   totalLikes: z.number(),
   message: z.string(),
+});
+
+const viewResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.object({ views: z.number() }),
 });
 
 const commentSchema = z.object({
@@ -96,17 +103,18 @@ export function getPublishedBlogs(
   );
 }
 
-export function getBlog(blogId: string) {
-  return apiRequest<{ success: boolean; message: string; data: Blog }>(
-    `/api/v1/blogs/${blogId}`,
-    blogResponseSchema,
-  );
-}
-
 export function getBlogBySlug(slug: string) {
   return apiRequest<{ success: boolean; message: string; data: Blog }>(
     `/api/v1/blogs/${slug}`,
     blogResponseSchema,
+  );
+}
+
+export function recordBlogView(slug: string) {
+  return apiRequest<{ success: boolean; message: string; data: { views: number } }>(
+    `/api/v1/blogs/${slug}/views`,
+    viewResponseSchema,
+    { method: "POST" },
   );
 }
 

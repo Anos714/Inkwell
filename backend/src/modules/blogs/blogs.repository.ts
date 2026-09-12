@@ -1,4 +1,4 @@
-import { and, count, desc, eq, ilike, or } from "drizzle-orm";
+import { and, count, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { db } from "../../db/db";
 import { blogs, users } from "../../db/schema";
 import { AppError } from "../../utils/AppError";
@@ -56,7 +56,10 @@ export const findBlogById = async (blogId: string) => {
 };
 
 export const findBlogBySlug = async (slug: string) => {
-  const [blog] = await db.select().from(blogs).where(eq(blogs.slug, slug));
+  const [blog] = await db
+    .select()
+    .from(blogs)
+    .where(and(eq(blogs.slug, slug), eq(blogs.isPublished, true)));
   if (!blog) {
     throw AppError.NotFound("Blog not found");
   }
@@ -64,6 +67,20 @@ export const findBlogBySlug = async (slug: string) => {
   const likesCount = await countLikes(blog.id);
 
   return { ...blog, likesCount };
+};
+
+export const incrementBlogViews = async (slug: string) => {
+  const [blog] = await db
+    .update(blogs)
+    .set({ views: sql`${blogs.views} + 1` })
+    .where(and(eq(blogs.slug, slug), eq(blogs.isPublished, true)))
+    .returning({ views: blogs.views });
+
+  if (!blog) {
+    throw AppError.NotFound("Blog not found");
+  }
+
+  return blog.views;
 };
 
 export const findPublishedBlogs = async (params: {

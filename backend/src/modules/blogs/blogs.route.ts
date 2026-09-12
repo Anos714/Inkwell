@@ -19,6 +19,7 @@ blogsRoute.get(
   }),
   blogController.getBlogsController,
 );
+blogsRoute.post("/:slug/views", blogController.incrementBlogViewsController);
 blogsRoute.get("/:slug", blogController.getBlogBySlugController);
 
 blogsRoute.post(
