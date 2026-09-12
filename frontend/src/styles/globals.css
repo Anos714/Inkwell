@@ -25,7 +25,7 @@
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; min-width: 320px; }
+body { margin: 0; min-width: 320px; overflow-x: clip; }
 body, button, input, textarea { transition: background-color .3s ease, border-color .3s ease, color .3s ease, box-shadow .3s ease; }
 .theme-toggle {
   display: grid;
@@ -316,4 +316,10 @@ button { font: inherit; }
   padding: .1rem .3rem;
 }
 .blog-content pre code { background: transparent; padding: 0; }
+.blog-content img { height: auto; max-width: 100%; border-radius: .75rem; }
 .blog-content hr { border-color: color-mix(in srgb, var(--color-inkwell-cream) 15%, transparent); margin: 2rem 0; }
+@media (max-width: 640px) {
+  .blog-content h1 { font-size: 1.875rem; }
+  .blog-content h2 { font-size: 1.5rem; }
+  .blog-content h3 { font-size: 1.25rem; }
+}
