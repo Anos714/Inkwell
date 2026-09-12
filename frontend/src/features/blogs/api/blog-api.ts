@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { apiRequest } from "../../../lib/api";
 import type { BlogsResponse } from "../types";
-import type { Blog, BlogInput, CommentsResponse, LikeResponse } from "../types";
+import type { Blog, BlogInput, CommentsResponse, DashboardSummary, LikeResponse } from "../types";
 
 const blogSchema = z.object({
   id: z.string(),
@@ -54,6 +54,21 @@ const viewResponseSchema = z.object({
   data: z.object({ views: z.number() }),
 });
 
+const dashboardSummarySchema = z.object({
+  totalBlogs: z.number(),
+  publishedBlogs: z.number(),
+  draftBlogs: z.number(),
+  totalLikes: z.number(),
+  totalComments: z.number(),
+  totalViews: z.number(),
+});
+
+const dashboardResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: dashboardSummarySchema,
+});
+
 const commentSchema = z.object({
   id: z.string(),
   content: z.string(),
@@ -100,6 +115,28 @@ export function getPublishedBlogs(
   return apiRequest<BlogsResponse>(
     `/api/v1/blogs${query}`,
     blogsResponseSchema,
+  );
+}
+
+export function getAdminBlogs(token: string) {
+  return apiRequest<BlogsResponse>("/api/v1/blogs/admin", blogsResponseSchema, {
+    headers: authHeaders(token),
+  });
+}
+
+export function getAdminBlogBySlug(token: string, slug: string) {
+  return apiRequest<{ success: boolean; message: string; data: Blog }>(
+    `/api/v1/blogs/admin/${slug}`,
+    blogResponseSchema,
+    { headers: authHeaders(token) },
+  );
+}
+
+export function getDashboardSummary(token: string) {
+  return apiRequest<{ success: boolean; message: string; data: DashboardSummary }>(
+    "/api/v1/blogs/dashboard",
+    dashboardResponseSchema,
+    { headers: authHeaders(token) },
   );
 }
 

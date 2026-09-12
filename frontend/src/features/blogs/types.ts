@@ -61,3 +61,12 @@ export type CommentsResponse = {
   message: string
   data: BlogComment[]
 }
+
+export type DashboardSummary = {
+  totalBlogs: number
+  publishedBlogs: number
+  draftBlogs: number
+  totalLikes: number
+  totalComments: number
+  totalViews: number
+}
