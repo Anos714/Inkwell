@@ -55,6 +55,17 @@ export const findBlogById = async (blogId: string) => {
   return { ...blog, likesCount };
 };
 
+export const findBlogBySlug = async (slug: string) => {
+  const [blog] = await db.select().from(blogs).where(eq(blogs.slug, slug));
+  if (!blog) {
+    throw AppError.NotFound("Blog not found");
+  }
+
+  const likesCount = await countLikes(blog.id);
+
+  return { ...blog, likesCount };
+};
+
 export const findPublishedBlogs = async (params: {
   page: number;
   limit: number;

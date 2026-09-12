@@ -87,9 +87,9 @@ export function getPublishedBlogs(options: { search?: string; page?: number; lim
   return apiRequest<BlogsResponse>(`/api/v1/blogs${query}`, blogsResponseSchema)
 }
 
-export function getBlog(blogId: string) {
+export function getBlogBySlug(slug: string) {
   return apiRequest<{ success: boolean; message: string; data: Blog }>(
-    `/api/v1/blogs/${blogId}`,
+    `/api/v1/blogs/${slug}`,
     blogResponseSchema,
   )
 }

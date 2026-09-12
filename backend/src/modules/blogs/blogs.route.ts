@@ -19,7 +19,7 @@ blogsRoute.get(
   }),
   blogController.getBlogsController,
 );
-blogsRoute.get("/:blogId", blogController.getBlogByIdController);
+blogsRoute.get("/:slug", blogController.getBlogBySlugController);
 
 blogsRoute.post(
   "/",

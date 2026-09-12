@@ -19,7 +19,7 @@ function App() {
         <Route path="/login" element={<AuthPage />} />
         <Route path="/home" element={<BlogHome />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/blogs/:blogId" element={<BlogDetail />} />
+        <Route path="/blogs/:slug" element={<BlogDetail />} />
         <Route path="/blogs" element={<BlogListPage />} />
         <Route path="/admin/blogs" element={<AdminDashboard />} />
         <Route path="/admin/blogs/create" element={<AdminCreatePage />} />

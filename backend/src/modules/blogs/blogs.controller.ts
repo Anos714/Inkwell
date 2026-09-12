@@ -3,7 +3,7 @@ import { AppError } from "../../utils/AppError";
 import {
   createBlogService,
   deleteBlogService,
-  getBlogByIdService,
+  getBlogBySlugService,
   getPublishedBlogsService,
   patchBlogService,
 } from "./blogs.service";
@@ -14,11 +14,24 @@ import {
   PatchBlogContext,
   SuccessBlogResponse,
 } from "./blogs.types";
+import slugify from "slugify";
 
 export const createBlogController = async (c: CreateBlogContext) => {
   const data = c.req.valid("json");
   const payload = c.get("user");
-  const blog = await createBlogService(payload.id, data);
+
+  // formatting slug
+  const rawSlug = data.slug.trim();
+  const formattedSlug = slugify(rawSlug, {
+    lower: true,
+    strict: true,
+    trim: true,
+  });
+
+  const blog = await createBlogService(payload.id, {
+    ...data,
+    slug: formattedSlug,
+  });
   return c.json<SuccessBlogResponse>({
     success: true,
     message: "Blog created successfully",
@@ -58,14 +71,14 @@ export const deleteBlogController = async (c: Context) => {
   });
 };
 
-export const getBlogByIdController = async (c: Context) => {
-  const blogId = c.req.param("blogId");
+export const getBlogBySlugController = async (c: Context) => {
+  const slug = c.req.param("slug");
 
-  if (!blogId) {
-    throw AppError.BadRequest("Blog id is required");
+  if (!slug) {
+    throw AppError.BadRequest("Blog slug is required");
   }
 
-  const blog = await getBlogByIdService(blogId);
+  const blog = await getBlogBySlugService(slug);
   return c.json<SuccessBlogResponse>({
     success: true,
     message: "Blog fetched successfully",

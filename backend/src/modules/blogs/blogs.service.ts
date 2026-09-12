@@ -3,6 +3,7 @@ import {
   createBlog,
   deleteBlog,
   findBlogById,
+  findBlogBySlug,
   findPublishedBlogs,
   IsAdmin,
   patchBlog,
@@ -15,6 +16,11 @@ import {
 
 export const getBlogByIdService = async (blogId: string) => {
   const blog = await findBlogById(blogId);
+  return blog;
+};
+
+export const getBlogBySlugService = async (slug: string) => {
+  const blog = await findBlogBySlug(slug);
   return blog;
 };
 
