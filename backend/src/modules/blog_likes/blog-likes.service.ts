@@ -6,14 +6,12 @@ export const toggleBlogLikeService = async (blogId: string, userId: string) => {
     userId,
   );
 
-  const totalLikes = await blogLikesRepository.countLikes(blogId);
-
   if (existingLike) {
     await blogLikesRepository.deleteLike(blogId, userId);
     return {
       liked: false,
       message: "Blog unliked successfully",
-      totalLikes,
+      totalLikes: await blogLikesRepository.countLikes(blogId),
       statusCode: 200,
     };
   } else {
@@ -21,7 +19,7 @@ export const toggleBlogLikeService = async (blogId: string, userId: string) => {
     return {
       liked: true,
       message: "Blog liked successfully",
-      totalLikes,
+      totalLikes: await blogLikesRepository.countLikes(blogId),
       statusCode: 201,
     };
   }

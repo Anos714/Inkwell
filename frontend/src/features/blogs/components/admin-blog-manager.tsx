@@ -20,8 +20,8 @@ export function AdminBlogManager({ token, blogs }: Props) {
           className="flex items-center justify-between gap-4 rounded-xl border border-inkwell-cream/10 bg-inkwell-950/60 px-4 py-3"
         >
           <Link
-            to={`/blogs/${blog.id}`}
-            className="truncate text-sm hover:text-inkwell-gold"
+            to={`/blogs/${blog.slug}`}
+            className="min-w-0 flex-1 truncate text-sm hover:text-inkwell-gold"
           >
             {blog.title}
           </Link>

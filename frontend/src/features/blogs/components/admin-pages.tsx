@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link, Navigate, useParams } from 'react-router'
 import type { ReactNode } from 'react'
-import { getBlog, getPublishedBlogs } from '../api/blog-api'
+import { getBlogBySlug, getPublishedBlogs } from '../api/blog-api'
 import { useAuthStore } from '../../auth/store/auth-store'
 import { AdminBlogForm } from './admin-blog-form'
 import { AdminBlogManager } from './admin-blog-manager'
@@ -51,6 +51,6 @@ export function AdminManagePage() {
 export function AdminEditPage() {
   const token = useAuthStore((state) => state.token)
   const { blogId } = useParams()
-  const query = useQuery({ queryKey: ['blog', blogId], queryFn: () => getBlog(blogId ?? ''), enabled: Boolean(token && blogId) })
+  const query = useQuery({ queryKey: ['blog', blogId], queryFn: () => getBlogBySlug(blogId ?? ''), enabled: Boolean(token && blogId) })
   return <AdminFrame title="Update an entry.">{query.isLoading ? <div className="space-y-4"><div className="skeleton-shimmer h-12 rounded-xl" /><div className="skeleton-shimmer h-72 rounded-xl" /></div> : query.data?.data ? <AdminBlogForm key={query.data.data.id} token={token ?? ''} blog={query.data.data} /> : <p className="text-sm text-red-300">Entry could not be loaded.</p>}</AdminFrame>
 }
