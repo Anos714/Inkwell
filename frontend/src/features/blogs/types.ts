@@ -62,6 +62,20 @@ export type CommentsResponse = {
   data: BlogComment[]
 }
 
+export type RecentComment = BlogComment & {
+  blog: {
+    id: string
+    title: string
+    slug: string
+  } | null
+}
+
+export type RecentCommentsResponse = {
+  success: boolean
+  message: string
+  data: RecentComment[]
+}
+
 export type DashboardSummary = {
   totalBlogs: number
   publishedBlogs: number

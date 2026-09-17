@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { apiRequest } from "../../../lib/api";
 import type { BlogsResponse } from "../types";
-import type { Blog, BlogInput, CommentsResponse, DashboardSummary, LikeResponse } from "../types";
+import type { Blog, BlogInput, CommentsResponse, DashboardSummary, LikeResponse, RecentCommentsResponse } from "../types";
 
 const blogSchema = z.object({
   id: z.string(),
@@ -86,6 +86,22 @@ const commentsResponseSchema = z.object({
   success: z.boolean(),
   message: z.string(),
   data: z.array(commentSchema),
+});
+
+const recentCommentSchema = commentSchema.extend({
+  blog: z
+    .object({
+      id: z.string(),
+      title: z.string(),
+      slug: z.string(),
+    })
+    .nullable(),
+});
+
+const recentCommentsResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.array(recentCommentSchema),
 });
 
 const commentMutationResponseSchema = z.object({
@@ -211,6 +227,13 @@ export function getBlogComments(blogId: string) {
   return apiRequest<CommentsResponse>(
     `/api/v1/blog-comments/${blogId}/comments`,
     commentsResponseSchema,
+  );
+}
+
+export function getRecentComments(limit = 12) {
+  return apiRequest<RecentCommentsResponse>(
+    `/api/v1/blog-comments/recent?limit=${limit}`,
+    recentCommentsResponseSchema,
   );
 }
 
