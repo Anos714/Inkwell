@@ -5,8 +5,10 @@ import './styles/globals.css'
 import App from './App.tsx'
 import { initializeTheme } from './components/theme'
 import { queryClient } from './lib/query-client'
+import { startSilentRefresh } from './features/auth/store/silent-refresh'
 
 initializeTheme()
+startSilentRefresh()
 const root = document.getElementById('root')
 
 if (!root) {
