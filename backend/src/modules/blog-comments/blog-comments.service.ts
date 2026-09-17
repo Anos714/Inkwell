@@ -24,6 +24,10 @@ export const getCommentsService = async (blogId: string) => {
   return comments;
 };
 
+export const getRecentCommentsService = async (limit?: number) => {
+  return commentRepository.getRecentComments(limit);
+};
+
 export const deleteCommentService = async (
   userId: string,
   role: string,

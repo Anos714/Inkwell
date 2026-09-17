@@ -47,6 +47,23 @@ export const getCommentsController = async (c: Context) => {
   });
 };
 
+export const getRecentCommentsController = async (c: Context) => {
+  const limitRaw = c.req.query("limit");
+  const limit = limitRaw ? Number.parseInt(limitRaw, 10) : undefined;
+
+  if (limit !== undefined && (!Number.isInteger(limit) || limit < 1)) {
+    throw AppError.BadRequest("Limit must be a positive integer");
+  }
+
+  const comments = await BlogCommentService.getRecentCommentsService(limit);
+
+  return c.json({
+    success: true,
+    message: "Recent comments fetched successfully",
+    data: comments,
+  });
+};
+
 export const deleteCommentController = async (c: Context) => {
   const payload = c.get("user");
   const commentId = c.req.param("commentId");

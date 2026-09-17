@@ -18,6 +18,11 @@ blogCommentsRoute.post(
 );
 
 blogCommentsRoute.get(
+  "/recent",
+  BlogCommentController.getRecentCommentsController,
+);
+
+blogCommentsRoute.get(
   "/:blogId/comments",
   BlogCommentController.getCommentsController,
 );

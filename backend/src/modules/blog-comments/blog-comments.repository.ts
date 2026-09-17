@@ -1,6 +1,6 @@
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { db } from "../../db/db";
-import { blogComments, users } from "../../db/schema";
+import { blogComments, blogs, users } from "../../db/schema";
 
 export const createComment = async (
   userId: string,
@@ -37,7 +37,6 @@ export const getComments = async (blogId: string) => {
 
   return comments;
 };
-
 export const deleteComment = async (
   userId: string,
   role: string,
@@ -53,4 +52,29 @@ export const deleteComment = async (
     .returning();
 
   return result;
+};
+
+export const getRecentComments = async (limit = 12) => {
+  return db
+    .select({
+      id: blogComments.id,
+      content: blogComments.content,
+      createdAt: blogComments.createdAt,
+      user: {
+        id: users.id,
+        username: users.username,
+        avatarUrl: users.avatarUrl,
+      },
+      blog: {
+        id: blogs.id,
+        title: blogs.title,
+        slug: blogs.slug,
+      },
+    })
+    .from(blogComments)
+    .leftJoin(users, eq(blogComments.userId, users.id))
+    .leftJoin(blogs, eq(blogComments.blogId, blogs.id))
+    .where(eq(blogs.isPublished, true))
+    .orderBy(desc(blogComments.createdAt))
+    .limit(limit);
 };
