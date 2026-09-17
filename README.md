@@ -10,7 +10,7 @@ editorial "inkwell" design system with dark/light themes.
 ![License](https://img.shields.io/badge/License-MIT-d9b47b?style=for-the-badge)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?style=for-the-badge&logo=typescript&logoColor=white)
 
-- 🔗 **Live demo:** [https://inkwell-0tx.pages.dev/](https://inkwell-blogs.pages.dev/)
+- 🔗 **Live demo:** [https://inkwell-blogs.pages.dev/](https://inkwell-blogs.pages.dev/)
 - 🧑‍💻 **Repository:** [https://github.com/Anos714/Inkwell](https://github.com/Anos714/Inkwell)
 
 ---
@@ -531,7 +531,7 @@ blog_comments
 The project is designed to deploy the two apps independently.
 
 **Frontend (Cloudflare Pages)** — the live demo runs at
-[inkwell-0tx.pages.dev](https://inkwell-blogs.pages.dev/).
+[inkwell-blogs.pages.dev](https://inkwell-blogs.pages.dev/).
 
 - Build command: `bun run build`
 - Output directory: `frontend/dist`
