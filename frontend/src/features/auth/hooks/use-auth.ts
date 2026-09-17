@@ -4,20 +4,12 @@ import { useNavigate } from 'react-router'
 import { authenticateWithGoogle, getCurrentUser, logout, refreshSession } from '../api/auth-api'
 import type { AuthResponse } from '../schemas'
 import { useAuthStore } from '../store/auth-store'
+import { getTokenRole } from '../lib/token'
 
 export const googleCallbackPath = '/api/auth/google/callback'
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ''
 const googleRedirectUri = import.meta.env.VITE_GOOGLE_REDIRECT_URI
   ?? `${window.location.origin}${googleCallbackPath}`
-
-function getTokenRole(token: string): 'user' | 'admin' | undefined {
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1] ?? '')) as { role?: string }
-    return payload.role === 'admin' || payload.role === 'user' ? payload.role : undefined
-  } catch {
-    return undefined
-  }
-}
 
 export function useAuth() {
   const navigate = useNavigate()
