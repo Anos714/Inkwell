@@ -51,7 +51,17 @@ export const patchBlogController = async (c: PatchBlogContext) => {
   if (!blogId) {
     throw AppError.BadRequest("Blog id is required");
   }
-  const blog = await patchBlogService(payload.id, blogId, data);
+
+  // formatting slug (same contract as create)
+  const rawSlug = data.slug?.trim();
+  const formattedSlug = rawSlug
+    ? slugify(rawSlug, { lower: true, strict: true, trim: true })
+    : undefined;
+
+  const blog = await patchBlogService(payload.id, blogId, {
+    ...data,
+    ...(formattedSlug ? { slug: formattedSlug } : {}),
+  });
   return c.json<SuccessBlogResponse>({
     success: true,
     message: "Blog updated successfully",

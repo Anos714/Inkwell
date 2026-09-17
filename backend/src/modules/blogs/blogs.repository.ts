@@ -14,7 +14,13 @@ export const IsAdmin = async (userId: string) => {
 };
 
 export const createBlog = async (data: CreateBlogInput) => {
-  const [blog] = await db.insert(blogs).values(data).returning();
+  const [blog] = await db
+    .insert(blogs)
+    .values({
+      ...data,
+      publishedAt: data.isPublished ? new Date() : null,
+    })
+    .returning();
   if (!blog) {
     throw AppError.InternalServerError("Failed to create blog");
   }
@@ -22,10 +28,26 @@ export const createBlog = async (data: CreateBlogInput) => {
 };
 
 export const patchBlog = async (blogId: string, data: PatchBlogInput) => {
+  // Only manage publishedAt when the publish flag is part of the patch.
+  let publishedAt: Date | null | undefined;
+  if (data.isPublished !== undefined) {
+    if (data.isPublished) {
+      const [current] = await db
+        .select({ publishedAt: blogs.publishedAt })
+        .from(blogs)
+        .where(eq(blogs.id, blogId));
+      // Keep the original publish date; stamp it on draft → publish.
+      publishedAt = current?.publishedAt ?? new Date();
+    } else {
+      publishedAt = null;
+    }
+  }
+
   const [blog] = await db
     .update(blogs)
     .set({
       ...data,
+      ...(publishedAt !== undefined ? { publishedAt } : {}),
       updatedAt: new Date(),
     })
     .where(eq(blogs.id, blogId))
