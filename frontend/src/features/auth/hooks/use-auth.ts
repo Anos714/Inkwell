@@ -25,12 +25,19 @@ export function useAuth() {
   const { token, setSession, clearSession } = useAuthStore()
   const [notice, setNotice] = useState('')
   const refreshAttempted = useRef(false)
+  const [refreshSettled, setRefreshSettled] = useState(false)
 
+  // The /me lookup runs whenever we hold an access token. The token lives in the
+  // queryKey so a refreshed token automatically triggers a re-fetch.
   const meQuery = useQuery({
-    queryKey: ['auth', 'me'],
+    queryKey: ['auth', 'me', token],
     queryFn: () => getCurrentUser(token ?? ''),
     enabled: Boolean(token),
     retry: false,
+    // Re-fetching /me on focus can fire while the access token is briefly
+    // stale and trigger a false sign-out; the mount-time refresh below covers
+    // session recovery instead.
+    refetchOnWindowFocus: false,
   })
 
   const {
@@ -41,7 +48,7 @@ export function useAuth() {
     onSuccess: (data: AuthResponse) => {
       if (data.token) setSession(data.token, data.user ? { ...data.user, role: getTokenRole(data.token) } : null)
     },
-    onError: clearSession,
+    onSettled: () => setRefreshSettled(true),
   })
 
   const loginMutation = useMutation({
@@ -57,21 +64,29 @@ export function useAuth() {
     onError: (error: Error) => setNotice(error.message),
   })
 
+  // Silent refresh on every mount (except the OAuth callback route). The stored
+  // access token expires after 15 minutes, but the httpOnly refresh cookie is
+  // valid for 7 days — exchanging it keeps returning visitors signed in.
   useEffect(() => {
     const isGoogleCallback = window.location.pathname === googleCallbackPath
 
-    if (!token && !isGoogleCallback && !refreshAttempted.current) {
-      refreshAttempted.current = true
-      refresh()
-    }
-  }, [refresh, token])
+    if (isGoogleCallback || refreshAttempted.current) return
+
+    refreshAttempted.current = true
+    refresh()
+  }, [refresh])
 
   useEffect(() => {
     if (meQuery.data?.user && token) {
       setSession(token, { ...meQuery.data.user, role: getTokenRole(token) })
     }
-    if (meQuery.error) clearSession()
-  }, [clearSession, meQuery.data, meQuery.error, setSession, token])
+
+    // Only sign the user out once the silent refresh has settled AND /me cannot
+    // authenticate us — a pending refresh may still restore a valid session.
+    if (refreshSettled && meQuery.error && !meQuery.isFetching) {
+      clearSession()
+    }
+  }, [clearSession, meQuery.data, meQuery.error, meQuery.isFetching, refreshSettled, setSession, token])
 
   useEffect(() => {
     const callbackUrl = new URL(window.location.href)
@@ -128,7 +143,9 @@ export function useAuth() {
   })
 
   return {
-    isLoading: isRefreshing || loginMutation.isPending,
+    // The boot-time refresh shouldn't expose a loading state — it would flicker
+    // the sign-out button on every page load for signed-in users.
+    isLoading: (refreshSettled && isRefreshing) || loginMutation.isPending,
     notice,
     login,
     logout: logoutUser,
