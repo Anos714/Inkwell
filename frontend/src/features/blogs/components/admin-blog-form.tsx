@@ -62,6 +62,9 @@ export function AdminBlogForm({
     mutationFn: () => {
       const data = {
         ...form,
+        // Empty strings fail backend `.min(3)`/`z.url()` guards; omit instead.
+        description: form.description?.trim() || undefined,
+        coverImage: form.coverImage || undefined,
         tags: tagsInput
           .split(',')
           .map((tag) => tag.trim())
@@ -77,6 +80,12 @@ export function AdminBlogForm({
       queryClient.invalidateQueries({
         queryKey: ['blogs'],
       })
+
+      // Keep the detail views in sync after an edit (public + admin caches).
+      if (blog) {
+        queryClient.invalidateQueries({ queryKey: ['blog', blog.slug] })
+        queryClient.invalidateQueries({ queryKey: ['blog', 'admin', blog.slug] })
+      }
 
       setError('')
       onSaved?.()
@@ -217,44 +226,72 @@ export function AdminBlogForm({
 
         mutation.mutate()
       }}
-      className="grid gap-3 md:grid-cols-2"
+      className="grid gap-4 md:grid-cols-2"
     >
       {(
         ['title', 'slug', 'description'] as const
       ).map((key) => (
-        <input
-          key={key}
-          value={String(form[key] ?? '')}
-          onChange={(event) =>
-            update(key, event.target.value)
-          }
-          placeholder={
-            key[0].toUpperCase() + key.slice(1)
-          }
-          required={
-            key === 'title' || key === 'slug'
-          }
-          className="rounded-xl border border-inkwell-cream/15 bg-inkwell-950 px-4 py-3 text-sm text-inkwell-cream outline-none focus:border-inkwell-gold"
-        />
+        <label key={key} className="group block">
+          <span className="mb-2 block font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-dim">
+            {key[0].toUpperCase() + key.slice(1)}
+          </span>
+          <input
+            value={String(form[key] ?? '')}
+            onChange={(event) =>
+              update(key, event.target.value)
+            }
+            placeholder={
+              key === 'title'
+                ? 'A memorable title'
+                : key === 'slug'
+                  ? 'url-friendly-slug'
+                  : 'A short summary (optional)'
+            }
+            required={
+              key === 'title' || key === 'slug'
+            }
+            className="w-full rounded-xl border border-inkwell-cream/15 bg-inkwell-950 px-4 py-3 text-sm text-inkwell-cream outline-none transition duration-300 placeholder:text-inkwell-dim/60 focus:border-inkwell-gold focus:bg-inkwell-900"
+          />
+        </label>
       ))}
 
       {/* Cover image */}
       <div className="space-y-3 md:col-span-2">
-        <label className="block text-sm font-medium text-inkwell-cream">
+        <span className="block font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-dim">
           Cover image
+        </span>
+
+        <label className="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-inkwell-cream/20 bg-inkwell-950 px-6 py-10 text-center transition duration-300 hover:border-inkwell-gold/50 hover:bg-inkwell-900/60">
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 48 48"
+            className="size-9 text-inkwell-gold"
+            fill="none"
+          >
+            <path
+              d="M8 34l10-11 7 8 6-6 9 9"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="17" cy="17" r="3.5" stroke="currentColor" strokeWidth="2" />
+            <rect x="6" y="8" width="36" height="32" rx="5" stroke="currentColor" strokeWidth="2" />
+          </svg>
+          <span className="text-sm font-medium text-inkwell-cream">
+            Click to upload a cover
+          </span>
+          <span className="text-xs text-inkwell-muted">
+            JPG, PNG or WebP · Maximum 5MB
+          </span>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleCoverChange}
+            disabled={isSaving}
+            className="hidden"
+          />
         </label>
-
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          onChange={handleCoverChange}
-          disabled={isSaving}
-          className="block w-full cursor-pointer rounded-xl border border-inkwell-cream/15 bg-inkwell-950 px-4 py-3 text-sm text-inkwell-cream file:mr-4 file:rounded-lg file:border-0 file:bg-inkwell-gold file:px-4 file:py-2 file:font-semibold file:text-inkwell-950"
-        />
-
-        <p className="text-xs text-inkwell-muted">
-          JPG, PNG or WebP · Maximum 5MB
-        </p>
 
         {isUploadingCover && (
           <p className="text-sm text-inkwell-gold">
@@ -263,7 +300,7 @@ export function AdminBlogForm({
         )}
 
         {coverPreview && (
-          <div className="relative overflow-hidden rounded-xl border border-inkwell-cream/15">
+          <div className="relative overflow-hidden rounded-2xl border border-inkwell-cream/15">
             <img
               src={coverPreview}
               alt="Cover preview"
@@ -274,7 +311,7 @@ export function AdminBlogForm({
               <button
                 type="button"
                 onClick={removeCover}
-                className="absolute right-3 top-3 rounded-lg bg-black/70 px-3 py-2 text-xs font-semibold text-white"
+                className="absolute right-3 top-3 rounded-lg bg-black/70 px-3 py-2 text-xs font-semibold text-white backdrop-blur-sm transition hover:bg-black/85"
               >
                 Remove
               </button>
@@ -283,23 +320,19 @@ export function AdminBlogForm({
         )}
       </div>
 
-      <RichTextEditor
-        value={String(form.content)}
-        onChange={(value) =>
-          update('content', value)
-        }
-      />
+      <div className="md:col-span-2">
+        <span className="mb-2 block font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-dim">
+          Content
+        </span>
+        <RichTextEditor
+          value={String(form.content)}
+          onChange={(value) =>
+            update('content', value)
+          }
+        />
+      </div>
 
-      <input
-        value={tagsInput}
-        onChange={(event) =>
-          setTagsInput(event.target.value)
-        }
-        placeholder="Tags, comma separated"
-        className="rounded-xl border border-inkwell-cream/15 bg-inkwell-950 px-4 py-3 text-sm text-inkwell-cream outline-none focus:border-inkwell-gold"
-      />
-
-      <label className="flex items-center gap-3 px-2 text-sm text-inkwell-muted">
+      <label className="group flex items-center gap-3 rounded-xl border border-inkwell-cream/15 bg-inkwell-950 px-4 py-3.5 text-sm text-inkwell-muted transition hover:border-inkwell-gold/40">
         <input
           type="checkbox"
           checked={Boolean(form.isPublished)}
@@ -309,14 +342,33 @@ export function AdminBlogForm({
               event.target.checked,
             )
           }
+          className="size-4 accent-inkwell-gold"
         />
 
-        Published
+        <span>
+          <span className="font-semibold text-inkwell-cream">
+            {form.isPublished ? 'Published' : 'Save as draft'}
+          </span>
+          <span className="mt-0.5 block text-xs text-inkwell-dim">
+            {form.isPublished
+              ? 'Visible to everyone in the journal'
+              : 'Only visible to you in the admin workspace'}
+          </span>
+        </span>
       </label>
+
+      <input
+        value={tagsInput}
+        onChange={(event) =>
+          setTagsInput(event.target.value)
+        }
+        placeholder="Tags, comma separated"
+        className="rounded-xl border border-inkwell-cream/15 bg-inkwell-950 px-4 py-3 text-sm text-inkwell-cream outline-none transition duration-300 placeholder:text-inkwell-dim/60 focus:border-inkwell-gold focus:bg-inkwell-900"
+      />
 
       <button
         disabled={isSaving}
-        className="rounded-xl bg-inkwell-gold px-5 py-3 text-sm font-bold text-inkwell-950 disabled:opacity-60 md:col-span-2"
+        className="group inline-flex items-center justify-center gap-2 rounded-xl bg-inkwell-gold px-5 py-3.5 text-sm font-bold text-inkwell-950 transition duration-300 hover:-translate-y-0.5 hover:bg-inkwell-light hover:shadow-lg hover:shadow-inkwell-gold/20 disabled:cursor-wait disabled:opacity-60 md:col-span-2"
       >
         {isUploadingCover
           ? 'Uploading image…'
@@ -324,7 +376,9 @@ export function AdminBlogForm({
             ? 'Saving…'
             : blog
               ? 'Update entry'
-              : 'Publish entry'}
+              : form.isPublished
+                ? 'Publish entry'
+                : 'Save draft'}
       </button>
 
       {error && (
