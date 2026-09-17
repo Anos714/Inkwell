@@ -5,6 +5,7 @@ import { authenticateWithGoogle, getCurrentUser, logout, refreshSession } from '
 import type { AuthResponse } from '../schemas'
 import { useAuthStore } from '../store/auth-store'
 import { getTokenRole } from '../lib/token'
+import { isApiError } from '../../../lib/api'
 
 export const googleCallbackPath = '/api/auth/google/callback'
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ''
@@ -38,7 +39,14 @@ export function useAuth() {
   } = useMutation({
     mutationFn: refreshSession,
     onSuccess: (data: AuthResponse) => {
-      if (data.token) setSession(data.token, data.user ? { ...data.user, role: getTokenRole(data.token) } : null)
+      if (!data.token) return
+      // /refresh returns only a new access token, so keep the profile we
+      // already have rather than blanking it mid-session.
+      const currentUser = useAuthStore.getState().user
+      setSession(
+        data.token,
+        data.user ? { ...data.user, role: getTokenRole(data.token) } : currentUser,
+      )
     },
     onSettled: () => setRefreshSettled(true),
   })
@@ -73,9 +81,11 @@ export function useAuth() {
       setSession(token, { ...meQuery.data.user, role: getTokenRole(token) })
     }
 
-    // Only sign the user out once the silent refresh has settled AND /me cannot
-    // authenticate us — a pending refresh may still restore a valid session.
-    if (refreshSettled && meQuery.error && !meQuery.isFetching) {
+    // Only sign the user out once the silent refresh has settled AND /me
+    // rejects the session outright (401). Transient failures must not log
+    // anyone out — the token now rotates in the background every ~15 minutes,
+    // and a one-off network blip during a rotation isn't a dead session.
+    if (refreshSettled && isApiError(meQuery.error) && meQuery.error.status === 401 && !meQuery.isFetching) {
       clearSession()
     }
   }, [clearSession, meQuery.data, meQuery.error, meQuery.isFetching, refreshSettled, setSession, token])
