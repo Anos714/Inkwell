@@ -9,6 +9,8 @@ import { AdminBlogManager } from './admin-blog-manager'
 import { BlogGridSkeleton } from './blog-skeleton'
 import { ThemeToggle } from '../../../components/theme-toggle'
 import { BrandLogo } from '../../../components/brand-logo'
+import { useSeo } from '../../../hooks/use-seo'
+import { SITE_NAME } from '../../../lib/seo'
 
 const NAV_ITEMS = [
   { href: '/admin/blogs', label: 'Overview' },
@@ -32,6 +34,13 @@ export function AdminFrame({
   const user = useAuthStore((state) => state.user)
   const token = useAuthStore((state) => state.token)
   const location = useLocation()
+
+  useSeo({
+    title: `${title} — ${SITE_NAME} Admin`,
+    description: 'Private Inkwell admin workspace. Not indexed.',
+    path: location.pathname,
+    noIndex: true,
+  })
 
   if (!token || user?.role !== 'admin') return <Navigate to="/" replace />
 

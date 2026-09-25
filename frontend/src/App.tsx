@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { AuthPage } from "./features/auth/components/auth-page";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router";
+import { BrowserRouter, Route, Routes } from "react-router";
 
 const BlogHome = lazy(() =>
   import("./features/blogs/components/blog-home").then((module) => ({ default: module.BlogHome })),
@@ -26,6 +26,15 @@ const AdminManagePage = lazy(() =>
 const AdminEditPage = lazy(() =>
   import("./features/blogs/components/admin-pages").then((module) => ({ default: module.AdminEditPage })),
 );
+const PrivacyPolicy = lazy(() =>
+  import("./features/blogs/components/landing/privacy-policy").then((module) => ({ default: module.PrivacyPolicy })),
+);
+const TermsAndConditions = lazy(() =>
+  import("./features/blogs/components/landing/terms-and-conditions").then((module) => ({ default: module.TermsAndConditions })),
+);
+const NotFoundPage = lazy(() =>
+  import("./features/blogs/components/not-found-page").then((module) => ({ default: module.NotFoundPage })),
+);
 
 function App() {
   return (
@@ -43,7 +52,9 @@ function App() {
           <Route path="/admin/blogs/manage" element={<AdminManagePage />} />
           <Route path="/admin/blogs/edit/:blogId" element={<AdminEditPage />} />
           <Route path="/api/auth/google/callback" element={<AuthPage />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsAndConditions />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
     </BrowserRouter>

@@ -1,0 +1,6 @@
+# Inkwell — Cloudflare Pages redirects
+# https://developers.cloudflare.com/pages/configuration/redirects/
+
+# SPA fallback: every unknown path resolves to the app shell so client-side
+# routing can take over. Static assets are matched first by Pages itself.
+/*    /index.html   200

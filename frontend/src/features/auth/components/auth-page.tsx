@@ -2,9 +2,18 @@ import { useAuth } from '../hooks/use-auth'
 import { FcGoogle } from 'react-icons/fc'
 import { ThemeToggle } from '../../../components/theme-toggle'
 import { BrandLogo } from '../../../components/brand-logo'
+import { useSeo } from '../../../hooks/use-seo'
+import { SITE_NAME } from '../../../lib/seo'
 
 export function AuthPage() {
   const { isLoading, login, notice } = useAuth()
+
+  useSeo({
+    title: `Sign in — ${SITE_NAME}`,
+    description: `Sign in to ${SITE_NAME} with Google to like posts and join the conversation.`,
+    path: '/login',
+    noIndex: true,
+  })
 
   return (
     <main className="auth-shell min-h-svh bg-inkwell-950 text-inkwell-cream">

@@ -23,6 +23,12 @@ import {
   useHeadingToc,
 } from "../hooks/use-heading-toc";
 import { useReadingProgress } from "../hooks/use-reading-progress";
+import { useSeo } from "../../../hooks/use-seo";
+import {
+  SITE_NAME,
+  blogPostingJsonLd,
+  breadcrumbJsonLd,
+} from "../../../lib/seo";
 
 export function BlogDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -126,6 +132,28 @@ export function BlogDetail() {
 
   // Canonical share URL — stable regardless of trailing query params or hashes.
   const canonicalUrl = `${window.location.origin}/blogs/${blog?.slug ?? slug}`;
+  const seoPath = `/blogs/${blog?.slug ?? slug}`;
+
+  // The article's head state is only complete once the entry resolves; until
+  // then a slug-keyed placeholder keeps the title unique per URL.
+  useSeo({
+    title: blog ? `${blog.title} — ${SITE_NAME}` : `Loading… — ${SITE_NAME}`,
+    description: blog?.description ?? undefined,
+    path: seoPath,
+    type: "article",
+    image: blog?.coverImage,
+    publishedTime: blog?.publishedAt ?? blog?.createdAt,
+    jsonLd: blog
+      ? [
+          blogPostingJsonLd(blog, canonicalUrl),
+          breadcrumbJsonLd([
+            { name: "Home", url: "/" },
+            { name: "All posts", url: "/blogs" },
+            { name: blog.title, url: seoPath },
+          ]),
+        ]
+      : [],
+  });
 
   const content =
     typeof blog?.content === "string"
@@ -226,7 +254,7 @@ export function BlogDetail() {
         {blog.coverImage && (
           <img
             src={blog.coverImage}
-            alt=""
+            alt={`${blog.title} — cover image`}
             className="mt-12 max-h-[30rem] w-full rounded-2xl object-cover"
           />
         )}
