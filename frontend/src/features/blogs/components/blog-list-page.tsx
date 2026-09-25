@@ -5,8 +5,26 @@ import { getPublishedBlogs } from "../api/blog-api";
 import { BlogGridSkeleton } from "./blog-skeleton";
 import { ThemeToggle } from "../../../components/theme-toggle";
 import { BrandLogo } from "../../../components/brand-logo";
+import { useSeo } from "../../../hooks/use-seo";
+import {
+  SITE_NAME,
+  breadcrumbJsonLd,
+} from "../../../lib/seo";
 
 export function BlogListPage() {
+  useSeo({
+    title: `All posts — ${SITE_NAME}`,
+    description:
+      "Browse every published story, essay and note on Inkwell — searchable by title and topic.",
+    path: "/blogs",
+    jsonLd: [
+      breadcrumbJsonLd([
+        { name: "Home", url: "/" },
+        { name: "All posts", url: "/blogs" },
+      ]),
+    ],
+  });
+
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);

@@ -1,7 +1,16 @@
 import { Link } from 'react-router'
 import { LegalPage } from './legal-page'
+import { useSeo } from '../../../../hooks/use-seo'
+import { SITE_NAME } from '../../../../lib/seo'
 
 export function TermsAndConditions() {
+  useSeo({
+    title: `Terms & Conditions — ${SITE_NAME}`,
+    description:
+      'The rules that govern use of Inkwell — accounts, content, conduct, and responsibilities.',
+    path: '/terms',
+  })
+
   return (
     <LegalPage eyebrow="Legal" title="Terms &amp; Conditions" updatedAt="25 September 2026">
       <p>

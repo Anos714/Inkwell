@@ -1,7 +1,16 @@
 import { Link } from 'react-router'
 import { LegalPage } from './legal-page'
+import { useSeo } from '../../../../hooks/use-seo'
+import { SITE_NAME } from '../../../../lib/seo'
 
 export function PrivacyPolicy() {
+  useSeo({
+    title: `Privacy Policy — ${SITE_NAME}`,
+    description:
+      'How Inkwell handles account data, authentication cookies, analytics and your privacy choices.',
+    path: '/privacy',
+  })
+
   return (
     <LegalPage eyebrow="Legal" title="Privacy Policy" updatedAt="25 September 2026">
       <p>

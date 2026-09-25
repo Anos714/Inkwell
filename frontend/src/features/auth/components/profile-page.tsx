@@ -5,6 +5,8 @@ import { ThemeToggle } from '../../../components/theme-toggle'
 import { useAuthStore } from '../store/auth-store'
 import { deleteAccount, updateProfile } from '../api/auth-api'
 import { saveAvatar, uploadImage } from '../../blogs/api/upload-api'
+import { useSeo } from '../../../hooks/use-seo'
+import { SITE_NAME } from '../../../lib/seo'
 
 export function ProfilePage() {
   const navigate = useNavigate()
@@ -13,6 +15,13 @@ export function ProfilePage() {
   const setSession = useAuthStore((state) => state.setSession)
   const clearSession = useAuthStore((state) => state.clearSession)
   const [username, setUsername] = useState(user?.username ?? '')
+
+  useSeo({
+    title: `Profile — ${SITE_NAME}`,
+    description: 'Your Inkwell account profile — username, avatar and session settings.',
+    path: '/profile',
+    noIndex: true,
+  })
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [isSavingName, setIsSavingName] = useState(false)
