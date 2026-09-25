@@ -8,6 +8,7 @@ import {
 } from "../api/blog-api";
 import { useAuthStore } from "../../auth/store/auth-store";
 import DOMPurify from "dompurify";
+import { readingTime } from "reading-time-estimator";
 import { FaHeart, FaShareAlt } from "react-icons/fa";
 import { FaListUl } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
@@ -247,9 +248,17 @@ export function BlogDetail() {
         <h1 className="mt-6 break-words font-display text-4xl leading-tight sm:text-7xl">
           {blog.title}
         </h1>
-        <p className="mt-6 text-sm text-inkwell-dim">
-          {new Date(blog.publishedAt ?? blog.createdAt).toLocaleDateString()}
-        </p>
+        <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-[11px] uppercase tracking-[.14em] text-inkwell-dim">
+          <time dateTime={(blog.publishedAt ?? blog.createdAt).slice(0, 10)}>
+            {new Date(blog.publishedAt ?? blog.createdAt).toLocaleDateString(undefined, {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+          </time>
+          <span aria-hidden="true" className="text-inkwell-gold">·</span>
+          <span>{readingTime(stampedContent).text}</span>
+        </div>
 
         {blog.coverImage && (
           <img
