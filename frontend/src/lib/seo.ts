@@ -2,12 +2,16 @@
 // in structured-data payloads. Keeping the site identity here means the SEO
 // hook, the sitemap generator and index.html can never drift apart.
 
-export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? 'https://inkwell-blogs.pages.dev').replace(/\/$/, '')
+// Vite injects `import.meta.env` at build time; the fallback keeps the module
+// importable outside a Vite context (tests, tooling).
+const env = (import.meta as unknown as { env?: Record<string, string | undefined> }).env ?? {}
+
+export const SITE_URL = (env.VITE_SITE_URL ?? 'https://inkwell-blogs.pages.dev').replace(/\/$/, '')
 export const SITE_NAME = 'Inkwell'
 export const SITE_TAGLINE = 'Make space for good ideas'
 export const SITE_DESCRIPTION =
   'Inkwell is a personal blog by Rahul — stories, ideas, and honest notes on building, writing, and the web.'
-export const AUTHOR_NAME = import.meta.env.VITE_AUTHOR_NAME ?? 'Rahul'
+export const AUTHOR_NAME = env.VITE_AUTHOR_NAME ?? 'Rahul'
 export const AUTHOR_HANDLE = '@rahul'
 // Social scrapers (Twitter/X, Facebook, LinkedIn, Slack) do not render SVG, so
 // every shared card must point at the rasterised PNG.
