@@ -8,21 +8,34 @@ import {
 } from "../api/blog-api";
 import { useAuthStore } from "../../auth/store/auth-store";
 import DOMPurify from "dompurify";
-import { FaHeart, FaLink, FaShareAlt, FaWhatsapp } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
+import { FaHeart, FaShareAlt } from "react-icons/fa";
+import { FaListUl } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
 import { BlogDetailSkeleton } from "./blog-skeleton";
 import { BlogComments } from "./blog-comments";
 import { ThemeToggle } from "../../../components/theme-toggle";
 import { BrandLogo } from "../../../components/brand-logo";
+import { ShareModal } from "./share-modal";
+import { TableOfContents } from "./table-of-contents";
+import { ReadingProgressPill } from "./reading-progress-pill";
+import {
+  useActiveHeading,
+  useHeadingToc,
+} from "../hooks/use-heading-toc";
+import { useReadingProgress } from "../hooks/use-reading-progress";
 
 export function BlogDetail() {
   const { slug } = useParams<{ slug: string }>();
   const token = useAuthStore((state) => state.token);
   const navigate = useNavigate();
   const [shareOpen, setShareOpen] = useState(false);
-  const [shareNotice, setShareNotice] = useState("");
-  const shareMenuRef = useRef<HTMLDivElement>(null);
+  const [tocOpen, setTocOpen] = useState(false);
+  const shareButtonRef = useRef<HTMLButtonElement>(null);
+  const tocButtonRef = useRef<HTMLButtonElement>(null);
+  const pillRef = useRef<HTMLButtonElement>(null);
+  // Whichever control opened the TOC last, so focus can go straight back to it.
+  const tocTriggerRef = useRef<HTMLElement | null>(null);
+  const articleRef = useRef<HTMLDivElement>(null);
   const hasRecordedView = useRef(false);
   const queryClient = useQueryClient();
 
@@ -111,44 +124,36 @@ export function BlogDetail() {
     viewMutation.mutate();
   }, [blog, slug, viewMutation]);
 
-  const shareUrl = window.location.href;
-  const shareText = `Read "${blog?.title ?? "this post"}" on Inkwell`;
-
-  const copyLink = async () => {
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setShareNotice("Link copied");
-    } catch {
-      setShareNotice("Copy failed");
-    }
-    window.setTimeout(() => setShareNotice(""), 1800);
-  };
-
-  useEffect(() => {
-    if (!shareOpen) return;
-    const closeOnOutsideClick = (event: MouseEvent) => {
-      if (
-        shareMenuRef.current &&
-        !shareMenuRef.current.contains(event.target as Node)
-      ) {
-        setShareOpen(false);
-      }
-    };
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setShareOpen(false);
-    };
-    document.addEventListener("mousedown", closeOnOutsideClick);
-    document.addEventListener("keydown", closeOnEscape);
-    return () => {
-      document.removeEventListener("mousedown", closeOnOutsideClick);
-      document.removeEventListener("keydown", closeOnEscape);
-    };
-  }, [shareOpen]);
+  // Canonical share URL — stable regardless of trailing query params or hashes.
+  const canonicalUrl = `${window.location.origin}/blogs/${blog?.slug ?? slug}`;
 
   const content =
     typeof blog?.content === "string"
       ? DOMPurify.sanitize(blog.content)
       : `<pre>${DOMPurify.sanitize(JSON.stringify(blog?.content, null, 2) ?? "")}</pre>`;
+
+  // The sanitized body is the single source of truth for the TOC: heading ids
+  // are baked into the HTML before React renders it, because React re-writes
+  // the whole dangerouslySetInnerHTML block on every content change and would
+  // erase anything stamped on afterwards. The article therefore renders the
+  // stamped copy so the anchors are actually in the DOM.
+  const { items: tocItems, html: stampedContent } = useHeadingToc(content);
+  const activeHeadingId = useActiveHeading(tocItems);
+  const readingProgress = useReadingProgress(articleRef, content);
+  const activeTitle =
+    tocItems.find((item) => item.id === activeHeadingId)?.text ?? null;
+
+  // One reader overlay at a time. The pill is the only control that sits above
+  // both overlays, so it can open the TOC while the share modal is visible.
+  const toggleToc = (trigger: HTMLElement | null) => {
+    if (tocOpen) {
+      setTocOpen(false);
+      return;
+    }
+    tocTriggerRef.current = trigger;
+    setShareOpen(false);
+    setTocOpen(true);
+  };
 
   if (blogQuery.isLoading) {
     return (
@@ -267,49 +272,30 @@ export function BlogDetail() {
             {blog.views} views
           </span>
 
-          <div ref={shareMenuRef} className="relative ml-2">
+          {tocItems.length > 0 && (
             <button
+              ref={tocButtonRef}
               type="button"
-              aria-expanded={shareOpen}
-              onClick={() => setShareOpen((current) => !current)}
+              aria-expanded={tocOpen}
+              onClick={() => toggleToc(tocButtonRef.current)}
               className="inline-flex items-center gap-2 rounded-full border border-inkwell-cream/15 px-3 py-2 text-sm text-inkwell-muted transition hover:border-inkwell-gold/60 hover:text-inkwell-gold"
             >
-              <FaShareAlt aria-hidden="true" className="size-3.5" /> Share
+              <FaListUl aria-hidden="true" className="size-3.5" /> Contents
             </button>
+          )}
 
-            {shareOpen && (
-              <div className="absolute left-0 top-full z-10 mt-2 flex min-w-48 flex-col gap-1 rounded-xl border border-inkwell-cream/15 bg-inkwell-900 p-2 shadow-xl shadow-black/30">
-                <button
-                  type="button"
-                  onClick={copyLink}
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-left text-xs text-inkwell-muted transition hover:bg-inkwell-brown/50 hover:text-inkwell-cream"
-                >
-                  <FaLink className="size-3.5" /> Copy link
-                </button>
-                <a
-                  href={`https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-xs text-inkwell-muted transition hover:bg-inkwell-brown/50 hover:text-emerald-400"
-                >
-                  <FaWhatsapp className="size-4" /> WhatsApp
-                </a>
-                <a
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-xs text-inkwell-muted transition hover:bg-inkwell-brown/50 hover:text-inkwell-cream"
-                >
-                  <FaXTwitter className="size-3.5" /> X / Twitter
-                </a>
-                {shareNotice && (
-                  <span className="px-3 py-1 text-[10px] text-inkwell-gold">
-                    {shareNotice}
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
+          <button
+            ref={shareButtonRef}
+            type="button"
+            aria-expanded={shareOpen}
+            onClick={() => {
+              setTocOpen(false);
+              setShareOpen(true);
+            }}
+            className="inline-flex items-center gap-2 rounded-full border border-inkwell-cream/15 px-3 py-2 text-sm text-inkwell-muted transition hover:border-inkwell-gold/60 hover:text-inkwell-gold"
+          >
+            <FaShareAlt aria-hidden="true" className="size-3.5" /> Share
+          </button>
         </div>
 
         {blog.description && (
@@ -319,13 +305,37 @@ export function BlogDetail() {
         )}
 
         <div
+          ref={articleRef}
           className="blog-content mt-10 text-base leading-8 text-inkwell-cream/85"
-          dangerouslySetInnerHTML={{ __html: content }}
+          dangerouslySetInnerHTML={{ __html: stampedContent }}
         />
 
-        {/* Comments Blog ID se hi maintain rahenge */}
         <BlogComments blogId={blog.id} />
       </article>
+
+      <ReadingProgressPill
+        ref={pillRef}
+        progress={readingProgress}
+        activeTitle={activeTitle}
+        tocOpen={tocOpen}
+        onToggleToc={() => toggleToc(pillRef.current)}
+      />
+
+      <TableOfContents
+        open={tocOpen}
+        onClose={() => setTocOpen(false)}
+        items={tocItems}
+        activeId={activeHeadingId}
+        triggerRef={tocTriggerRef}
+      />
+
+      <ShareModal
+        open={shareOpen}
+        onClose={() => setShareOpen(false)}
+        url={canonicalUrl}
+        title={blog.title}
+        triggerRef={shareButtonRef}
+      />
     </main>
   );
 }
