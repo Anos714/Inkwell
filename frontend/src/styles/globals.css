@@ -532,3 +532,92 @@ button { font: inherit; }
   50% { transform: translateY(-10px); }
 }
 
+/* ── Blog reader chrome: share modal, TOC overlay, progress pill ───────────── */
+/* Overlays dim AND blur the page behind them. The rgba black is used directly
+   so the dim reads identically in light and dark themes; the surfaces below it
+   stay theme-aware through the inkwell-* tokens. */
+
+.reader-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgb(0 0 0 / 55%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: reader-fade-in var(--dur-fast) var(--ease-out-soft);
+}
+
+.reader-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 24px 64px -12px rgb(0 0 0 / 60%);
+  animation: reader-pop-in var(--dur-base) var(--ease-out-soft);
+}
+
+@keyframes reader-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes reader-pop-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+/* "Live position" dot on the floating pill */
+.reader-dot-pulse {
+  animation: reader-dot-pulse 1.6s var(--ease-in-out-soft) infinite;
+}
+@keyframes reader-dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.reader-pill {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(420px, 90vw);
+  padding: 10px 16px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--base) 92%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 45%);
+  color: var(--text);
+  cursor: pointer;
+  transform: translate(-50%, 12px);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--dur-base) var(--ease-out-soft),
+    transform var(--dur-base) var(--ease-out-soft);
+}
+.reader-pill[data-visible='true'] {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+/* Subtle raised border while the TOC dialog it opened is on screen. */
+.reader-pill[data-open='true'] {
+  border-color: color-mix(in srgb, var(--text) 32%, transparent);
+}
+.reader-pill-label {
+  overflow: hidden;
+  max-width: 32ch;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+@media (max-width: 640px) {
+  .reader-pill-label { max-width: 20ch; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reader-dot-pulse { animation: none; }
+}
+
