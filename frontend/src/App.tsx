@@ -26,6 +26,12 @@ const AdminManagePage = lazy(() =>
 const AdminEditPage = lazy(() =>
   import("./features/blogs/components/admin-pages").then((module) => ({ default: module.AdminEditPage })),
 );
+const PrivacyPolicy = lazy(() =>
+  import("./features/blogs/components/landing/privacy-policy").then((module) => ({ default: module.PrivacyPolicy })),
+);
+const TermsAndConditions = lazy(() =>
+  import("./features/blogs/components/landing/terms-and-conditions").then((module) => ({ default: module.TermsAndConditions })),
+);
 
 function App() {
   return (
@@ -43,6 +49,8 @@ function App() {
           <Route path="/admin/blogs/manage" element={<AdminManagePage />} />
           <Route path="/admin/blogs/edit/:blogId" element={<AdminEditPage />} />
           <Route path="/api/auth/google/callback" element={<AuthPage />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsAndConditions />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Suspense>

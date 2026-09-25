@@ -17,6 +17,13 @@ const FOOTER_LINKS = [
       { label: 'Profile', href: '/profile' },
     ],
   },
+  {
+    heading: 'Legal',
+    links: [
+      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'Terms & Conditions', href: '/terms' },
+    ],
+  },
 ] as const
 
 const SOCIALS = [
@@ -85,7 +92,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-inkwell-cream/10">
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_.75fr_.75fr_.75fr]">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_.75fr_.75fr_.75fr_.75fr]">
           {/* Brand */}
           <div>
             <Link to="/" className="flex items-center gap-2.5">
