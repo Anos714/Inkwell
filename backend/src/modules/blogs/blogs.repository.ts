@@ -1,4 +1,4 @@
-import { and, count, desc, eq, ilike, or, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { db } from "../../db/db";
 import { blogComments, blogLikes, blogs, users } from "../../db/schema";
 import { AppError } from "../../utils/AppError";
@@ -120,30 +120,57 @@ export const findPublishedBlogs = async (params: {
   page: number;
   limit: number;
   search?: string;
+  tag?: string;
+  sort?: "latest" | "oldest" | "most_viewed";
 }) => {
-  const { page, limit, search } = params;
+  const { page, limit, search, tag, sort = "latest" } = params;
   const offset = (page - 1) * limit;
 
   const conditions = [eq(blogs.isPublished, true)];
 
+  if (tag) {
+    // Tags are stored lowercased on write, so an exact array match is enough.
+    conditions.push(sql`${blogs.tags} @> array[${tag}]`);
+  }
+
   if (search && search.trim() !== "") {
-    const searchPattern = `%${search.trim()}%`;
-    conditions.push(
-      or(
-        ilike(blogs.title, searchPattern),
-        ilike(blogs.description, searchPattern),
-      )!,
-    );
+    // Multi-word search: every term must appear in the title or description.
+    // Wildcard chars are stripped so a term can never widen the match.
+    const terms = search
+      .trim()
+      .split(/\s+/)
+      .map((term) => term.replace(/[%_\\]/g, "").slice(0, 50))
+      .filter(Boolean)
+      .slice(0, 5);
+    for (const term of terms) {
+      const pattern = `%${term}%`;
+      conditions.push(
+        or(
+          ilike(blogs.title, pattern),
+          ilike(blogs.description, pattern),
+        )!,
+      );
+    }
   }
 
   const whereClause = and(...conditions);
+
+  // coalesce keeps NULL publishedAt rows from floating above fresh posts —
+  // that NULLS-FIRST default was burying the latest entries.
+  const freshestFirst = sql`coalesce(${blogs.publishedAt}, ${blogs.createdAt})`;
+  const orderBy =
+    sort === "oldest"
+      ? [sql`${freshestFirst} asc`, asc(blogs.createdAt)]
+      : sort === "most_viewed"
+        ? [desc(blogs.views), sql`${freshestFirst} desc`]
+        : [sql`${freshestFirst} desc`, desc(blogs.createdAt)];
 
   const [blogList, totalResult] = await Promise.all([
     db
       .select()
       .from(blogs)
       .where(whereClause)
-      .orderBy(desc(blogs.publishedAt), desc(blogs.createdAt))
+      .orderBy(...orderBy)
       .limit(limit)
       .offset(offset),
     db.select({ total: count() }).from(blogs).where(whereClause),
@@ -155,6 +182,15 @@ export const findPublishedBlogs = async (params: {
     blogs: blogList,
     total,
   };
+};
+
+export const getBlogTags = async (max = 30) => {
+  const rows = await db.execute<{ tag: string; count: number }>(sql`
+    select tag, count(*)::int as count from (
+      select unnest(tags) as tag from ${blogs} where is_published = true
+    ) t group by tag order by count desc limit ${max}
+  `);
+  return rows.rows ?? rows;
 };
 
 export const findAllBlogs = async (params?: { limit?: number; offset?: number }) => {

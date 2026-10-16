@@ -21,6 +21,8 @@ blogsRoute.get(
 );
 blogsRoute.get("/dashboard", requireAuth, blogController.getDashboardSummaryController);
 blogsRoute.get("/admin", requireAuth, blogController.getAdminBlogsController);
+// /tags must stay above /:slug or "tags" is read as a slug.
+blogsRoute.get("/tags", blogController.getBlogTagsController);
 blogsRoute.get(
   "/admin/:slug",
   requireAuth,
