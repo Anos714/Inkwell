@@ -24,16 +24,21 @@ const DIRECT_MEDIA_HOSTS = [
   'media.imgur.com',
 ]
 
+// Share/short links on the main site hosts redirect to view pages,
+// even when the path ends with .gif — always resolve them.
+const PAGE_HOSTS = ['tenor.com', 'www.tenor.com', 'giphy.com', 'www.giphy.com']
+
 // media1.tenor.com … media4.tenor.com, media0.giphy.com … media4.giphy.com
 const DIRECT_MEDIA_HOST_PATTERNS = [/^media\d\.tenor\.com$/, /^media\d\.giphy\.com$/]
 
 function isDirectMediaUrl(value: string) {
   try {
     const parsed = new URL(value)
+    const host = parsed.hostname.toLowerCase()
+    if (PAGE_HOSTS.includes(host)) return false
     if (/\.(gif|webp|png|jpe?g|avif|mp4|webm)(\?.*)?$/i.test(parsed.pathname)) {
       return true
     }
-    const host = parsed.hostname.toLowerCase()
     return (
       DIRECT_MEDIA_HOSTS.some(
         (allowed) => host === allowed || host.endsWith(`.${allowed}`),
@@ -66,7 +71,9 @@ function GifMedia({ url, alt }: { url: string; alt: string }) {
   const kind =
     resolvedQuery.data?.kind ?? (isVideoGif(src ?? '') ? 'video' : 'image')
 
-  if (failed || (!direct && resolvedQuery.isError)) {
+  // Logged-out readers cannot hit the authed resolver — link out instead of
+  // shimmering forever.
+  if (failed || (!direct && (resolvedQuery.isError || !token))) {
     return (
       <a
         href={url}
