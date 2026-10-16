@@ -196,6 +196,13 @@ function SpotCard({
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100 [background:radial-gradient(320px_circle_at_var(--mx,50%)_var(--my,50%),color-mix(in_srgb,var(--accent)_14%,transparent),transparent_70%)]"
       />
+      {/* field-index number */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute right-5 top-4 font-display text-5xl italic leading-none text-inkwell-cream/[0.07] transition duration-500 group-hover:text-inkwell-gold/15"
+      >
+        {String(index + 1).padStart(2, '0')}
+      </span>
       {children}
     </motion.article>
   )
@@ -210,6 +217,7 @@ type Card = {
   chips: string[]
   visual: React.ReactNode
   className: string
+  horizontal?: boolean
 }
 
 const CARDS: Card[] = [
@@ -219,7 +227,8 @@ const CARDS: Card[] = [
     copy: 'Headings, lists, quotes, code, images, and alignment — the full typographic toolkit, rendered as calm, readable prose.',
     chips: ['Headings', 'Code', 'Images', 'Quotes'],
     visual: <DocMock />,
-    className: 'md:col-span-2 md:row-span-2',
+    className: 'md:col-span-4',
+    horizontal: true,
   },
   {
     icon: <EyeIcon />,
@@ -227,7 +236,7 @@ const CARDS: Card[] = [
     copy: 'Every post tracks reads, so you know what actually lands.',
     chips: ['Per-post reads'],
     visual: <BarsMock />,
-    className: '',
+    className: 'md:col-span-2',
   },
   {
     icon: <HeartIcon />,
@@ -235,7 +244,7 @@ const CARDS: Card[] = [
     copy: 'One tap to like. Instant, optimistic, satisfying.',
     chips: ['Optimistic UI'],
     visual: <HeartbeatMock />,
-    className: '',
+    className: 'md:col-span-2',
   },
   {
     icon: <CommentIcon />,
@@ -259,7 +268,8 @@ const CARDS: Card[] = [
     copy: 'Fern & paper in both themes — a hand-tuned palette with editorial serif type.',
     chips: ['2 themes', 'Serif type'],
     visual: <ThemeMock />,
-    className: 'md:col-span-2',
+    className: 'md:col-span-6',
+    horizontal: true,
   },
 ]
 
@@ -422,37 +432,54 @@ export function BentoFeatures() {
           </h2>
         </div>
         <p className="max-w-xs font-serif text-sm leading-7 text-inkwell-muted">
-          Hover around — every card is alive, the way the product feels to use.
+          A field index of what the journal can do — hover around, every card
+          is alive the way the product feels to use.
         </p>
       </motion.div>
 
-      <div className="grid auto-rows-[minmax(9rem,auto)] gap-3 sm:grid-cols-2 md:grid-cols-4">
+      <div className="grid auto-rows-[minmax(9rem,auto)] gap-3 sm:grid-cols-2 md:grid-cols-6">
         {CARDS.map((card, index) => (
           <SpotCard key={card.title} index={index} className={card.className}>
-            <div className="relative mb-4 grid size-10 shrink-0 place-items-center rounded-2xl border border-inkwell-gold/25 bg-inkwell-gold/5 p-2 text-inkwell-gold transition duration-300 group-hover:rotate-3 group-hover:border-inkwell-gold/50 group-hover:bg-inkwell-gold/10">
-              {card.icon}
-            </div>
+            <div
+              className={
+                card.horizontal
+                  ? 'relative grid flex-1 gap-6 sm:grid-cols-2 sm:items-center'
+                  : 'relative flex flex-1 flex-col'
+              }
+            >
+              <div className={card.horizontal ? 'min-w-0' : ''}>
+                <div className="relative mb-4 inline-grid size-10 shrink-0 place-items-center rounded-2xl border border-inkwell-gold/25 bg-inkwell-gold/5 p-2 text-inkwell-gold transition duration-300 group-hover:rotate-3 group-hover:border-inkwell-gold/50 group-hover:bg-inkwell-gold/10">
+                  {card.icon}
+                </div>
 
-            <h3 className="relative font-display text-xl font-medium leading-snug text-inkwell-cream">
-              {card.title}
-            </h3>
-            <p className="relative mt-2 text-[13px] leading-6 text-inkwell-muted">
-              {card.copy}
-            </p>
+                <h3 className="relative font-display text-xl font-medium leading-snug text-inkwell-cream sm:text-[1.4rem]">
+                  {card.title}
+                </h3>
+                <p className="relative mt-2 max-w-md text-[13px] leading-6 text-inkwell-muted">
+                  {card.copy}
+                </p>
 
-            <div className="relative mt-3 flex flex-wrap gap-1.5">
-              {card.chips.map((chip) => (
-                <span
-                  key={chip}
-                  className="rounded-full border border-inkwell-cream/10 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[.14em] text-inkwell-dim transition group-hover:border-inkwell-gold/25 group-hover:text-inkwell-muted"
-                >
-                  {chip}
-                </span>
-              ))}
-            </div>
+                <div className="relative mt-3 flex flex-wrap gap-1.5">
+                  {card.chips.map((chip) => (
+                    <span
+                      key={chip}
+                      className="rounded-full border border-inkwell-cream/10 px-2.5 py-1 font-mono text-[9px] uppercase tracking-[.14em] text-inkwell-dim transition group-hover:border-inkwell-gold/25 group-hover:text-inkwell-muted"
+                    >
+                      {chip}
+                    </span>
+                  ))}
+                </div>
+              </div>
 
-            <div className="relative mt-4 flex flex-1 flex-col">
-              {card.visual}
+              <div
+                className={
+                  card.horizontal
+                    ? 'relative flex min-w-0 flex-col self-stretch rounded-2xl border border-dashed border-inkwell-cream/10 bg-inkwell-950/40 p-4'
+                    : 'relative mt-4 flex flex-1 flex-col'
+                }
+              >
+                {card.visual}
+              </div>
             </div>
           </SpotCard>
         ))}
