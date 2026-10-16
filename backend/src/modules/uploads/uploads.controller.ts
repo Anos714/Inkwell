@@ -63,6 +63,12 @@ const DIRECT_MEDIA_HOSTS = [
   "media.imgur.com",
 ];
 
+// media1.tenor.com … media4.tenor.com, media0.giphy.com … media4.giphy.com
+const DIRECT_MEDIA_HOST_PATTERNS = [
+  /^media\d\.tenor\.com$/,
+  /^media\d\.giphy\.com$/,
+];
+
 const RESOLVE_TIMEOUT_MS = 8000;
 const MAX_HTML_BYTES = 512 * 1024;
 
@@ -73,8 +79,10 @@ const isImagePath = (pathname: string) =>
 const isDirectMediaUrl = (url: URL) => {
   if (isVideoPath(url.pathname) || isImagePath(url.pathname)) return true;
   const host = url.hostname.toLowerCase();
-  return DIRECT_MEDIA_HOSTS.some(
-    (allowed) => host === allowed || host.endsWith(`.${allowed}`),
+  return (
+    DIRECT_MEDIA_HOSTS.some(
+      (allowed) => host === allowed || host.endsWith(`.${allowed}`),
+    ) || DIRECT_MEDIA_HOST_PATTERNS.some((pattern) => pattern.test(host))
   );
 };
 
