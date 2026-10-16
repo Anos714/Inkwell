@@ -181,7 +181,7 @@ export function HeroPreviewCard() {
             <span className="font-mono text-[10px] uppercase tracking-wider text-inkwell-dim">#writing</span>
           </div>
 
-          <h3 className="mt-3 font-display text-2xl leading-tight text-inkwell-cream sm:text-3xl">
+          <h3 className="mt-3 font-display text-2xl font-medium leading-tight text-inkwell-cream sm:text-3xl">
             Notes from the long way.
           </h3>
 

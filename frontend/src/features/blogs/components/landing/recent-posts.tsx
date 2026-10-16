@@ -33,7 +33,7 @@ export function RecentPosts() {
             <span className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">
               From the journal
             </span>
-            <h2 className="mt-4 font-display text-4xl leading-tight tracking-tight text-inkwell-cream sm:text-5xl">
+            <h2 className="mt-4 font-display text-4xl font-medium leading-tight tracking-tight text-inkwell-cream sm:text-5xl">
               Recent posts.
             </h2>
           </div>
@@ -90,7 +90,7 @@ export function RecentPosts() {
                       </span>
                     ))}
                   </div>
-                  <h3 className="mt-4 font-display text-2xl leading-tight text-inkwell-cream transition group-hover:text-inkwell-gold">
+                  <h3 className="mt-4 font-display text-2xl font-medium leading-tight text-inkwell-cream transition group-hover:text-inkwell-gold">
                     {blog.title}
                   </h3>
                   {blog.description && (

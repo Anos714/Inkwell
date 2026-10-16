@@ -20,7 +20,7 @@ export function AuthPage() {
       <section className="auth-visual hidden lg:flex">
         <div className="auth-grid" />
         <div className="auth-visual-copy">
-          <p className="font-display text-4xl italic leading-tight text-inkwell-cream">“Make space for<br />good ideas.”</p>
+          <p className="font-display text-5xl font-medium italic leading-[1.1] text-inkwell-cream">“Make space for<br />good ideas.”</p>
           <span className="mt-6 font-mono text-[10px] uppercase tracking-[.22em] text-inkwell-gold">Inkwell workspace</span>
         </div>
       </section>
@@ -29,7 +29,7 @@ export function AuthPage() {
         <div className="m-auto w-full max-w-[330px] text-center">
           <BrandLogo size="lg" className="mx-auto mb-8" />
           <p className="font-mono text-[10px] uppercase tracking-[.28em] text-inkwell-gold">Inkwell</p>
-          <h1 className="mt-3 font-display text-4xl text-inkwell-cream">Welcome back.</h1>
+          <h1 className="mt-3 font-display text-5xl font-medium text-inkwell-cream">Welcome back.</h1>
           <p className="mt-4 text-sm leading-7 text-inkwell-muted">A quiet place for your writing, ideas, and unfinished thoughts.</p>
           <button className="mt-9 flex w-full items-center justify-center gap-3 rounded-full bg-inkwell-cream px-5 py-3.5 text-sm font-semibold text-inkwell-950 transition hover:bg-white disabled:cursor-wait disabled:opacity-65" type="button" onClick={login} disabled={isLoading}>
             <FcGoogle aria-hidden="true" size={20} />

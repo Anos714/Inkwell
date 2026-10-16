@@ -14,6 +14,7 @@ function ArrowUpRight() {
 }
 
 const NAV_LINKS = [
+  { href: '#topics', label: 'Topics' },
   { href: '#features', label: 'Features' },
   { href: '#journal', label: 'Journal' },
   { href: '#voices', label: 'Voices' },

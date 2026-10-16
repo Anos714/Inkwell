@@ -61,7 +61,7 @@ export function CallToAction() {
           <span className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">
             Stay a while
           </span>
-          <h2 className="mt-5 max-w-2xl font-display text-4xl leading-[1.08] tracking-tight text-inkwell-cream sm:text-6xl">
+          <h2 className="mt-5 max-w-2xl font-display text-5xl font-medium leading-[1.04] tracking-tight text-inkwell-cream sm:text-6xl">
             Find a post that<br />
             <span className="italic text-inkwell-gold">speaks to you.</span>
           </h2>
