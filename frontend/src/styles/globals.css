@@ -1,33 +1,36 @@
 /* ──────────────────────────────────────────────────────────────────────────
-   Inkwell — "Quiet Ink" design system
-   Tokens are semantic and swap per-theme at the CSS-variable level, so the
-   `inkwell-*` utilities stay theme-aware without any !important overrides.
-   ────────────────────────────────────────────────────────────────────────── */
+    Inkwell — "Fern & Paper" design system
+    Deep forest ink, warm paper text, one fern accent. Tokens stay semantic
+    and swap per-theme at the CSS-variable level, so the `inkwell-*`
+    utilities stay theme-aware without any !important overrides.
+    Type: Cormorant Garamond (display) · Outfit (sans) ·
+          Newsreader (reading) · DM Mono (labels)
+    ────────────────────────────────────────────────────────────────────────── */
 
 @import "tailwindcss";
 
 /* Semantic tokens — dark is the default. Light overrides the same variables,
    so every utility resolves through one cascading source of truth. */
 :root {
-  /* Quiet Ink surfaces — calm moss-charcoals, green kept whisper-soft */
-  --base: #101511;
-  --surface: #151a16;
-  --surface-2: #1b211c;
-  --surface-3: #232b24;
-  --border: color-mix(in srgb, #edeae3 7%, transparent);
-  --border-strong: color-mix(in srgb, #edeae3 12%, transparent);
+  /* Forest ink surfaces — deep green-charcoals */
+  --base: #0b100e;
+  --surface: #111713;
+  --surface-2: #182019;
+  --surface-3: #212a21;
+  --border: color-mix(in srgb, #ede9dc 7%, transparent);
+  --border-strong: color-mix(in srgb, #ede9dc 13%, transparent);
 
-  /* Ink */
-  --text: #edeae3;
-  --text-muted: #aaa89e;
-  --text-dim: #7e7c74;
+  /* Paper ink */
+  --text: #ede9dc;
+  --text-muted: #aaa89a;
+  --text-dim: #7f7e72;
 
-  /* Accent — antiqued gold, gently muted + sage companion for calm */
-  --accent: #b89a6a;
-  --accent-strong: #d6bc8d;
-  --accent-soft: color-mix(in srgb, #b89a6a 12%, transparent);
-  --sage: #8ba393;
-  --sage-soft: color-mix(in srgb, #8ba393 14%, transparent);
+  /* Accent — soft fern, used sparingly */
+  --accent: #a9c7a1;
+  --accent-strong: #d3e4cb;
+  --accent-soft: color-mix(in srgb, #a9c7a1 12%, transparent);
+  --sage: #7fa07b;
+  --sage-soft: color-mix(in srgb, #7fa07b 14%, transparent);
 
   /* Motion — soft, spring-like easings for tactile calm */
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
@@ -41,29 +44,29 @@
 }
 
 [data-theme='light'] {
-  --base: #f7f5ef;
-  --surface: #fdfcf8;
-  --surface-2: #f1eee3;
-  --surface-3: #e7e2d3;
-  --border: #e3ded0;
-  --border-strong: #d4cec0;
+  --base: #f5f2e8;
+  --surface: #fcfaf3;
+  --surface-2: #ede9db;
+  --surface-3: #e0dac7;
+  --border: #e2ddcc;
+  --border-strong: #cfc8b2;
 
-  --text: #232a23;
-  --text-muted: #62645c;
-  --text-dim: #8d8c83;
+  --text: #1d2521;
+  --text-muted: #5f655b;
+  --text-dim: #8f8e81;
 
-  --accent: #96702f;
-  --accent-strong: #77571f;
-  --accent-soft: color-mix(in srgb, #96702f 10%, transparent);
-  --sage: #5f7a66;
-  --sage-soft: color-mix(in srgb, #5f7a66 12%, transparent);
+  --accent: #436b4b;
+  --accent-strong: #33543b;
+  --accent-soft: color-mix(in srgb, #436b4b 10%, transparent);
+  --sage: #55795c;
+  --sage-soft: color-mix(in srgb, #55795c 12%, transparent);
 }
 
 /* Register aliases as Tailwind utilities. `inkwell-*` names are retained so the
    existing components keep working while becoming fully theme-aware. */
 @theme {
-  --font-sans: 'Manrope', system-ui, sans-serif;
-  --font-display: 'Fraunces', 'Playfair Display', Georgia, serif;
+  --font-sans: 'Outfit', system-ui, sans-serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
   --font-serif: 'Newsreader', Georgia, serif;
   --font-mono: 'DM Mono', ui-monospace, monospace;
 
