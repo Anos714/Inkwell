@@ -382,7 +382,7 @@ export function AdminBlogForm({
       </button>
 
       {error && (
-        <p className="text-sm text-red-300 md:col-span-2">
+        <p className="danger-error text-sm md:col-span-2">
           {error}
         </p>
       )}

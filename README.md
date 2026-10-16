@@ -2,9 +2,10 @@
 
 **Inkwell** is a full-featured, full-stack blogging platform where readers explore
 published stories and admins write rich, beautifully formatted posts. It ships with
-Google authentication, a WYSIWYG rich-text editor, likes, comments, view tracking,
-image uploads, and a role-based admin dashboard — all wrapped in a warm,
-editorial "inkwell" design system with dark/light themes.
+Google authentication, a WYSIWYG rich-text editor, threaded likes, comments with
+replies + likes + GIFs, view tracking, image uploads, and a role-based admin
+dashboard — all wrapped in a calm, elegant "fern & paper" design system with
+dark/light themes.
 
 ![Inkwell](https://img.shields.io/badge/Inkwell-Blogging%20Platform-d9b47b?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-d9b47b?style=for-the-badge)
@@ -63,10 +64,12 @@ with the API using `fetch` with `credentials: 'include'` (cookie-based refresh).
 
 ### For Readers
 
-- 📰 **Blog listing** with **debounced search** (300 ms) and **pagination**
+- 📰 **Blog listing** with **debounced multi-term search**, **tag pills**, and **sort** (latest / oldest / most viewed) — deep-linkable via `?tag=` / `?search=`
+- 🗺️ **Topics strip** on the landing page — real tag data with counts, one tap into a filtered journal
 - 📖 **Article pages** rendered from sanitized HTML with a reading-friendly layout
 - ❤️ **Like / unlike** posts with **optimistic UI updates** and rollback on failure
-- 💬 **Comments** — post your own (2000-char limit) and delete ones you own
+- 💬 **Threaded comments** — one-level replies, **comment likes** with optimistic counts, and **GIF attachments** (paste any Tenor/Giphy link; page links auto-resolve to embeddable media)
+- ↩️ **Consistent back navigation** everywhere (history-aware with safe fallbacks)
 - 👀 **View counts** — tracked once per visit per article
 - 🔗 **Share menu** — copy link, share to WhatsApp or X/Twitter
 - 🌗 **Dark / light theme**, persisted to `localStorage` with no flash of unstyled content
@@ -432,7 +435,8 @@ Base URL: `http://localhost:8000` · API prefix: `/api/v1` · Auth: `Authorizati
 
 | Method   | Endpoint               | Auth      | Description                                                  |
 | -------- | ---------------------- | :-------: | ------------------------------------------------------------ |
-| `GET`    | `/blogs`               | —         | List published blogs (`?page&limit&search`)                  |
+| `GET`    | `/blogs`               | —         | List published blogs (`?page&limit&search&tag&sort=latest\|oldest\|most_viewed`, latest-first via `coalesce`) |
+| `GET`    | `/blogs/tags`          | —         | Top tags with counts (single `unnest` query)                 |
 | `GET`    | `/blogs/:slug`         | —         | Get a published blog by slug (+ likes count)                 |
 | `POST`   | `/blogs/:slug/views`   | —         | Increment the view counter (published only, atomic)          |
 | `POST`   | `/blogs`               | ✅ admin  | Create a blog (slug auto-generated)                           |
@@ -453,15 +457,17 @@ Base URL: `http://localhost:8000` · API prefix: `/api/v1` · Auth: `Authorizati
 
 | Method   | Endpoint                          | Auth     | Description                                    |
 | -------- | --------------------------------- | :------: | ---------------------------------------------- |
-| `POST`   | `/blog-comments/:blogId/comments` | ✅       | Create a comment                               |
-| `GET`    | `/blog-comments/:blogId/comments` | —        | List comments (with author username & avatar)  |
-| `DELETE` | `/blog-comments/comments/:commentId` | ✅    | Delete a comment (owner **or** admin)          |
+| `POST`   | `/blog-comments/:blogId/comments` | ✅       | Create a comment or reply (`content`, `parentId?`, `gifUrl?`) |
+| `GET`    | `/blog-comments/:blogId/comments` | —        | Threaded comments (`?sort=newest\|oldest\|top`, `likesCount`, `likedByMe`) |
+| `POST`   | `/blog-comments/comments/:commentId/like` | ✅ | Toggle comment like → `201` liked / `200` unliked |
+| `DELETE` | `/blog-comments/comments/:commentId` | ✅    | Delete a comment (owner **or** admin, cascades to replies & likes) |
 
 ### Uploads — `/api/v1/uploads`
 
 | Method | Endpoint                    | Auth     | Description                                              |
 | ------ | --------------------------- | :------: | -------------------------------------------------------- |
 | `GET`  | `/uploads/signature?type=`  | ✅       | Cloudinary signed upload params. `type`: `blogCover` (5 MB, admin) or `avatar` (2 MB) |
+| `POST` | `/uploads/gif-resolve`      | ✅       | Resolve a Tenor/Giphy page or short link to direct media (`{ url, kind }`) via og-tags |
 
 **Error format** — all errors return a consistent JSON payload:
 
@@ -517,9 +523,16 @@ blog_comments
 ├── id            uuid PK (uuidv7)
 ├── blog_id       uuid FK → blogs.id  ON DELETE CASCADE
 ├── user_id       uuid FK → users.id  ON DELETE CASCADE
-├── content       text NOT NULL
+├── parent_id     uuid FK → blog_comments.id ON DELETE CASCADE (NULL = top-level, one level of replies)
+├── content       text NOT NULL DEFAULT ''
+├── gif_url       text                -- optional Tenor/Giphy attachment
 ├── created_at    timestamptz NOT NULL
 └── updated_at    timestamptz NOT NULL
+
+comment_likes                     -- composite PK, both FKs ON DELETE CASCADE
+├── user_id       uuid FK → users.id
+├── comment_id    uuid FK → blog_comments.id
+└── created_at    timestamptz NOT NULL
 ```
 
 **Relations:** one user → many likes & comments; one blog → many likes & comments.

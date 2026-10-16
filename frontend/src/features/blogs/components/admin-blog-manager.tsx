@@ -125,7 +125,7 @@ export function AdminBlogManager({ token, blogs }: Props) {
                   <button
                     type="button"
                     onClick={() => setSelectedBlog(blog)}
-                    className="inline-flex h-9 flex-1 items-center justify-center rounded-lg border border-red-300/30 px-4 text-xs font-semibold text-red-300 transition hover:border-red-300 hover:bg-red-300 hover:text-inkwell-950 sm:min-w-20 sm:flex-none"
+                    className="danger-outline inline-flex h-9 flex-1 items-center justify-center rounded-lg px-4 text-xs font-semibold sm:min-w-20 sm:flex-none"
                   >
                     Delete
                   </button>
@@ -179,7 +179,7 @@ export function AdminBlogManager({ token, blogs }: Props) {
 
             <div className="p-6 sm:p-7">
               {/* Icon */}
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-red-300/20 bg-red-300/10 text-red-300">
+              <div className="danger-icon flex h-11 w-11 items-center justify-center rounded-2xl">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -225,7 +225,7 @@ export function AdminBlogManager({ token, blogs }: Props) {
                   type="button"
                   onClick={handleDelete}
                   disabled={deleteMutation.isPending}
-                  className="h-10 rounded-xl bg-red-400 px-4 text-sm font-semibold text-inkwell-950 transition hover:bg-red-300 disabled:cursor-wait disabled:opacity-50"
+                  className="danger-solid h-10 rounded-xl px-4 text-sm font-semibold disabled:cursor-wait disabled:opacity-50"
                 >
                   {deleteMutation.isPending ? 'Deleting…' : 'Delete entry'}
                 </button>

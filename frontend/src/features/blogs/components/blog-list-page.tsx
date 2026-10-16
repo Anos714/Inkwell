@@ -173,7 +173,7 @@ export function BlogListPage() {
         )}
         {blogsQuery.isError && (
           <div className="py-16 text-center" role="alert">
-            <p className="text-sm text-red-300">
+            <p className="danger-error text-sm">
               The journal could not be loaded. Please try again.
             </p>
             <button

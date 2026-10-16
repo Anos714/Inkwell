@@ -48,7 +48,7 @@ export function RecentPosts() {
         {blogsQuery.isLoading && <BlogGridSkeleton count={6} />}
 
         {blogsQuery.isError && (
-          <p className="text-sm text-red-300">The journal could not be loaded. Please try again.</p>
+          <p className="danger-error text-sm">The journal could not be loaded. Please try again.</p>
         )}
 
         {!blogsQuery.isLoading && blogs.length === 0 && (
