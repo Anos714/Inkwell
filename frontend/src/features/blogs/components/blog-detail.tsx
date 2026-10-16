@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import {
   getBlogBySlug,
   getBlogLikeStatus,
@@ -16,6 +16,7 @@ import { BlogDetailSkeleton } from "./blog-skeleton";
 import { BlogComments } from "./blog-comments";
 import { ThemeToggle } from "../../../components/theme-toggle";
 import { BrandLogo } from "../../../components/brand-logo";
+import { BackButton } from "../../../components/back-button";
 import { ShareModal } from "./share-modal";
 import { TableOfContents } from "./table-of-contents";
 import { ReadingProgressPill } from "./reading-progress-pill";
@@ -34,7 +35,6 @@ import {
 export function BlogDetail() {
   const { slug } = useParams<{ slug: string }>();
   const token = useAuthStore((state) => state.token);
-  const navigate = useNavigate();
   const [shareOpen, setShareOpen] = useState(false);
   const [tocOpen, setTocOpen] = useState(false);
   const shareButtonRef = useRef<HTMLButtonElement>(null);
@@ -249,13 +249,7 @@ export function BlogDetail() {
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="rounded-full border border-inkwell-gold/60 px-4 py-2 font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold transition hover:bg-inkwell-gold hover:text-inkwell-950"
-            >
-              ← Back
-            </button>
+            <BackButton fallback="/blogs" label="Back" />
           </div>
         </nav>
       </header>

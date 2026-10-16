@@ -6,6 +6,7 @@ import { BlogGridSkeleton } from "./blog-skeleton";
 import { ElegantMenu } from "../../../components/elegant-menu";
 import { ThemeToggle } from "../../../components/theme-toggle";
 import { BrandLogo } from "../../../components/brand-logo";
+import { BackButton } from "../../../components/back-button";
 import { useSeo } from "../../../hooks/use-seo";
 import {
   SITE_NAME,
@@ -73,12 +74,7 @@ export function BlogListPage() {
           </Link>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <Link
-              to="/"
-              className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold hover:text-inkwell-light"
-            >
-              ← Home
-            </Link>
+            <BackButton fallback="/" label="Home" />
           </div>
         </nav>
       </header>
