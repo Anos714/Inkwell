@@ -1,7 +1,8 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { uploadImageController } from "./uploads.controller";
+import { resolveGifController, uploadImageController } from "./uploads.controller";
+import { gifResolveSchema } from "./gif-resolve.schema";
 import { requireAuth } from "../../middleware/auth.middleware";
 
 const uploadsRoute = new Hono();
@@ -19,6 +20,15 @@ uploadsRoute.get(
     },
   ),
   uploadImageController,
+);
+
+uploadsRoute.post(
+  "/gif-resolve",
+  requireAuth,
+  zValidator("json", gifResolveSchema, (result, _) => {
+    if (!result.success) throw result.error;
+  }),
+  resolveGifController,
 );
 
 export default uploadsRoute;

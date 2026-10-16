@@ -82,6 +82,33 @@ export async function uploadImage(token: string, file: File, type: UploadType) {
   };
 }
 
+export type ResolvedGif = {
+  url: string
+  kind: 'image' | 'video'
+}
+
+const gifResolveResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.object({
+    url: z.string(),
+    kind: z.enum(['image', 'video']),
+  }),
+});
+
+export async function resolveGifUrl(token: string, url: string) {
+  const response = await apiRequest(
+    '/api/v1/uploads/gif-resolve',
+    gifResolveResponseSchema,
+    {
+      method: 'POST',
+      headers: authHeaders(token),
+      body: JSON.stringify({ url }),
+    },
+  );
+  return response.data as ResolvedGif;
+}
+
 export async function saveAvatar(token: string, avatarUrl: string) {
   return apiRequest(
     "/api/v1/users/me/avatar",

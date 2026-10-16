@@ -10,17 +10,63 @@ import {
   toggleCommentLike,
   type NewCommentInput,
 } from '../api/blog-api'
+import { resolveGifUrl } from '../api/upload-api'
 import type { BlogComment } from '../types'
 
 type ReplyTarget = Omit<BlogComment, 'replies'>
+
+// Hosts that always serve raw media, even without a file extension.
+const DIRECT_MEDIA_HOSTS = [
+  'media.tenor.com',
+  'media.giphy.com',
+  'i.giphy.com',
+  'i.imgur.com',
+  'media.imgur.com',
+]
+
+// media1.tenor.com … media4.tenor.com, media0.giphy.com … media4.giphy.com
+const DIRECT_MEDIA_HOST_PATTERNS = [/^media\d\.tenor\.com$/, /^media\d\.giphy\.com$/]
+
+function isDirectMediaUrl(value: string) {
+  try {
+    const parsed = new URL(value)
+    if (/\.(gif|webp|png|jpe?g|avif|mp4|webm)(\?.*)?$/i.test(parsed.pathname)) {
+      return true
+    }
+    const host = parsed.hostname.toLowerCase()
+    return (
+      DIRECT_MEDIA_HOSTS.some(
+        (allowed) => host === allowed || host.endsWith(`.${allowed}`),
+      ) || DIRECT_MEDIA_HOST_PATTERNS.some((pattern) => pattern.test(host))
+    )
+  } catch {
+    return false
+  }
+}
 
 function isVideoGif(url: string) {
   return /\.(mp4|webm)(\?.*)?$/i.test(url)
 }
 
 function GifMedia({ url, alt }: { url: string; alt: string }) {
+  const token = useAuthStore((state) => state.token)
   const [failed, setFailed] = useState(false)
-  if (failed) {
+  // Tenor/Giphy share pages (tenor.com/view/…) are not embeddable — resolve
+  // them to the direct media file once, then cache forever per URL.
+  const direct = isDirectMediaUrl(url)
+  const resolvedQuery = useQuery({
+    queryKey: ['gif-resolve', url],
+    queryFn: () => resolveGifUrl(token ?? '', url),
+    enabled: !direct && Boolean(token),
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: false,
+  })
+  const src = direct ? url : (resolvedQuery.data?.url ?? null)
+  const kind =
+    resolvedQuery.data?.kind ?? (isVideoGif(src ?? '') ? 'video' : 'image')
+
+  if (failed || (!direct && resolvedQuery.isError)) {
     return (
       <a
         href={url}
@@ -32,10 +78,13 @@ function GifMedia({ url, alt }: { url: string; alt: string }) {
       </a>
     )
   }
-  if (isVideoGif(url)) {
+  if (!src) {
+    return <div className="skeleton-shimmer mt-2 h-40 w-64 max-w-full rounded-xl" />
+  }
+  if (kind === 'video' || isVideoGif(src)) {
     return (
       <video
-        src={url}
+        src={src}
         muted
         loop
         playsInline
@@ -47,7 +96,7 @@ function GifMedia({ url, alt }: { url: string; alt: string }) {
   }
   return (
     <img
-      src={url}
+      src={src}
       alt={alt}
       loading="lazy"
       decoding="async"
