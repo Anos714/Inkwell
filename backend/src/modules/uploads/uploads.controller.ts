@@ -63,6 +63,10 @@ const DIRECT_MEDIA_HOSTS = [
   "media.imgur.com",
 ];
 
+// Share/short links on the main site hosts redirect to view pages,
+// even when the path ends with .gif — never treat them as direct media.
+const PAGE_HOSTS = ["tenor.com", "www.tenor.com", "giphy.com", "www.giphy.com"];
+
 // media1.tenor.com … media4.tenor.com, media0.giphy.com … media4.giphy.com
 const DIRECT_MEDIA_HOST_PATTERNS = [
   /^media\d\.tenor\.com$/,
@@ -77,8 +81,9 @@ const isImagePath = (pathname: string) =>
   /\.(gif|webp|png|jpe?g|avif)(\?.*)?$/i.test(pathname);
 
 const isDirectMediaUrl = (url: URL) => {
-  if (isVideoPath(url.pathname) || isImagePath(url.pathname)) return true;
   const host = url.hostname.toLowerCase();
+  if (PAGE_HOSTS.includes(host)) return false;
+  if (isVideoPath(url.pathname) || isImagePath(url.pathname)) return true;
   return (
     DIRECT_MEDIA_HOSTS.some(
       (allowed) => host === allowed || host.endsWith(`.${allowed}`),

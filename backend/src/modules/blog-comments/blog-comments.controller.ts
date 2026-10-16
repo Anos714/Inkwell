@@ -1,6 +1,6 @@
 import { AppError } from "../../utils/AppError";
 import { verifyAccessToken } from "../../utils/auth";
-import { BlogCommentContext } from "./blog-comments.type";
+import { BlogCommentContext, BlogCommentsQueryContext } from "./blog-comments.type";
 import * as BlogCommentService from "./blog-comments.service";
 import { Context } from "hono";
 import { ContentfulStatusCode } from "hono/utils/http-status";
@@ -46,7 +46,7 @@ const getOptionalViewerId = async (c: Context) => {
   }
 };
 
-export const getCommentsController = async (c: Context) => {
+export const getCommentsController = async (c: BlogCommentsQueryContext) => {
   const blogId = c.req.param("blogId");
 
   if (!blogId) {
@@ -54,7 +54,12 @@ export const getCommentsController = async (c: Context) => {
   }
 
   const viewerId = await getOptionalViewerId(c);
-  const comments = await BlogCommentService.getCommentsService(blogId, viewerId);
+  const { sort } = c.req.valid("query");
+  const comments = await BlogCommentService.getCommentsService(
+    blogId,
+    viewerId,
+    sort,
+  );
 
   return c.json({
     success: true,

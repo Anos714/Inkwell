@@ -29,3 +29,9 @@ export const blogCommentsSchema = z
   });
 
 export type BlogCommentInput = z.infer<typeof blogCommentsSchema>;
+
+export const commentsQuerySchema = z.object({
+  sort: z.enum(["newest", "oldest", "top"]).default("newest"),
+});
+
+export type CommentsQueryInput = z.infer<typeof commentsQuerySchema>;

@@ -46,8 +46,11 @@ type ThreadedComment = Awaited<
 export const getCommentsService = async (
   blogId: string,
   viewerId?: string,
+  sort?: commentRepository.CommentSort,
 ): Promise<ThreadedComment[]> => {
-  const topLevel = await commentRepository.getTopLevelComments(blogId);
+  const topLevel = await commentRepository.getTopLevelComments(blogId, {
+    sort,
+  });
   const replies = await commentRepository.getRepliesForParents(
     topLevel.map((comment) => comment.id),
   );
