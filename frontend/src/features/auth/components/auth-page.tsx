@@ -1,6 +1,7 @@
 import { useAuth } from '../hooks/use-auth'
 import { FcGoogle } from 'react-icons/fc'
 import { ThemeToggle } from '../../../components/theme-toggle'
+import { BackButton } from '../../../components/back-button'
 import { BrandLogo } from '../../../components/brand-logo'
 import { useSeo } from '../../../hooks/use-seo'
 import { SITE_NAME } from '../../../lib/seo'
@@ -25,7 +26,7 @@ export function AuthPage() {
         </div>
       </section>
       <section className="auth-panel relative flex min-h-svh flex-col px-7 py-8 sm:px-14">
-        <div className="flex items-center justify-between"><button type="button" onClick={() => window.history.back()} className="self-start text-xs text-inkwell-muted transition hover:text-inkwell-cream">← Back</button><ThemeToggle /></div>
+        <div className="flex items-center justify-between"><BackButton fallback="/" label="Back" /><ThemeToggle /></div>
         <div className="m-auto w-full max-w-[330px] text-center">
           <BrandLogo size="lg" className="mx-auto mb-8" />
           <p className="font-mono text-[10px] uppercase tracking-[.28em] text-inkwell-gold">Inkwell</p>

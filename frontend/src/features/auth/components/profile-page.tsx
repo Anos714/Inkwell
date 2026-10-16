@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Navigate, Link, useNavigate } from 'react-router'
 import { BrandLogo } from '../../../components/brand-logo'
+import { BackButton } from '../../../components/back-button'
 import { ThemeToggle } from '../../../components/theme-toggle'
 import { useAuthStore } from '../store/auth-store'
 import { deleteAccount, updateProfile } from '../api/auth-api'
@@ -114,7 +115,7 @@ export function ProfilePage() {
           </Link>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <Link to="/" className="text-sm text-inkwell-gold hover:text-inkwell-light">Back to blog</Link>
+            <BackButton fallback="/" label="Blog" />
           </div>
         </nav>
       </header>

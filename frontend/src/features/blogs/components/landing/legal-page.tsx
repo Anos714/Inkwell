@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router'
 import { BrandLogo } from '../../../../components/brand-logo'
+import { BackButton } from '../../../../components/back-button'
 import { ThemeToggle } from '../../../../components/theme-toggle'
 import { SiteFooter } from './site-footer'
 
@@ -35,12 +36,7 @@ export function LegalPage({ eyebrow, title, updatedAt, children }: LegalPageProp
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <Link
-              to="/"
-              className="rounded-full border border-inkwell-gold/60 px-4 py-2 font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold transition hover:bg-inkwell-gold hover:text-inkwell-950"
-            >
-              ← Home
-            </Link>
+            <BackButton fallback="/" label="Home" />
           </div>
         </nav>
       </header>
