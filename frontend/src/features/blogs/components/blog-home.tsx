@@ -1,5 +1,6 @@
 import { SiteHeader } from '../../../components/site-header'
 import { Hero } from './landing/hero'
+import { TopicsStrip } from './landing/topics-strip'
 import { BentoFeatures } from './landing/bento-features'
 import { RecentPosts } from './landing/recent-posts'
 import { CommentsMarquee } from './landing/comments-marquee'
@@ -26,6 +27,7 @@ export function BlogHome() {
     <div className="min-h-screen bg-inkwell-950">
       <SiteHeader />
       <Hero />
+      <TopicsStrip />
       <BentoFeatures />
       <RecentPosts />
       <CommentsMarquee />

@@ -103,7 +103,7 @@ export function AdminFrame({
           <span className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">
             {eyebrow}
           </span>
-          <h1 className="mt-4 font-display text-5xl leading-[1.05] tracking-tight text-inkwell-cream sm:text-6xl">
+          <h1 className="mt-4 font-display text-6xl font-medium leading-[1.02] tracking-tight text-inkwell-cream sm:text-7xl">
             {title}
           </h1>
         </motion.div>

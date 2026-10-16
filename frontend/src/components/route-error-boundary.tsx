@@ -29,7 +29,7 @@ export class RouteErrorBoundary extends Component<Props, State> {
           <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-inkwell-gold">
             Something went quiet
           </p>
-          <h1 className="mt-4 font-display text-4xl">This page stumbled.</h1>
+          <h1 className="mt-4 font-display text-5xl font-medium">This page stumbled.</h1>
           <p className="mt-3 text-sm leading-7 text-inkwell-muted">
             Take a breath and try again — your reading spot is saved.
           </p>

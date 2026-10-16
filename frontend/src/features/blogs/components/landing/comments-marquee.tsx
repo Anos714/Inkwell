@@ -79,7 +79,7 @@ export function CommentsMarquee() {
           <span className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">
             Voices from the margins
           </span>
-          <h2 className="mt-4 font-display text-4xl leading-tight tracking-tight text-inkwell-cream sm:text-5xl">
+          <h2 className="mt-4 font-display text-4xl font-medium leading-tight tracking-tight text-inkwell-cream sm:text-5xl">
             What readers are<br />
             <span className="italic text-inkwell-gold">saying.</span>
           </h2>

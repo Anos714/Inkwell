@@ -581,7 +581,7 @@ export function BlogComments({ blogId }: { blogId: string }) {
       aria-labelledby="comments-heading"
     >
       <div className="flex flex-wrap items-center gap-4">
-        <h2 id="comments-heading" className="font-display text-2xl">
+        <h2 id="comments-heading" className="font-display text-3xl font-medium">
           {totalCount.toLocaleString()} Comment{totalCount === 1 ? '' : 's'}
         </h2>
         <div className="ml-auto flex items-center gap-2 text-xs text-inkwell-muted">

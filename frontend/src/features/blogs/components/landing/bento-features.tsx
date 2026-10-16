@@ -207,7 +207,7 @@ export function BentoFeatures() {
         <span className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">
           Crafted, not assembled
         </span>
-        <h2 className="mt-4 font-display text-4xl leading-tight tracking-tight text-inkwell-cream sm:text-5xl">
+        <h2 className="mt-4 font-display text-4xl font-medium leading-tight tracking-tight text-inkwell-cream sm:text-5xl">
           Everything a blog needs,<br />
           <span className="italic text-inkwell-gold">nothing it doesn't.</span>
         </h2>
@@ -230,7 +230,7 @@ export function BentoFeatures() {
               {card.icon}
             </div>
 
-            <h3 className="relative font-display text-xl leading-snug text-inkwell-cream sm:text-2xl">
+            <h3 className="relative font-display text-xl font-medium leading-snug text-inkwell-cream sm:text-2xl">
               {card.title}
             </h3>
             <p className="relative mt-3 text-sm leading-7 text-inkwell-muted">

@@ -272,7 +272,7 @@ export function BlogDetail() {
           ))}
         </div>
 
-        <h1 className="mt-6 break-words font-display text-4xl leading-tight sm:text-7xl">
+        <h1 className="mt-6 break-words font-display text-5xl font-medium leading-[1.02] sm:text-7xl">
           {blog.title}
         </h1>
         <div className="mt-6 flex flex-wrap items-center gap-x-3 gap-y-1.5 font-mono text-[11px] uppercase tracking-[.14em] text-inkwell-dim">

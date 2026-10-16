@@ -49,7 +49,7 @@ export function LegalPage({ eyebrow, title, updatedAt, children }: LegalPageProp
         <span className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">
           {eyebrow}
         </span>
-        <h1 className="mt-4 font-display text-4xl leading-tight sm:text-6xl">
+        <h1 className="mt-4 font-display text-5xl font-medium leading-tight sm:text-6xl">
           {title}
         </h1>
         <p className="mt-6 text-sm text-inkwell-dim">

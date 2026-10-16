@@ -99,8 +99,8 @@ export function SiteFooter() {
               <BrandLogo size="sm" />
               <span className="font-display text-lg tracking-tight text-inkwell-cream">Inkwell</span>
             </Link>
-            <p className="mt-4 max-w-xs font-serif text-sm leading-7 text-inkwell-muted">
-              Make space for good ideas. A quiet corner of the internet for unfinished thoughts and honest notes.
+            <p className="mt-4 max-w-xs font-serif text-base leading-8 text-inkwell-muted">
+              Rooted in the slow web. Essays, notes, and field guides — written to last.
             </p>
             <div className="mt-6 flex flex-wrap items-center gap-2.5">
               {SOCIALS.map((social) => (

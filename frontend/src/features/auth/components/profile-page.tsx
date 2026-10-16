@@ -121,7 +121,7 @@ export function ProfilePage() {
 
       <section className="mx-auto max-w-3xl px-6 py-14 lg:px-8">
         <p className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">Your account</p>
-        <h1 className="mt-4 font-display text-5xl">Profile settings.</h1>
+        <h1 className="mt-4 font-display text-6xl font-medium tracking-tight">Profile settings.</h1>
 
         <div className="mt-10 space-y-6">
           <div className="rounded-2xl border border-inkwell-cream/10 bg-inkwell-900 p-6">

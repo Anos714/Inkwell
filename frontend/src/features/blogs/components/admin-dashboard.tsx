@@ -150,7 +150,7 @@ function StatCard({
       <p className="relative font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-dim">
         {label}
       </p>
-      <p className="relative mt-3 font-display text-4xl text-inkwell-cream sm:text-5xl">
+      <p className="relative mt-3 font-display text-5xl font-medium text-inkwell-cream sm:text-6xl">
         <CountUp value={value} />
       </p>
       <p className="relative mt-2.5 text-xs leading-6 text-inkwell-muted">{detail}</p>

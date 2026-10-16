@@ -40,7 +40,7 @@ export function AdminBlogManager({ token, blogs }: Props) {
         {/* Header */}
         <div className="flex flex-col gap-3 border-b border-inkwell-cream/10 pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="font-display text-2xl text-inkwell-cream sm:text-3xl">
+            <h2 className="font-display text-3xl font-medium text-inkwell-cream sm:text-4xl">
               All entries
             </h2>
 
@@ -138,7 +138,7 @@ export function AdminBlogManager({ token, blogs }: Props) {
         {/* Empty state */}
         {blogs.length === 0 && (
           <div className="rounded-3xl border border-dashed border-inkwell-cream/15 px-6 py-16 text-center">
-            <p className="font-display text-2xl text-inkwell-cream">No entries yet</p>
+            <p className="font-display text-3xl font-medium text-inkwell-cream">No entries yet</p>
             <p className="mt-3 text-sm text-inkwell-muted">
               Your published posts and drafts will appear here.
             </p>
