@@ -12,6 +12,7 @@ import {
   integer,
   pgEnum,
   primaryKey,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 
 export const roleEnum = pgEnum("role", ["user", "admin"]);
@@ -105,7 +106,16 @@ export const blogComments = pgTable("blog_comments", {
       onDelete: "cascade",
     }),
 
-  content: text("content").notNull(),
+  // Single-level threading: NULL = top-level, otherwise the parent comment.
+  // Explicit AnyPgColumn breaks the circular type inference.
+  parentId: uuid("parent_id").references((): AnyPgColumn => blogComments.id, {
+    onDelete: "cascade",
+  }),
+
+  content: text("content").notNull().default(""),
+
+  // Optional attached GIF (Tenor/Giphy direct link), rendered by the client.
+  gifUrl: text("gif_url"),
 
   createdAt: timestamp("created_at", {
     withTimezone: true,
@@ -120,7 +130,37 @@ export const blogComments = pgTable("blog_comments", {
 },
 (table) => [
   index("blog_comments_blog_idx").on(table.blogId, table.createdAt),
+  index("blog_comments_thread_idx").on(table.blogId, table.parentId, table.createdAt),
 ]);
+
+export const commentLikes = pgTable(
+  "comment_likes",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, {
+        onDelete: "cascade",
+      }),
+
+    commentId: uuid("comment_id")
+      .notNull()
+      .references(() => blogComments.id, {
+        onDelete: "cascade",
+      }),
+
+    createdAt: timestamp("created_at", {
+      withTimezone: true,
+    })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.userId, table.commentId],
+    }),
+    index("comment_likes_comment_idx").on(table.commentId),
+  ],
+);
 
 // relations
 export const usersRelations = relations(users, ({ many }) => ({
@@ -145,7 +185,7 @@ export const blogLikesRelations = relations(blogLikes, ({ one }) => ({
   }),
 }));
 
-export const blogCommentsRelations = relations(blogComments, ({ one }) => ({
+export const blogCommentsRelations = relations(blogComments, ({ one, many }) => ({
   user: one(users, {
     fields: [blogComments.userId],
     references: [users.id],
@@ -154,5 +194,19 @@ export const blogCommentsRelations = relations(blogComments, ({ one }) => ({
   blog: one(blogs, {
     fields: [blogComments.blogId],
     references: [blogs.id],
+  }),
+
+  likes: many(commentLikes),
+}));
+
+export const commentLikesRelations = relations(commentLikes, ({ one }) => ({
+  user: one(users, {
+    fields: [commentLikes.userId],
+    references: [users.id],
+  }),
+
+  comment: one(blogComments, {
+    fields: [commentLikes.commentId],
+    references: [blogComments.id],
   }),
 }));
