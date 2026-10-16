@@ -14,12 +14,10 @@ export function ProfilePage() {
   const user = useAuthStore((state) => state.user)
   const setSession = useAuthStore((state) => state.setSession)
   const clearSession = useAuthStore((state) => state.clearSession)
-  const [username, setUsername] = useState(user?.username ?? '')
-
-  // Resync the input once the persisted session hydrates.
-  useEffect(() => {
-    if (user?.username) setUsername((current) => current || user.username)
-  }, [user?.username])
+  const [usernameDraft, setUsernameDraft] = useState<string | null>(null)
+  // Prefer the draft once the user starts typing; otherwise mirror the
+  // hydrated session value without syncing state inside an effect.
+  const username = usernameDraft ?? user?.username ?? ''
 
   useSeo({
     title: `Profile — ${SITE_NAME}`,
@@ -56,7 +54,7 @@ export function ProfilePage() {
     try {
       const response = await updateProfile(token, username)
       setSession(token, { ...user, ...response.data })
-      setUsername(response.data.username)
+      setUsernameDraft(response.data.username)
       setMessage('Username updated successfully.')
     } catch (updateError) {
       setError(updateError instanceof Error ? updateError.message : 'Unable to update username.')
@@ -147,7 +145,7 @@ export function ProfilePage() {
           <form onSubmit={submitUsername} className="rounded-2xl border border-inkwell-cream/10 bg-inkwell-900 p-6">
             <h2 className="text-xl font-semibold">Username</h2>
             <p className="mt-1 text-sm text-inkwell-muted">Use 3–30 letters, numbers, spaces or underscores.</p>
-            <input value={username} onChange={(event) => setUsername(event.target.value)} className="mt-5 w-full rounded-xl border border-inkwell-cream/15 bg-inkwell-950 px-4 py-3 text-sm outline-none focus:border-inkwell-gold" required minLength={3} maxLength={30} />
+            <input value={username} onChange={(event) => setUsernameDraft(event.target.value)} className="mt-5 w-full rounded-xl border border-inkwell-cream/15 bg-inkwell-950 px-4 py-3 text-sm outline-none focus:border-inkwell-gold" required minLength={3} maxLength={30} />
             <button disabled={isSavingName} className="mt-4 rounded-xl bg-inkwell-gold px-5 py-3 text-sm font-bold text-inkwell-950 disabled:opacity-60">{isSavingName ? 'Saving…' : 'Save username'}</button>
           </form>
 
