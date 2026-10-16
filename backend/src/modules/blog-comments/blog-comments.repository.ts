@@ -37,10 +37,12 @@ export const getCommentById = async (commentId: string) => {
 
 // Likes count as an inline sub-select so the thread loads in 2 queries
 // (top-level + replies) instead of N+1 per comment.
-const likesCountColumn = sql<number>`(
+const likesCountExpr = sql<number>`(
   select count(*)::int from ${commentLikes}
   where ${commentLikes.commentId} = ${blogComments.id}
-)`.as("likesCount");
+)`;
+
+const likesCountColumn = likesCountExpr.as("likesCount");
 
 const commentAuthorShape = {
   id: blogComments.id,
@@ -56,18 +58,27 @@ const commentAuthorShape = {
   },
 };
 
+export type CommentSort = "newest" | "oldest" | "top";
+
 export const getTopLevelComments = async (
   blogId: string,
-  params?: { limit?: number; offset?: number },
+  params?: { limit?: number; offset?: number; sort?: CommentSort },
 ) => {
   const limit = Math.min(Math.max(params?.limit ?? 50, 1), 100);
   const offset = Math.max(params?.offset ?? 0, 0);
+  const sort = params?.sort ?? "newest";
+  const orderBy =
+    sort === "oldest"
+      ? [asc(blogComments.createdAt)]
+      : sort === "top"
+        ? [desc(likesCountExpr), desc(blogComments.createdAt)]
+        : [desc(blogComments.createdAt)];
   return db
     .select(commentAuthorShape)
     .from(blogComments)
     .leftJoin(users, eq(blogComments.userId, users.id))
     .where(and(eq(blogComments.blogId, blogId), isNull(blogComments.parentId)))
-    .orderBy(desc(blogComments.createdAt))
+    .orderBy(...orderBy)
     .limit(limit)
     .offset(offset);
 };

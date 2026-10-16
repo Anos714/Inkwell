@@ -252,9 +252,12 @@ export function getBlogLikeStatus(token: string, blogId: string) {
   );
 }
 
-export function getBlogComments(blogId: string, token?: string) {
+export type CommentSort = 'newest' | 'oldest' | 'top'
+
+export function getBlogComments(blogId: string, token?: string, sort?: CommentSort) {
+  const params = sort ? `?sort=${sort}` : ''
   return apiRequest<CommentsResponse>(
-    `/api/v1/blog-comments/${blogId}/comments`,
+    `/api/v1/blog-comments/${blogId}/comments${params}`,
     commentsResponseSchema,
     token ? { headers: authHeaders(token) } : undefined,
   );

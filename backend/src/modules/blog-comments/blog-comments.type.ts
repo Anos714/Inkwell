@@ -1,5 +1,5 @@
 import { Context, Env } from "hono";
-import { BlogCommentInput } from "./blog-comments.schema";
+import { BlogCommentInput, CommentsQueryInput } from "./blog-comments.schema";
 
 export type BlogCommentContext = Context<
   Env,
@@ -7,5 +7,14 @@ export type BlogCommentContext = Context<
   {
     in: { json: BlogCommentInput };
     out: { json: BlogCommentInput };
+  }
+>;
+
+export type BlogCommentsQueryContext = Context<
+  Env,
+  string,
+  {
+    in: { query: CommentsQueryInput };
+    out: { query: CommentsQueryInput };
   }
 >;

@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { requireAuth } from "../../middleware/auth.middleware";
 import { zValidator } from "@hono/zod-validator";
 import { z } from "zod";
-import { blogCommentsSchema } from "./blog-comments.schema";
+import { blogCommentsSchema, commentsQuerySchema } from "./blog-comments.schema";
 import * as BlogCommentController from "./blog-comments.controller";
 
 const blogCommentsRoute = new Hono();
@@ -29,6 +29,9 @@ blogCommentsRoute.get(
 
 blogCommentsRoute.get(
   "/:blogId/comments",
+  zValidator("query", commentsQuerySchema, (result, _) => {
+    if (!result.success) throw result.error;
+  }),
   BlogCommentController.getCommentsController,
 );
 

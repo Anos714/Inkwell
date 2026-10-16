@@ -1,6 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { FaHeart, FaRegHeart, FaRegTrashAlt } from 'react-icons/fa'
+import {
+  FaChevronDown,
+  FaRegThumbsUp,
+  FaRegTrashAlt,
+  FaThumbsUp,
+} from 'react-icons/fa'
 import { Link } from 'react-router'
 import { useAuthStore } from '../../auth/store/auth-store'
 import {
@@ -8,12 +13,61 @@ import {
   deleteBlogComment,
   getBlogComments,
   toggleCommentLike,
+  type CommentSort,
   type NewCommentInput,
 } from '../api/blog-api'
 import { resolveGifUrl } from '../api/upload-api'
 import type { BlogComment } from '../types'
 
 type ReplyTarget = Omit<BlogComment, 'replies'>
+
+type ThreadKey = readonly ['blog-comments', string, CommentSort]
+
+const threadKey = (blogId: string, sort: CommentSort): ThreadKey => [
+  'blog-comments',
+  blogId,
+  sort,
+]
+
+function timeAgo(iso: string) {
+  const seconds = Math.floor((Date.now() - new Date(iso).getTime()) / 1000)
+  if (Number.isNaN(seconds) || seconds < 10) return 'just now'
+  if (seconds < 60) return `${seconds} seconds ago`
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`
+  const days = Math.floor(hours / 24)
+  if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`
+  const weeks = Math.floor(days / 7)
+  if (weeks < 5) return `${weeks} week${weeks > 1 ? 's' : ''} ago`
+  const months = Math.floor(days / 30)
+  if (months < 12) return `${months} month${months > 1 ? 's' : ''} ago`
+  const years = Math.floor(days / 365)
+  return `${years} year${years > 1 ? 's' : ''} ago`
+}
+
+function Avatar({ username, avatarUrl }: { username: string; avatarUrl: string | null }) {
+  if (avatarUrl) {
+    return (
+      <img
+        src={avatarUrl}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        className="size-9 shrink-0 rounded-full object-cover"
+      />
+    )
+  }
+  return (
+    <div
+      aria-hidden="true"
+      className="grid size-9 shrink-0 place-items-center rounded-full bg-inkwell-gold/20 text-sm font-semibold text-inkwell-gold"
+    >
+      {username[0]?.toUpperCase() ?? '?'}
+    </div>
+  )
+}
 
 // Hosts that always serve raw media, even without a file extension.
 const DIRECT_MEDIA_HOSTS = [
@@ -141,6 +195,7 @@ function CommentComposer({
   const [content, setContent] = useState('')
   const [gifInput, setGifInput] = useState('')
   const [showGif, setShowGif] = useState(false)
+  const [focused, setFocused] = useState(false)
   const gifUrl = gifInput.trim()
 
   const createMutation = useMutation({
@@ -154,16 +209,19 @@ function CommentComposer({
       setContent('')
       setGifInput('')
       setShowGif(false)
+      setFocused(false)
       queryClient.invalidateQueries({ queryKey: ['blog-comments', blogId] })
       onDone?.()
     },
   })
 
   const canPost = (content.trim() || gifUrl) && isValidGifUrl(gifUrl) && !createMutation.isPending
+  // YT-style: actions appear once the field has focus or content.
+  const expanded = focused || content.length > 0 || showGif
 
   return (
     <form
-      className="mt-4"
+      className="mt-2"
       onSubmit={(event) => {
         event.preventDefault()
         if (canPost) createMutation.mutate()
@@ -177,10 +235,11 @@ function CommentComposer({
         value={content}
         autoFocus={autoFocus}
         onChange={(event) => setContent(event.target.value)}
+        onFocus={() => setFocused(true)}
         placeholder={placeholder}
-        rows={parentId ? 2 : 3}
+        rows={1}
         maxLength={2000}
-        className="w-full resize-y rounded-xl border border-inkwell-cream/15 bg-inkwell-900/60 px-4 py-3 text-sm text-inkwell-cream outline-none transition placeholder:text-inkwell-dim focus:border-inkwell-gold"
+        className="w-full resize-none border-b border-inkwell-cream/20 bg-transparent py-2 text-sm text-inkwell-cream outline-none transition placeholder:text-inkwell-dim focus:border-inkwell-gold"
       />
       {showGif && (
         <div className="mt-2">
@@ -201,74 +260,94 @@ function CommentComposer({
           )}
         </div>
       )}
-      <div className="mt-2 flex items-center gap-3">
-        {createMutation.isError && (
-          <p className="text-xs text-red-300" role="alert">
-            Could not post. Try again.
-          </p>
-        )}
-        <span className="text-xs text-inkwell-dim">{content.length}/2000</span>
-        <button
-          type="button"
-          onClick={() => setShowGif((open) => !open)}
-          aria-expanded={showGif}
-          className="rounded-full border border-inkwell-cream/15 px-3 py-1.5 text-xs text-inkwell-muted transition hover:border-inkwell-gold/60 hover:text-inkwell-gold"
-        >
-          {showGif ? 'Hide GIF' : 'GIF'}
-        </button>
-        <button
-          type="submit"
-          disabled={!canPost}
-          className="ml-auto rounded-full bg-inkwell-gold px-4 py-2 text-xs font-semibold text-inkwell-950 transition hover:bg-inkwell-light disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {createMutation.isPending ? 'Posting…' : parentId ? 'Reply' : 'Post comment'}
-        </button>
-      </div>
+      {expanded && (
+        <div className="mt-2 flex items-center gap-2">
+          {createMutation.isError && (
+            <p className="text-xs text-red-300" role="alert">
+              Could not post. Try again.
+            </p>
+          )}
+          <span className="text-xs text-inkwell-dim">{content.length}/2000</span>
+          <button
+            type="button"
+            onClick={() => setShowGif((open) => !open)}
+            aria-expanded={showGif}
+            className="rounded-full border border-inkwell-cream/15 px-3 py-1.5 text-xs text-inkwell-muted transition hover:border-inkwell-gold/60 hover:text-inkwell-gold"
+          >
+            {showGif ? 'Hide GIF' : 'GIF'}
+          </button>
+          <span className="ml-auto flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setContent('')
+                setGifInput('')
+                setShowGif(false)
+                setFocused(false)
+                onDone?.()
+              }}
+              className="rounded-full px-4 py-2 text-xs font-semibold text-inkwell-muted transition hover:bg-inkwell-cream/10 hover:text-inkwell-cream"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={!canPost}
+              className="rounded-full bg-inkwell-gold px-4 py-2 text-xs font-semibold text-inkwell-950 transition hover:bg-inkwell-light disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {createMutation.isPending ? 'Posting…' : parentId ? 'Reply' : 'Comment'}
+            </button>
+          </span>
+        </div>
+      )}
     </form>
   )
 }
 
-function LikeButton({ blogId, comment }: { blogId: string; comment: ReplyTarget }) {
+function LikeButton({
+  blogId,
+  sort,
+  comment,
+}: {
+  blogId: string
+  sort: CommentSort
+  comment: ReplyTarget
+}) {
   const token = useAuthStore((state) => state.token)
   const queryClient = useQueryClient()
+  const key = threadKey(blogId, sort)
 
   const likeMutation = useMutation({
     mutationFn: () => toggleCommentLike(token ?? '', comment.id),
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: ['blog-comments', blogId] })
-      const previous = queryClient.getQueryData<{ data: BlogComment[] }>([
-        'blog-comments',
-        blogId,
-      ])
-      queryClient.setQueryData<{ data: BlogComment[] }>(
-        ['blog-comments', blogId],
-        (current) => {
-          if (!current) return current
-          const patch = (item: ReplyTarget) =>
-            item.id === comment.id
-              ? {
-                  ...item,
-                  likedByMe: !item.likedByMe,
-                  likesCount: Math.max(
-                    0,
-                    item.likesCount + (item.likedByMe ? -1 : 1),
-                  ),
-                }
-              : item
-          return {
-            ...current,
-            data: current.data.map((top) => ({
-              ...patch(top),
-              replies: top.replies.map(patch),
-            })),
-          }
-        },
-      )
+      await queryClient.cancelQueries({ queryKey: key })
+      const previous = queryClient.getQueryData<{ data: BlogComment[] }>(key)
+      queryClient.setQueryData<{ data: BlogComment[] }>(key, (current) => {
+        if (!current) return current
+        const patch = (item: ReplyTarget) =>
+          item.id === comment.id
+            ? {
+                ...item,
+                likedByMe: !item.likedByMe,
+                likesCount: Math.max(
+                  0,
+                  item.likesCount + (item.likedByMe ? -1 : 1),
+                ),
+              }
+            : item
+        return {
+          ...current,
+          data: current.data.map((top) => ({
+            ...patch(top),
+            replies: top.replies.map(patch),
+          })),
+        }
+      })
       return { previous }
     },
     onError: (_error, _vars, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(['blog-comments', blogId], context.previous)
+        queryClient.setQueryData(key, context.previous)
       }
     },
     onSettled: () => {
@@ -281,10 +360,10 @@ function LikeButton({ blogId, comment }: { blogId: string; comment: ReplyTarget 
       <Link
         to="/login"
         aria-label="Sign in to like this comment"
-        className="inline-flex items-center gap-1.5 text-xs text-inkwell-dim transition hover:text-red-400"
+        className="inline-flex items-center gap-1.5 text-xs text-inkwell-dim transition hover:text-inkwell-gold"
       >
-        <FaRegHeart aria-hidden="true" className="size-3.5" />
-        <span>{comment.likesCount}</span>
+        <FaRegThumbsUp aria-hidden="true" className="size-4" />
+        {comment.likesCount > 0 && <span>{comment.likesCount}</span>}
       </Link>
     )
   }
@@ -297,29 +376,32 @@ function LikeButton({ blogId, comment }: { blogId: string; comment: ReplyTarget 
       onClick={() => likeMutation.mutate()}
       disabled={likeMutation.isPending}
       className={`inline-flex items-center gap-1.5 text-xs transition disabled:opacity-60 ${
-        comment.likedByMe ? 'text-red-400' : 'text-inkwell-dim hover:text-red-400'
+        comment.likedByMe ? 'text-inkwell-gold' : 'text-inkwell-dim hover:text-inkwell-cream'
       }`}
     >
       {comment.likedByMe ? (
-        <FaHeart aria-hidden="true" className="size-3.5" />
+        <FaThumbsUp aria-hidden="true" className="size-4" />
       ) : (
-        <FaRegHeart aria-hidden="true" className="size-3.5" />
+        <FaRegThumbsUp aria-hidden="true" className="size-4" />
       )}
-      <span>{comment.likesCount}</span>
+      {comment.likesCount > 0 && <span>{comment.likesCount}</span>}
     </button>
   )
 }
 
-function CommentCard({
+// One flat YT-style row: avatar rail on the left, everything else flowing.
+function CommentRow({
   blogId,
+  sort,
   comment,
-  isReply,
+  parentAuthor,
   onReply,
   replying,
 }: {
   blogId: string
+  sort: CommentSort
   comment: ReplyTarget
-  isReply?: boolean
+  parentAuthor?: string
   onReply?: () => void
   replying?: boolean
 }) {
@@ -335,84 +417,158 @@ function CommentCard({
     token && (user?.role === 'admin' || user?.id === comment.user?.id)
 
   return (
-    <article
-      className={`rounded-xl border border-inkwell-cream/10 bg-inkwell-900/35 p-4 ${
-        isReply ? 'ml-6 border-l-2 border-l-inkwell-gold/40 sm:ml-10' : ''
-      }`}
-    >
-      <div className="flex items-start gap-3">
-        {comment.user?.avatarUrl ? (
-          <img
-            src={comment.user.avatarUrl}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            className="size-9 rounded-full object-cover"
-          />
-        ) : (
-          <div className="grid size-9 shrink-0 place-items-center rounded-full bg-inkwell-gold/20 text-sm font-semibold text-inkwell-gold">
-            {comment.user?.username?.[0]?.toUpperCase() ?? '?'}
-          </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <p className="text-sm font-semibold text-inkwell-cream">
-              {comment.user?.username ?? 'Anonymous'}
-            </p>
-            <time
-              className="text-xs text-inkwell-dim"
-              dateTime={comment.createdAt}
-            >
-              {new Date(comment.createdAt).toLocaleDateString()}
-            </time>
-          </div>
-          {comment.content && (
-            <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-inkwell-muted">
-              {comment.content}
-            </p>
-          )}
-          {comment.gifUrl && (
-            <GifMedia
-              url={comment.gifUrl}
-              alt={`GIF shared by ${comment.user?.username ?? 'a reader'}`}
-            />
-          )}
-          <div className="mt-3 flex items-center gap-4">
-            <LikeButton blogId={blogId} comment={comment} />
-            {!isReply && token && (
-              <button
-                type="button"
-                onClick={onReply}
-                aria-expanded={replying}
-                className="text-xs text-inkwell-dim transition hover:text-inkwell-gold"
-              >
-                Reply
-              </button>
-            )}
-          </div>
-        </div>
-        {canDelete && (
-          <button
-            type="button"
-            aria-label="Delete comment"
-            onClick={() => deleteMutation.mutate()}
-            disabled={deleteMutation.isPending}
-            className="rounded-lg p-2 text-inkwell-dim transition hover:bg-red-400/10 hover:text-red-300 disabled:opacity-50"
+    <article className="flex gap-3">
+      <Avatar
+        username={comment.user?.username ?? '?'}
+        avatarUrl={comment.user?.avatarUrl ?? null}
+      />
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-baseline gap-x-2">
+          <p className="text-[13px] font-semibold text-inkwell-cream">
+            @{comment.user?.username ?? 'anonymous'}
+          </p>
+          <time
+            className="text-xs text-inkwell-dim"
+            dateTime={comment.createdAt}
+            title={new Date(comment.createdAt).toLocaleString()}
           >
-            <FaRegTrashAlt aria-hidden="true" className="size-3.5" />
-          </button>
+            {timeAgo(comment.createdAt)}
+          </time>
+        </div>
+        {parentAuthor && (
+          <p className="mt-0.5 text-xs text-inkwell-gold/90">@{parentAuthor}</p>
         )}
+        {comment.content && (
+          <p className="mt-1 whitespace-pre-wrap text-sm leading-6 text-inkwell-cream/90">
+            {comment.content}
+          </p>
+        )}
+        {comment.gifUrl && (
+          <GifMedia
+            url={comment.gifUrl}
+            alt={`GIF shared by ${comment.user?.username ?? 'a reader'}`}
+          />
+        )}
+        <div className="mt-2 flex items-center gap-4">
+          <LikeButton blogId={blogId} sort={sort} comment={comment} />
+          {!parentAuthor && token && (
+            <button
+              type="button"
+              onClick={onReply}
+              aria-expanded={replying}
+              className="rounded-full px-3 py-1.5 text-xs font-semibold text-inkwell-muted transition hover:bg-inkwell-cream/10 hover:text-inkwell-cream"
+            >
+              Reply
+            </button>
+          )}
+          {canDelete && (
+            <button
+              type="button"
+              aria-label="Delete comment"
+              onClick={() => deleteMutation.mutate()}
+              disabled={deleteMutation.isPending}
+              className="rounded-full p-1.5 text-inkwell-dim transition hover:bg-red-400/10 hover:text-red-300 disabled:opacity-50"
+            >
+              <FaRegTrashAlt aria-hidden="true" className="size-3.5" />
+            </button>
+          )}
+        </div>
       </div>
     </article>
   )
 }
 
+// A top-level comment plus its collapsible reply rail.
+function CommentThread({
+  blogId,
+  sort,
+  comment,
+  replyOpen,
+  onToggleReply,
+}: {
+  blogId: string
+  sort: CommentSort
+  comment: BlogComment
+  replyOpen: boolean
+  onToggleReply: () => void
+}) {
+  const token = useAuthStore((state) => state.token)
+  const [showReplies, setShowReplies] = useState(false)
+  const replyCount = comment.replies.length
+
+  return (
+    <div>
+      <CommentRow
+        blogId={blogId}
+        sort={sort}
+        comment={comment}
+        onReply={onToggleReply}
+        replying={replyOpen}
+      />
+      {replyOpen && token && (
+        <div className="ml-12 mt-1 flex gap-3">
+          <Avatar
+            username={comment.user?.username ?? '?'}
+            avatarUrl={comment.user?.avatarUrl ?? null}
+          />
+          <div className="min-w-0 flex-1">
+            <CommentComposer
+              blogId={blogId}
+              parentId={comment.id}
+              autoFocus
+              placeholder={`Reply to @${comment.user?.username ?? 'anonymous'}…`}
+              onDone={onToggleReply}
+            />
+          </div>
+        </div>
+      )}
+      {replyCount > 0 && (
+        <div className="ml-12 mt-1">
+          <button
+            type="button"
+            onClick={() => setShowReplies((open) => !open)}
+            aria-expanded={showReplies}
+            className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold text-inkwell-gold transition hover:bg-inkwell-gold/10"
+          >
+            <FaChevronDown
+              aria-hidden="true"
+              className={`size-3 transition-transform ${showReplies ? 'rotate-180' : ''}`}
+            />
+            {showReplies ? 'Hide replies' : `${replyCount} ${replyCount === 1 ? 'reply' : 'replies'}`}
+          </button>
+          {showReplies && (
+            <div className="mt-3 space-y-5 border-l border-inkwell-cream/15 pl-4">
+              {comment.replies.map((reply) => (
+                <CommentRow
+                  key={reply.id}
+                  blogId={blogId}
+                  sort={sort}
+                  comment={reply}
+                  parentAuthor={comment.user?.username ?? undefined}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+const SORT_LABELS: Record<CommentSort, string> = {
+  newest: 'Newest first',
+  oldest: 'Oldest first',
+  top: 'Top comments',
+}
+
 export function BlogComments({ blogId }: { blogId: string }) {
   const token = useAuthStore((state) => state.token)
+  const user = useAuthStore((state) => state.user)
   const [replyTo, setReplyTo] = useState<string | null>(null)
+  const [sort, setSort] = useState<CommentSort>('newest')
   const commentsQuery = useQuery({
-    queryKey: ['blog-comments', blogId],
-    queryFn: () => getBlogComments(blogId, token ?? undefined),
+    queryKey: threadKey(blogId, sort),
+    queryFn: () => getBlogComments(blogId, token ?? undefined, sort),
   })
   const comments = commentsQuery.data?.data ?? []
   const totalCount =
@@ -423,19 +579,39 @@ export function BlogComments({ blogId }: { blogId: string }) {
       className="mt-16 border-t border-inkwell-cream/10 pt-8"
       aria-labelledby="comments-heading"
     >
-      <div className="flex items-baseline justify-between gap-4">
-        <h2 id="comments-heading" className="font-display text-3xl">
-          Comments{' '}
-          <span className="font-sans text-sm text-inkwell-dim">
-            ({totalCount})
-          </span>
+      <div className="flex flex-wrap items-center gap-4">
+        <h2 id="comments-heading" className="font-display text-2xl">
+          {totalCount.toLocaleString()} Comment{totalCount === 1 ? '' : 's'}
         </h2>
+        <label className="ml-auto inline-flex items-center gap-2 text-xs text-inkwell-muted">
+          <span className="font-mono uppercase tracking-[0.14em]">Sort by</span>
+          <span className="sr-only">Sort comments</span>
+          <select
+            value={sort}
+            onChange={(event) => setSort(event.target.value as CommentSort)}
+            className="rounded-lg border border-inkwell-cream/15 bg-inkwell-900/70 px-2.5 py-1.5 text-xs text-inkwell-cream outline-none focus:border-inkwell-gold"
+          >
+            {(Object.keys(SORT_LABELS) as CommentSort[]).map((value) => (
+              <option key={value} value={value}>
+                {SORT_LABELS[value]}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
       {token ? (
-        <CommentComposer
-          blogId={blogId}
-          placeholder="Add to the conversation…"
-        />
+        <div className="mt-4 flex gap-3">
+          <Avatar
+            username={user?.username ?? '?'}
+            avatarUrl={user?.avatarUrl ?? null}
+          />
+          <div className="min-w-0 flex-1">
+            <CommentComposer
+              blogId={blogId}
+              placeholder="Add a comment…"
+            />
+          </div>
+        </div>
       ) : (
         <p className="mt-5 text-sm text-inkwell-muted">
           Please{' '}
@@ -463,37 +639,18 @@ export function BlogComments({ blogId }: { blogId: string }) {
           </button>
         </div>
       )}
-      <div className="mt-8 space-y-5">
+      <div className="mt-8 space-y-7">
         {comments.map((comment) => (
-          <div key={comment.id} className="space-y-3">
-            <CommentCard
-              blogId={blogId}
-              comment={comment}
-              onReply={() =>
-                setReplyTo((current) => (current === comment.id ? null : comment.id))
-              }
-              replying={replyTo === comment.id}
-            />
-            {comment.replies.map((reply) => (
-              <CommentCard
-                key={reply.id}
-                blogId={blogId}
-                comment={reply}
-                isReply
-              />
-            ))}
-            {replyTo === comment.id && token && (
-              <div className="ml-6 sm:ml-10">
-                <CommentComposer
-                  blogId={blogId}
-                  parentId={comment.id}
-                  autoFocus
-                  placeholder={`Reply to ${comment.user?.username ?? 'this comment'}…`}
-                  onDone={() => setReplyTo(null)}
-                />
-              </div>
-            )}
-          </div>
+          <CommentThread
+            key={comment.id}
+            blogId={blogId}
+            sort={sort}
+            comment={comment}
+            replyOpen={replyTo === comment.id}
+            onToggleReply={() =>
+              setReplyTo((current) => (current === comment.id ? null : comment.id))
+            }
+          />
         ))}
         {!commentsQuery.isLoading && !commentsQuery.isError && comments.length === 0 && (
           <p className="text-sm text-inkwell-dim">
