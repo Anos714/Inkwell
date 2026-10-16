@@ -60,13 +60,13 @@ export const updateProfileService = async (
   const user = await findUserById(userId);
   if (!user) throw AppError.NotFound("User not found");
   if (data.username) {
-    const username = data.username.toLowerCase();
+    const username = data.username.trim();
 
     if (username !== user.username) {
       const existingUser = await findUserByUsername(username);
 
       if (existingUser && existingUser.id !== userId) {
-        throw new Error("Username already taken");
+        throw AppError.Conflict("Username already taken");
       }
 
       data = {

@@ -9,8 +9,13 @@ import { isApiError } from '../../../lib/api'
 
 export const googleCallbackPath = '/api/auth/google/callback'
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? ''
-const googleRedirectUri = import.meta.env.VITE_GOOGLE_REDIRECT_URI
-  ?? `${window.location.origin}${googleCallbackPath}`
+function getGoogleRedirectUri(): string {
+  if (typeof window === 'undefined') return ''
+  return (
+    (import.meta.env.VITE_GOOGLE_REDIRECT_URI as string | undefined) ??
+    `${window.location.origin}${googleCallbackPath}`
+  )
+}
 
 export function useAuth() {
   const navigate = useNavigate()
@@ -113,12 +118,16 @@ export function useAuth() {
   }, [loginMutation])
 
   const login = () => {
+    if (!googleClientId) {
+      setNotice('Google sign-in is not configured. Missing VITE_GOOGLE_CLIENT_ID.')
+      return
+    }
     const state = crypto.randomUUID()
     sessionStorage.setItem('google-auth-state', state)
     const authorizationUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth')
     authorizationUrl.search = new URLSearchParams({
       client_id: googleClientId,
-      redirect_uri: googleRedirectUri,
+      redirect_uri: getGoogleRedirectUri(),
       response_type: 'code',
       scope: 'openid email profile',
       state,
@@ -128,14 +137,6 @@ export function useAuth() {
     window.location.assign(authorizationUrl.toString())
   }
 
-  const logoutUser = () => {
-    if (token) {
-      logoutMutation.mutate()
-    } else {
-      clearSession()
-    }
-  }
-
   const logoutMutation = useMutation({
     mutationFn: () => logout(token ?? ''),
     onSettled: () => {
@@ -143,6 +144,14 @@ export function useAuth() {
       queryClient.clear()
     },
   })
+
+  const logoutUser = () => {
+    if (token) {
+      logoutMutation.mutate()
+    } else {
+      clearSession()
+    }
+  }
 
   return {
     // The boot-time refresh shouldn't expose a loading state — it would flicker

@@ -92,9 +92,18 @@ export function BlogListPage() {
           </div>
         )}
         {blogsQuery.isError && (
-          <p className="py-16 text-sm text-red-300">
-            The journal could not be loaded. Please try again.
-          </p>
+          <div className="py-16 text-center" role="alert">
+            <p className="text-sm text-red-300">
+              The journal could not be loaded. Please try again.
+            </p>
+            <button
+              type="button"
+              onClick={() => blogsQuery.refetch()}
+              className="mt-4 rounded-full border border-inkwell-gold/60 px-5 py-2 text-sm font-semibold text-inkwell-gold transition hover:bg-inkwell-gold hover:text-inkwell-950"
+            >
+              Retry
+            </button>
+          </div>
         )}
         {!blogsQuery.isLoading && !blogs.length && (
           <div className="mt-12 rounded-2xl border border-dashed border-inkwell-cream/15 p-10 text-center">
@@ -108,12 +117,16 @@ export function BlogListPage() {
           {blogs.map((blog) => (
             <article
               key={blog.id}
-              className="group overflow-hidden rounded-2xl border border-inkwell-cream/10 bg-inkwell-900/45 transition hover:-translate-y-1 hover:border-inkwell-gold/50"
+              className="group overflow-hidden rounded-2xl border border-inkwell-cream/10 bg-inkwell-900/40 shadow-[0_2px_16px_-8px_rgb(0_0_0/0.35)] transition duration-300 hover:-translate-y-0.5 hover:border-inkwell-gold/40 hover:shadow-[0_12px_32px_-12px_rgb(0_0_0/0.45)]"
             >
               {blog.coverImage && (
                 <img
                   src={blog.coverImage}
-                  alt=""
+                  alt={`${blog.title} — cover image`}
+                  loading="lazy"
+                  decoding="async"
+                  width={800}
+                  height={450}
                   className="aspect-[16/9] w-full object-cover opacity-90 transition duration-500 group-hover:opacity-100"
                 />
               )}

@@ -38,18 +38,17 @@ export const createGoogleAuthUser = async (data: TokenPayload) => {
     );
   }
 
-  const baseUsername =
-    data.name.trim().slice(0, 90) || `user-${data.sub.slice(-8)}`;
-  const usernameTaken = await findUserByUsername(baseUsername);
-  const username = usernameTaken
-    ? `${baseUsername}-${data.sub.slice(-8)}`
-    : baseUsername;
+  const rawName = data.name.trim().slice(0, 30) || `user-${data.sub.slice(-8)}`;
+  const usernameTaken = await findUserByUsername(rawName);
+  const baseUsername = usernameTaken
+    ? `${rawName.slice(0, 21)}-${data.sub.slice(-8)}`.slice(0, 30)
+    : rawName;
 
   const [user] = await db
     .insert(users)
     .values({
       googleId: data.sub,
-      username,
+      username: baseUsername,
       avatarUrl: data.picture,
       email: data.email,
     })
@@ -61,11 +60,12 @@ export const updateGoogleAuthUser = async (
   userId: string,
   data: TokenPayload,
 ) => {
+  // Preserve the user's chosen username — only sync googleId/avatar.
   const [updatedUser] = await db
     .update(users)
     .set({
       googleId: data.sub,
-      username: data.name,
+      ...(data.picture ? { avatarUrl: data.picture } : {}),
     })
     .where(eq(users.id, userId))
     .returning();

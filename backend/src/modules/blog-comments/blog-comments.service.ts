@@ -1,4 +1,5 @@
 import { AppError } from "../../utils/AppError";
+import { findBlogById } from "../blogs/blogs.repository";
 import * as commentRepository from "./blog-comments.repository";
 
 export const createCommentService = async (
@@ -6,6 +7,8 @@ export const createCommentService = async (
   blogId: string,
   content: string,
 ) => {
+  // Fail with 404 (not a raw FK 500) when the target blog is missing.
+  await findBlogById(blogId);
   const comment = await commentRepository.createComment(
     userId,
     blogId,
@@ -36,7 +39,7 @@ export const deleteCommentService = async (
   const result = await commentRepository.deleteComment(userId, role, commentId);
 
   if (!result) {
-    throw AppError.InternalServerError("Failed to delete comment");
+    throw AppError.NotFound("Comment not found or you are not allowed to delete it");
   }
 
   return result;

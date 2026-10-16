@@ -35,6 +35,7 @@ export function NotFoundPage() {
   const smoothY = useSpring(pointerY, { stiffness: 120, damping: 22, mass: 0.6 });
 
   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
     const stage = stageRef.current;
     if (!stage) return;
     const bounds = stage.getBoundingClientRect();

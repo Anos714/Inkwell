@@ -132,7 +132,9 @@ export function BlogDetail() {
   }, [blog, slug, viewMutation]);
 
   // Canonical share URL — stable regardless of trailing query params or hashes.
-  const canonicalUrl = `${window.location.origin}/blogs/${blog?.slug ?? slug}`;
+  // Guarded for non-browser renders.
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const canonicalUrl = `${origin}/blogs/${blog?.slug ?? slug}`;
   const seoPath = `/blogs/${blog?.slug ?? slug}`;
 
   // The article's head state is only complete once the entry resolves; until
@@ -157,9 +159,9 @@ export function BlogDetail() {
   });
 
   const content =
-    typeof blog?.content === "string"
+    typeof blog?.content === "string" && blog.content.trim()
       ? DOMPurify.sanitize(blog.content)
-      : `<pre>${DOMPurify.sanitize(JSON.stringify(blog?.content, null, 2) ?? "")}</pre>`;
+      : `<p>This entry has no readable content yet.</p>`;
 
   // The sanitized body is the single source of truth for the TOC: heading ids
   // are baked into the HTML before React renders it, because React re-writes
@@ -203,8 +205,33 @@ export function BlogDetail() {
 
   if (blogQuery.isError || !blog) {
     return (
-      <main className="min-h-screen bg-inkwell-950 px-6 py-24 text-center text-red-300">
-        This entry could not be found.
+      <main className="grid min-h-screen place-items-center bg-inkwell-950 px-6 py-24 text-center">
+        <div className="max-w-md" role="alert">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-inkwell-gold">
+            Not found
+          </p>
+          <h1 className="mt-4 font-display text-4xl text-inkwell-cream">
+            This entry could not be found.
+          </h1>
+          <p className="mt-3 text-sm leading-7 text-inkwell-muted">
+            It may have been moved or is no longer published.
+          </p>
+          <div className="mt-8 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={() => blogQuery.refetch()}
+              className="rounded-full bg-inkwell-gold px-5 py-2.5 text-sm font-semibold text-inkwell-950 transition hover:bg-inkwell-light"
+            >
+              Try again
+            </button>
+            <Link
+              to="/blogs"
+              className="rounded-full border border-inkwell-cream/15 px-5 py-2.5 text-sm text-inkwell-muted transition hover:border-inkwell-gold/60 hover:text-inkwell-gold"
+            >
+              All posts
+            </Link>
+          </div>
+        </div>
       </main>
     );
   }
@@ -233,7 +260,7 @@ export function BlogDetail() {
         </nav>
       </header>
 
-      <article className="mx-auto max-w-3xl px-6 py-16 sm:py-24">
+      <article className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
         <div className="flex flex-wrap gap-2">
           {blog.tags.map((tag) => (
             <span
@@ -264,6 +291,10 @@ export function BlogDetail() {
           <img
             src={blog.coverImage}
             alt={`${blog.title} — cover image`}
+            loading="lazy"
+            decoding="async"
+            width={1200}
+            height={675}
             className="mt-12 max-h-[30rem] w-full rounded-2xl object-cover"
           />
         )}
@@ -336,14 +367,14 @@ export function BlogDetail() {
         </div>
 
         {blog.description && (
-          <p className="mt-12 text-xl leading-9 text-inkwell-muted">
+          <p className="mt-10 max-w-[62ch] font-serif text-xl leading-9 text-inkwell-muted">
             {blog.description}
           </p>
         )}
 
         <div
           ref={articleRef}
-          className="blog-content mt-10 text-base leading-8 text-inkwell-cream/85"
+          className="blog-content mt-10 text-base leading-8 text-inkwell-cream/90"
           dangerouslySetInnerHTML={{ __html: stampedContent }}
         />
 

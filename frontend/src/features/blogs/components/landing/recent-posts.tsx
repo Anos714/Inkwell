@@ -67,13 +67,17 @@ export function RecentPosts() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.15 }}
                 transition={{ duration: 0.6, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="group overflow-hidden rounded-3xl border border-inkwell-cream/10 bg-inkwell-950/70 transition duration-300 hover:-translate-y-1 hover:border-inkwell-gold/50 hover:shadow-xl hover:shadow-black/25"
+                className="group overflow-hidden rounded-3xl border border-inkwell-cream/10 bg-inkwell-950/60 shadow-[0_2px_16px_-8px_rgb(0_0_0/0.35)] transition duration-300 hover:-translate-y-0.5 hover:border-inkwell-gold/40 hover:shadow-xl hover:shadow-black/20"
               >
                 {blog.coverImage && (
                   <div className="overflow-hidden">
                     <img
                       src={blog.coverImage}
-                      alt=""
+                      alt={`${blog.title} — cover image`}
+                      loading="lazy"
+                      decoding="async"
+                      width={800}
+                      height={450}
                       className="aspect-[16/9] w-full object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
                     />
                   </div>

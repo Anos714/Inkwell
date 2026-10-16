@@ -133,6 +133,20 @@ export function AdminManagePage() {
     <AdminFrame title="Manage entries." eyebrow="Private workspace">
       {query.isLoading ? (
         <BlogGridSkeleton count={4} />
+      ) : query.isError ? (
+        <div className="rounded-3xl border border-dashed border-inkwell-cream/15 p-12 text-center" role="alert">
+          <p className="font-display text-2xl text-inkwell-cream">Entries could not be loaded.</p>
+          <p className="mt-3 text-sm text-inkwell-muted">
+            Check your connection and try again.
+          </p>
+          <button
+            type="button"
+            onClick={() => query.refetch()}
+            className="mt-6 inline-flex items-center gap-2 rounded-xl border border-inkwell-gold/60 px-5 py-2.5 text-sm font-semibold text-inkwell-gold transition hover:bg-inkwell-gold hover:text-inkwell-950"
+          >
+            Retry
+          </button>
+        </div>
       ) : (
         <AdminBlogManager token={token ?? ''} blogs={query.data?.data ?? []} />
       )}
