@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import { getBlogTags, getPublishedBlogs, type BlogSort } from "../api/blog-api";
-import { ElegantMenu } from "../../../components/elegant-menu";
 import { BlogGridSkeleton } from "./blog-skeleton";
+import { ElegantMenu } from "../../../components/elegant-menu";
 import { ThemeToggle } from "../../../components/theme-toggle";
 import { BrandLogo } from "../../../components/brand-logo";
 import { useSeo } from "../../../hooks/use-seo";
@@ -26,9 +26,10 @@ export function BlogListPage() {
     ],
   });
 
+  const [searchParams] = useSearchParams();
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
-  const [tag, setTag] = useState("");
+  const [tag, setTag] = useState(() => searchParams.get("tag") ?? "");
   const [sort, setSort] = useState<BlogSort>("latest");
   const [page, setPage] = useState(1);
   const limit = 9;
@@ -84,10 +85,10 @@ export function BlogListPage() {
       <section className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
         <div className="flex flex-col justify-between gap-8 border-b border-inkwell-cream/10 pb-10 md:flex-row md:items-end">
           <div>
-            <span className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">
+            <span className="font-mono text-[10px] uppercase tracking-[.22em] text-inkwell-gold">
               The complete journal
             </span>
-            <h1 className="mt-4 font-display text-5xl sm:text-6xl">
+            <h1 className="mt-4 font-display text-6xl font-medium tracking-tight sm:text-7xl">
               All posts.
             </h1>
             <p className="mt-4 max-w-xl text-sm leading-7 text-inkwell-muted">
@@ -233,7 +234,7 @@ export function BlogListPage() {
                     </span>
                   ))}
                 </div>
-                <h2 className="mt-4 font-display text-2xl leading-tight">
+                <h2 className="mt-4 font-display text-3xl font-medium leading-tight">
                   {blog.title}
                 </h2>
                 {blog.description && (

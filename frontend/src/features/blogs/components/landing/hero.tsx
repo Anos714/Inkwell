@@ -32,14 +32,15 @@ export function Hero() {
         <motion.div variants={container} initial="hidden" animate="show">
           <motion.div
             variants={item}
-            className="mb-7 inline-flex items-center gap-2 rounded-full border border-inkwell-gold/30 bg-inkwell-gold/5 px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold"
+            className="mb-7 inline-flex items-center gap-2.5 rounded-full border border-inkwell-gold/30 bg-inkwell-gold/5 px-4 py-1.5 font-mono text-[10px] uppercase tracking-[.22em] text-inkwell-gold"
           >
-            Stories · Ideas · Honest notes
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-inkwell-gold" />
+            A slow journal of code & craft
           </motion.div>
 
           <motion.h1
             variants={item}
-            className="max-w-3xl font-display text-5xl leading-[1.02] tracking-[-0.03em] text-inkwell-cream sm:text-7xl lg:text-[5.25rem]"
+            className="max-w-3xl font-display text-6xl font-medium leading-[0.98] tracking-[-0.015em] text-inkwell-cream sm:text-8xl lg:text-[6.5rem]"
           >
             Make space<br />
             for{' '}
@@ -67,7 +68,7 @@ export function Hero() {
 
           <motion.p
             variants={item}
-            className="mt-9 max-w-lg font-serif text-lg leading-8 text-inkwell-muted"
+            className="mt-9 max-w-lg font-serif text-xl leading-9 text-inkwell-muted"
           >
             A quiet corner of the internet for unfinished thoughts, useful lessons, and the small details worth remembering.
           </motion.p>
@@ -75,30 +76,24 @@ export function Hero() {
           <motion.div variants={item} className="mt-11 flex flex-wrap items-center gap-4">
             <Link
               to="/blogs"
-              className="group flex items-center gap-2.5 rounded-xl bg-inkwell-gold px-6 py-3.5 text-sm font-bold text-inkwell-950 transition duration-300 hover:-translate-y-0.5 hover:bg-inkwell-light hover:shadow-lg hover:shadow-inkwell-gold/20"
+              className="group flex items-center gap-2.5 rounded-full bg-inkwell-gold px-7 py-3.5 text-sm font-bold text-inkwell-950 transition duration-300 hover:-translate-y-0.5 hover:bg-inkwell-light hover:shadow-lg hover:shadow-inkwell-gold/20"
             >
               Read the journal <ArrowUpRight />
             </Link>
             <a
-              href="#features"
-              className="rounded-xl px-5 py-3.5 text-sm font-semibold text-inkwell-muted transition hover:text-inkwell-cream"
+              href="#topics"
+              className="rounded-full px-5 py-3.5 text-sm font-semibold text-inkwell-muted transition hover:text-inkwell-cream"
             >
-              What is Inkwell?
+              Browse topics
             </a>
           </motion.div>
 
-          <motion.div variants={item} className="mt-14 flex items-center gap-4 text-xs text-inkwell-dim">
-            <span className="flex -space-x-2">
-              {['RS', 'AK', 'JM'].map((initials) => (
-                <span
-                  key={initials}
-                  className="grid size-8 place-items-center rounded-full border-2 border-inkwell-950 bg-inkwell-800 font-mono text-[9px] text-inkwell-cream"
-                >
-                  {initials}
-                </span>
-              ))}
-            </span>
-            <span>Written slowly, shared freely.</span>
+          <motion.div variants={item} className="mt-14 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[10px] uppercase tracking-[.22em] text-inkwell-dim">
+            <span>Slow web</span>
+            <span aria-hidden="true" className="text-inkwell-gold">·</span>
+            <span>No trackers</span>
+            <span aria-hidden="true" className="text-inkwell-gold">·</span>
+            <span>Written to last</span>
           </motion.div>
         </motion.div>
 
