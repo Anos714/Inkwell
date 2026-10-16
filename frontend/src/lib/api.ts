@@ -58,5 +58,11 @@ export async function apiRequest<T>(
     )
   }
 
-  return schema ? schema.parse(body) : body
+  if (!schema) return body
+
+  try {
+    return schema.parse(body)
+  } catch {
+    throw new ApiError('The server returned an unexpected response.', response.status)
+  }
 }

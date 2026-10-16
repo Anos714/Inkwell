@@ -4,17 +4,17 @@ import { useQuery } from '@tanstack/react-query'
 import { getRecentComments } from '../../api/blog-api'
 import type { RecentComment } from '../../types'
 
-function CommentCard({ comment }: { comment: RecentComment }) {
-  const username = comment.user?.username ?? 'Someone'
+function CommentCard({ comment, hidden = false }: { comment: RecentComment; hidden?: boolean }) {
+  const username = comment.user?.username?.trim() || 'Someone'
   const initials = username
-    .split(' ')
+    .split(/\s+/)
     .map((part) => part[0])
     .join('')
     .slice(0, 2)
     .toUpperCase()
 
   return (
-    <figure className="flex w-[20rem] shrink-0 flex-col gap-4 rounded-2xl border border-inkwell-cream/10 bg-inkwell-900/50 p-6 transition duration-300 hover:border-inkwell-gold/40 sm:w-[24rem]">
+    <figure aria-hidden={hidden || undefined} className="flex w-[20rem] shrink-0 flex-col gap-4 rounded-2xl border border-inkwell-cream/10 bg-inkwell-900/50 p-6 transition duration-300 hover:border-inkwell-gold/40 sm:w-[24rem]">
       <div className="flex items-center gap-3">
         {comment.user?.avatarUrl ? (
           <img
@@ -102,7 +102,7 @@ export function CommentsMarquee() {
         >
           <div className="marquee-track">
             {loop.map((comment, index) => (
-              <CommentCard key={`${comment.id}-${index}`} comment={comment} />
+              <CommentCard key={`${comment.id}-${index}`} comment={comment} hidden={index >= comments.length} />
             ))}
           </div>
         </div>

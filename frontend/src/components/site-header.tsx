@@ -52,8 +52,8 @@ export function SiteHeader() {
     }
   }, [profileOpen])
 
-  const userInitials = user?.username
-    .split(' ')
+  const userInitials = (user?.username?.trim() ? user.username : '?')
+    .split(/\s+/)
     .map((part) => part[0])
     .join('')
     .slice(0, 2)
@@ -82,12 +82,13 @@ export function SiteHeader() {
               <button
                 type="button"
                 aria-expanded={profileOpen}
+                aria-haspopup="menu"
                 aria-label={`Open profile menu for ${user.username}`}
                 onClick={() => setProfileOpen((open) => !open)}
                 className="group flex items-center gap-2 rounded-full border border-inkwell-gold/70 py-1.5 pl-1.5 pr-3 text-xs font-semibold text-inkwell-gold transition hover:bg-inkwell-gold hover:text-inkwell-950"
               >
                 {user.avatarUrl ? (
-                  <img src={user.avatarUrl} alt="" className="size-7 rounded-full object-cover" />
+                  <img src={user.avatarUrl} alt="" loading="lazy" decoding="async" className="size-7 rounded-full object-cover" />
                 ) : (
                   <span className="grid size-7 place-items-center rounded-full bg-inkwell-gold text-[10px] font-bold text-inkwell-950">{userInitials}</span>
                 )}
@@ -96,7 +97,7 @@ export function SiteHeader() {
               </button>
 
               {profileOpen && (
-                <div className="absolute right-0 top-full z-30 mt-3 w-56 overflow-hidden rounded-2xl border border-inkwell-cream/15 bg-inkwell-900 p-2 shadow-2xl shadow-black/40">
+                <div role="menu" className="absolute right-0 top-full z-30 mt-3 w-56 overflow-hidden rounded-2xl border border-inkwell-cream/15 bg-inkwell-900 p-2 shadow-2xl shadow-black/40">
                   <div className="border-b border-inkwell-cream/10 px-3 py-2.5">
                     <p className="truncate text-sm font-semibold text-inkwell-cream">{user.username}</p>
                     <p className="mt-0.5 truncate text-xs text-inkwell-muted">{user.email}</p>

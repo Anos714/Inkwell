@@ -73,7 +73,11 @@ export function RecentPosts() {
                   <div className="overflow-hidden">
                     <img
                       src={blog.coverImage}
-                      alt=""
+                      alt={`${blog.title} — cover image`}
+                      loading="lazy"
+                      decoding="async"
+                      width={800}
+                      height={450}
                       className="aspect-[16/9] w-full object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
                     />
                   </div>

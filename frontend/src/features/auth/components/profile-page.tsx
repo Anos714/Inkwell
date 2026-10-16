@@ -16,6 +16,11 @@ export function ProfilePage() {
   const clearSession = useAuthStore((state) => state.clearSession)
   const [username, setUsername] = useState(user?.username ?? '')
 
+  // Resync the input once the persisted session hydrates.
+  useEffect(() => {
+    if (user?.username) setUsername((current) => current || user.username)
+  }, [user?.username])
+
   useSeo({
     title: `Profile — ${SITE_NAME}`,
     description: 'Your Inkwell account profile — username, avatar and session settings.',
@@ -124,7 +129,7 @@ export function ProfilePage() {
           <div className="rounded-2xl border border-inkwell-cream/10 bg-inkwell-900 p-6">
             <div className="flex flex-wrap items-center gap-5">
               {user.avatarUrl ? (
-                <img src={user.avatarUrl} alt="" className="size-24 rounded-full object-cover" />
+                <img src={user.avatarUrl} alt={`${user.username} avatar`} loading="lazy" decoding="async" className="size-24 rounded-full object-cover" />
               ) : (
                 <div className="grid size-24 place-items-center rounded-full bg-inkwell-gold text-2xl font-bold text-inkwell-950">{initials}</div>
               )}

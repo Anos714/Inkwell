@@ -1,6 +1,7 @@
 type Props = {
   size?: 'sm' | 'md' | 'lg'
   className?: string
+  alt?: string
 }
 
 const sizeClasses = {
@@ -9,6 +10,6 @@ const sizeClasses = {
   lg: 'size-12',
 } as const
 
-export function BrandLogo({ size = 'md', className = '' }: Props) {
-  return <img src="/favicon.svg" alt="" aria-hidden="true" className={`${sizeClasses[size]} shrink-0 rounded-[25%] ${className}`} />
+export function BrandLogo({ size = 'md', className = '', alt = 'Inkwell home' }: Props) {
+  return <img src="/favicon.svg" alt={alt} className={`${sizeClasses[size]} shrink-0 rounded-[25%] ${className}`} />
 }

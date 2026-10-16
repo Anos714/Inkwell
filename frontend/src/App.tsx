@@ -1,6 +1,7 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { AuthPage } from "./features/auth/components/auth-page";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router";
+import { RouteErrorBoundary } from "./components/route-error-boundary";
 
 const BlogHome = lazy(() =>
   import("./features/blogs/components/blog-home").then((module) => ({ default: module.BlogHome })),
@@ -36,9 +37,19 @@ const NotFoundPage = lazy(() =>
   import("./features/blogs/components/not-found-page").then((module) => ({ default: module.NotFoundPage })),
 );
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
+      <RouteErrorBoundary>
       <Suspense fallback={<main className="min-h-screen bg-inkwell-950" />}>
         <Routes>
           <Route path="/" element={<BlogHome />} />
@@ -57,6 +68,7 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
+      </RouteErrorBoundary>
     </BrowserRouter>
   );
 }
