@@ -260,7 +260,7 @@ export function BlogDetail() {
         </nav>
       </header>
 
-      <article className="mx-auto max-w-3xl px-6 py-16 sm:py-24">
+      <article className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
         <div className="flex flex-wrap gap-2">
           {blog.tags.map((tag) => (
             <span
@@ -367,14 +367,14 @@ export function BlogDetail() {
         </div>
 
         {blog.description && (
-          <p className="mt-12 text-xl leading-9 text-inkwell-muted">
+          <p className="mt-10 max-w-[62ch] font-serif text-xl leading-9 text-inkwell-muted">
             {blog.description}
           </p>
         )}
 
         <div
           ref={articleRef}
-          className="blog-content mt-10 text-base leading-8 text-inkwell-cream/85"
+          className="blog-content mt-10 text-base leading-8 text-inkwell-cream/90"
           dangerouslySetInnerHTML={{ __html: stampedContent }}
         />
 

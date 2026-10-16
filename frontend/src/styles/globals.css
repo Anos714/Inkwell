@@ -9,23 +9,25 @@
 /* Semantic tokens — dark is the default. Light overrides the same variables,
    so every utility resolves through one cascading source of truth. */
 :root {
-  /* Quiet Ink surfaces — warm-neutral charcoals (green tint removed) */
-  --base: #0e0f0e;
-  --surface: #141615;
-  --surface-2: #1a1c1b;
-  --surface-3: #222523;
-  --border: color-mix(in srgb, #edeae3 9%, transparent);
-  --border-strong: color-mix(in srgb, #edeae3 16%, transparent);
+  /* Quiet Ink surfaces — calm moss-charcoals, green kept whisper-soft */
+  --base: #101511;
+  --surface: #151a16;
+  --surface-2: #1b211c;
+  --surface-3: #232b24;
+  --border: color-mix(in srgb, #edeae3 7%, transparent);
+  --border-strong: color-mix(in srgb, #edeae3 12%, transparent);
 
   /* Ink */
   --text: #edeae3;
-  --text-muted: #a6a49d;
-  --text-dim: #75736d;
+  --text-muted: #aaa89e;
+  --text-dim: #7e7c74;
 
-  /* Accent — one antiqued gold, used sparingly */
-  --accent: #c9a15f;
-  --accent-strong: #e0be8a;
-  --accent-soft: color-mix(in srgb, #c9a15f 14%, transparent);
+  /* Accent — antiqued gold, gently muted + sage companion for calm */
+  --accent: #b89a6a;
+  --accent-strong: #d6bc8d;
+  --accent-soft: color-mix(in srgb, #b89a6a 12%, transparent);
+  --sage: #8ba393;
+  --sage-soft: color-mix(in srgb, #8ba393 14%, transparent);
 
   /* Motion — soft, spring-like easings for tactile calm */
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
@@ -39,20 +41,22 @@
 }
 
 [data-theme='light'] {
-  --base: #f6f4ee;
-  --surface: #fcfaf5;
-  --surface-2: #f0ede4;
-  --surface-3: #e7e3d8;
-  --border: #e0dcd0;
-  --border-strong: #d2cdc0;
+  --base: #f7f5ef;
+  --surface: #fdfcf8;
+  --surface-2: #f1eee3;
+  --surface-3: #e7e2d3;
+  --border: #e3ded0;
+  --border-strong: #d4cec0;
 
-  --text: #23241f;
-  --text-muted: #61615b;
-  --text-dim: #8c8b84;
+  --text: #232a23;
+  --text-muted: #62645c;
+  --text-dim: #8d8c83;
 
-  --accent: #9a6f32;
-  --accent-strong: #7e5a26;
-  --accent-soft: color-mix(in srgb, #9a6f32 12%, transparent);
+  --accent: #96702f;
+  --accent-strong: #77571f;
+  --accent-soft: color-mix(in srgb, #96702f 10%, transparent);
+  --sage: #5f7a66;
+  --sage-soft: color-mix(in srgb, #5f7a66 12%, transparent);
 }
 
 /* Register aliases as Tailwind utilities. `inkwell-*` names are retained so the
@@ -72,6 +76,7 @@
   --color-inkwell-dim: var(--text-dim);
   --color-inkwell-gold: var(--accent);
   --color-inkwell-light: var(--accent-strong);
+  --color-inkwell-sage: var(--sage);
 }
 
 /* ── Base ─────────────────────────────────────────────────────────────────── */
@@ -260,48 +265,48 @@ button { font: inherit; }
 .rich-text-editor .tiptap mark { border-radius: .2rem; background: var(--accent); color: var(--base); padding: 0 .15rem; }
 .rich-text-editor .tiptap hr { border-color: color-mix(in srgb, var(--text) 15%, transparent); margin: 1.5rem 0; }
 .rich-text-editor-dark {
-  border-color: #303238;
-  background: #101114;
-  color: #edeae3;
-  box-shadow: 0 24px 70px rgb(0 0 0 / 22%);
+  border-color: var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 24px 70px rgb(0 0 0 / 18%);
 }
 .rich-text-editor-light {
-  border-color: #d8d4cb;
-  background: #fbfaf7;
-  color: #23241f;
+  border-color: var(--border-strong);
+  background: var(--surface);
+  color: var(--text);
 }
 .rich-text-toolbar {
   min-height: 3.25rem;
-  background: #111216;
-  border-color: #2a2c32;
+  background: var(--surface-2);
+  border-color: var(--border-strong);
   scrollbar-width: thin;
-  scrollbar-color: #3d4048 transparent;
+  scrollbar-color: color-mix(in srgb, var(--text) 24%, transparent) transparent;
 }
 .rich-text-editor-light .rich-text-toolbar {
-  background: #f0eee9;
-  border-color: #d8d4cb;
+  background: var(--surface-2);
+  border-color: var(--border-strong);
 }
 .rich-text-editor-light .tiptap {
-  color: #23241f;
-  caret-color: #9a6f32;
+  color: var(--text);
+  caret-color: var(--accent);
 }
 .rich-text-editor-light .tiptap h1,
 .rich-text-editor-light .tiptap h2,
-.rich-text-editor-light .tiptap h3 { color: #23241f; }
-.rich-text-editor-light .tiptap blockquote { color: #686b66; }
-.rich-text-editor-light .tiptap pre { background: #e9e6df; color: #27332d; }
-.rich-text-editor-light .tiptap code { background: #e8dfc9; color: #5c421e; }
-.rich-text-editor-light .tiptap a { color: #72501f; }
-.rich-text-editor-light .tiptap mark { background: #e9c979; color: #23241f; }
+.rich-text-editor-light .tiptap h3 { color: var(--text); }
+.rich-text-editor-light .tiptap blockquote { color: var(--text-muted); }
+.rich-text-editor-light .tiptap pre { background: var(--surface-2); color: var(--text); }
+.rich-text-editor-light .tiptap code { background: var(--accent-soft); color: var(--accent-strong); }
+.rich-text-editor-light .tiptap a { color: var(--accent-strong); }
+.rich-text-editor-light .tiptap mark { background: var(--accent-soft); color: var(--text); }
 .editor-select {
-  background: #1b1d22;
-  border-color: #3a3d45;
-  color: #edeae3;
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  color: var(--text);
 }
 .rich-text-editor-light .editor-select {
-  background: #fff;
-  border-color: #cfcac0;
-  color: #23241f;
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--text);
 }
 .rich-text-editor .rich-text-toolbar > button {
   flex: 0 0 auto;
@@ -315,12 +320,12 @@ button { font: inherit; }
   font-weight: 500;
 }
 .rich-text-editor-dark .rich-text-toolbar > button:hover {
-  background: #25272d;
-  border-color: #343740;
+  background: var(--surface-3);
+  border-color: var(--border-strong);
 }
 .rich-text-editor-light .rich-text-toolbar > button:hover {
-  background: #e3e0d8;
-  border-color: #c8c3b9;
+  background: var(--surface-3);
+  border-color: var(--border-strong);
 }
 .rich-text-editor .rich-text-toolbar > button:active,
 .rich-text-editor .rich-text-toolbar > button[aria-pressed="true"] {
@@ -351,8 +356,8 @@ button { font: inherit; }
   justify-content: center;
   overflow: hidden;
   background:
-    radial-gradient(ellipse at 30% 40%, color-mix(in srgb, var(--surface-3) 70%, transparent), transparent 45%),
-    linear-gradient(135deg, #0b0c0b, var(--base) 55%, #161a17);
+    radial-gradient(ellipse at 30% 40%, var(--sage-soft), transparent 55%),
+    linear-gradient(135deg, var(--surface) , var(--base) 55%, var(--surface-2));
 }
 .auth-visual::before,
 .auth-visual::after {
@@ -373,21 +378,21 @@ button { font: inherit; }
   mask-image: linear-gradient(90deg, black, transparent 85%);
 }
 .auth-visual-copy { position: relative; z-index: 1; text-align: center; }
-.auth-panel { background: #101110; }
+.auth-panel { background: var(--surface); }
 @media (max-width: 1023px) {
   .auth-shell { display: block; }
   .auth-panel { min-height: 100svh; }
 }
 
-/* ── Blog content — the reading experience ─────────────────────────────────── */
-/* Calm editorial serif at a comfortable measure (~68ch). */
+/* ── Blog content — the calm reading experience ───────────────────────────── */
 .blog-content {
   max-width: 68ch;
   font-family: var(--font-serif);
   font-size: 1.125rem;
-  line-height: 1.8;
+  line-height: 1.85;
+  letter-spacing: 0.002em;
 }
-.blog-content p { margin: 1.25rem 0; }
+.blog-content p { margin: 1.35rem 0; }
 .blog-content h1,
 .blog-content h2,
 .blog-content h3 {
@@ -456,18 +461,18 @@ button { font: inherit; }
   top: 0;
   z-index: 50;
   border-bottom: 1px solid transparent;
-  background: color-mix(in srgb, var(--base) 62%, transparent);
-  backdrop-filter: blur(16px) saturate(160%);
-  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  background: color-mix(in srgb, var(--base) 68%, transparent);
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
   transition:
     border-color var(--dur-base) var(--ease-out-soft),
     background var(--dur-base) var(--ease-out-soft),
     box-shadow var(--dur-slow) var(--ease-out-soft);
 }
 .glass-nav[data-scrolled='true'] {
-  border-bottom-color: color-mix(in srgb, var(--text) 10%, transparent);
-  background: color-mix(in srgb, var(--base) 80%, transparent);
-  box-shadow: 0 8px 32px -16px rgb(0 0 0 / 55%);
+  border-bottom-color: color-mix(in srgb, var(--text) 8%, transparent);
+  background: color-mix(in srgb, var(--base) 84%, transparent);
+  box-shadow: 0 8px 32px -16px rgb(0 0 0 / 40%);
 }
 
 /* Animated link underline — draws in on hover */

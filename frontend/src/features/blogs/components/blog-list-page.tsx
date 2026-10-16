@@ -117,7 +117,7 @@ export function BlogListPage() {
           {blogs.map((blog) => (
             <article
               key={blog.id}
-              className="group overflow-hidden rounded-2xl border border-inkwell-cream/10 bg-inkwell-900/45 transition hover:-translate-y-1 hover:border-inkwell-gold/50"
+              className="group overflow-hidden rounded-2xl border border-inkwell-cream/10 bg-inkwell-900/40 shadow-[0_2px_16px_-8px_rgb(0_0_0/0.35)] transition duration-300 hover:-translate-y-0.5 hover:border-inkwell-gold/40 hover:shadow-[0_12px_32px_-12px_rgb(0_0_0/0.45)]"
             >
               {blog.coverImage && (
                 <img
