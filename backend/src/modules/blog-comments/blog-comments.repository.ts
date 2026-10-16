@@ -19,7 +19,9 @@ export const createComment = async (
   return comment;
 };
 
-export const getComments = async (blogId: string) => {
+export const getComments = async (blogId: string, params?: { limit?: number; offset?: number }) => {
+  const limit = Math.min(Math.max(params?.limit ?? 100, 1), 200);
+  const offset = Math.max(params?.offset ?? 0, 0);
   const comments = await db
     .select({
       id: blogComments.id,
@@ -33,7 +35,10 @@ export const getComments = async (blogId: string) => {
     })
     .from(blogComments)
     .leftJoin(users, eq(blogComments.userId, users.id))
-    .where(eq(blogComments.blogId, blogId));
+    .where(eq(blogComments.blogId, blogId))
+    .orderBy(desc(blogComments.createdAt))
+    .limit(limit)
+    .offset(offset);
 
   return comments;
 };

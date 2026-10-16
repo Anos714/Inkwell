@@ -32,6 +32,10 @@ export const createBlogController = async (c: CreateBlogContext) => {
     trim: true,
   });
 
+  if (!formattedSlug) {
+    throw AppError.BadRequest("Slug must contain at least one letter or number");
+  }
+
   const blog = await createBlogService(payload.id, {
     ...data,
     slug: formattedSlug,
@@ -57,6 +61,9 @@ export const patchBlogController = async (c: PatchBlogContext) => {
   const formattedSlug = rawSlug
     ? slugify(rawSlug, { lower: true, strict: true, trim: true })
     : undefined;
+  if (rawSlug && !formattedSlug) {
+    throw AppError.BadRequest("Slug must contain at least one letter or number");
+  }
 
   const blog = await patchBlogService(payload.id, blogId, {
     ...data,

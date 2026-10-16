@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 import { env } from "./config/env";
-import { errorHandler } from "./middleware/error.middleware";
+import { errorHandler, notFoundHandler } from "./middleware/error.middleware";
 import { corsConfig } from "./config/cors";
 import { cors } from "hono/cors";
 import userRoutes from "./modules/users/users.route";
@@ -16,6 +16,7 @@ app.use("*", cors(corsConfig));
 
 // global error handler middleware
 app.onError(errorHandler);
+app.notFound(notFoundHandler);
 
 // routes
 app.get("/ping", (c) => {

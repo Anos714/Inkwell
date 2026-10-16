@@ -86,6 +86,8 @@ export const googleAuthController = async (c: GoogleAuthContext) => {
         id: user.id,
         email: user.email,
         username: user.username,
+        avatarUrl: user.avatarUrl,
+        role: user.role,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
       },
@@ -191,8 +193,26 @@ export const updateAvatarController = async (c: Context) => {
 };
 
 export const logoutUserController = async (c: Context) => {
-  const payload = c.get("user");
-  await redisClient.del(`refresh:${payload.id}`);
+  // Allow logout even with an expired access token: fall back to the
+  // refresh-token payload so a stale session can still clear its cookie.
+  let userId: string | undefined;
+  try {
+    userId = c.get("user")?.id;
+  } catch {
+    userId = undefined;
+  }
+  if (!userId) {
+    const refreshToken = getCookie(c, "refreshToken");
+    if (refreshToken) {
+      try {
+        const payload = await authUtils.verifyRefreshToken(refreshToken);
+        if (typeof payload.id === "string") userId = payload.id;
+      } catch {
+        // Invalid/expired refresh — still clear the cookie below.
+      }
+    }
+  }
+  if (userId) await redisClient.del(`refresh:${userId}`);
 
   deleteCookie(c, "refreshToken", {
     sameSite: env.BUN_ENV === "production" ? "none" : "lax",
@@ -234,6 +254,12 @@ export const deleteMeController = async (c: Context) => {
   }
 
   await userProfileDeleteService(payload.id);
+  await redisClient.del(`refresh:${payload.id}`);
+  deleteCookie(c, "refreshToken", {
+    sameSite: env.BUN_ENV === "production" ? "none" : "lax",
+    path: "/",
+    secure: env.BUN_ENV === "production",
+  });
 
   return c.json<AuthSuccessResponse>(
     {

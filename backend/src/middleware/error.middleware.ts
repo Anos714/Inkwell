@@ -40,7 +40,7 @@ export const errorHandler = (err: Error, c: Context) => {
     message = "Invalid JSON syntax in request body";
   }
 
-  const isProd = process.env.NODE_ENV === "production";
+  const isProd = process.env.BUN_ENV === "production" || process.env.NODE_ENV === "production";
 
   return c.json(
     {

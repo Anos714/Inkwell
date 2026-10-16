@@ -13,7 +13,9 @@ userRoutes.patch(
   requireAuth,
   UserController.updateAvatarController,
 );
-userRoutes.post("/logout", requireAuth, UserController.logoutUserController);
+// Logout clears the httpOnly refresh cookie — reachable without a valid
+// access token so expired sessions can still sign out cleanly.
+userRoutes.post("/logout", UserController.logoutUserController);
 userRoutes.patch(
   "/me/",
   zValidator("json", updateUserProfileSchema, (result, _) => {

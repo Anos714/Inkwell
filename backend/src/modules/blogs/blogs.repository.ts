@@ -53,7 +53,7 @@ export const patchBlog = async (blogId: string, data: PatchBlogInput) => {
     .where(eq(blogs.id, blogId))
     .returning();
   if (!blog) {
-    throw AppError.InternalServerError("Failed to patch or update blog");
+    throw AppError.NotFound("Blog not found");
   }
   return blog;
 };
@@ -61,7 +61,7 @@ export const patchBlog = async (blogId: string, data: PatchBlogInput) => {
 export const deleteBlog = async (blogId: string) => {
   const [blog] = await db.delete(blogs).where(eq(blogs.id, blogId)).returning();
   if (!blog) {
-    throw AppError.InternalServerError("Failed to delete blog");
+    throw AppError.NotFound("Blog not found");
   }
   return blog;
 };
@@ -157,11 +157,15 @@ export const findPublishedBlogs = async (params: {
   };
 };
 
-export const findAllBlogs = async () => {
+export const findAllBlogs = async (params?: { limit?: number; offset?: number }) => {
+  const limit = Math.min(Math.max(params?.limit ?? 100, 1), 200);
+  const offset = Math.max(params?.offset ?? 0, 0);
   return db
     .select()
     .from(blogs)
-    .orderBy(desc(blogs.updatedAt), desc(blogs.createdAt));
+    .orderBy(desc(blogs.updatedAt), desc(blogs.createdAt))
+    .limit(limit)
+    .offset(offset);
 };
 
 export const getDashboardSummary = async () => {

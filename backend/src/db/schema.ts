@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { relations } from "drizzle-orm/_relations";
 import {
   boolean,
+  index,
   jsonb,
   pgTable,
   text,
@@ -53,7 +54,11 @@ export const blogs = pgTable("blogs", {
     .defaultNow()
     .notNull()
     .$onUpdateFn(() => new Date()),
-});
+},
+(table) => [
+  index("blogs_published_idx").on(table.isPublished, table.publishedAt),
+  index("blogs_created_idx").on(table.createdAt),
+]);
 
 export const blogLikes = pgTable(
   "blog_likes",
@@ -112,7 +117,10 @@ export const blogComments = pgTable("blog_comments", {
     .defaultNow()
     .notNull()
     .$onUpdateFn(() => new Date()),
-});
+},
+(table) => [
+  index("blog_comments_blog_idx").on(table.blogId, table.createdAt),
+]);
 
 // relations
 export const usersRelations = relations(users, ({ many }) => ({
