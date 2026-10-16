@@ -126,7 +126,7 @@ export function NotFoundPage() {
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.22 }}
-          className="mt-2 font-display text-3xl leading-tight sm:text-4xl"
+          className="mt-2 font-display text-4xl font-medium leading-tight sm:text-4xl"
         >
           This page is blank.
         </motion.h2>
