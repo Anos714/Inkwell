@@ -16,6 +16,7 @@ import {
   type CommentSort,
   type NewCommentInput,
 } from '../api/blog-api'
+import { ElegantMenu } from '../../../components/elegant-menu'
 import { resolveGifUrl } from '../api/upload-api'
 import type { BlogComment } from '../types'
 
@@ -583,21 +584,18 @@ export function BlogComments({ blogId }: { blogId: string }) {
         <h2 id="comments-heading" className="font-display text-2xl">
           {totalCount.toLocaleString()} Comment{totalCount === 1 ? '' : 's'}
         </h2>
-        <label className="ml-auto inline-flex items-center gap-2 text-xs text-inkwell-muted">
+        <div className="ml-auto flex items-center gap-2 text-xs text-inkwell-muted">
           <span className="font-mono uppercase tracking-[0.14em]">Sort by</span>
-          <span className="sr-only">Sort comments</span>
-          <select
+          <ElegantMenu
+            label="Sort comments"
             value={sort}
-            onChange={(event) => setSort(event.target.value as CommentSort)}
-            className="rounded-lg border border-inkwell-cream/15 bg-inkwell-900/70 px-2.5 py-1.5 text-xs text-inkwell-cream outline-none focus:border-inkwell-gold"
-          >
-            {(Object.keys(SORT_LABELS) as CommentSort[]).map((value) => (
-              <option key={value} value={value}>
-                {SORT_LABELS[value]}
-              </option>
-            ))}
-          </select>
-        </label>
+            options={(Object.keys(SORT_LABELS) as CommentSort[]).map((value) => ({
+              value,
+              label: SORT_LABELS[value],
+            }))}
+            onChange={setSort}
+          />
+        </div>
       </div>
       {token ? (
         <div className="mt-4 flex gap-3">
