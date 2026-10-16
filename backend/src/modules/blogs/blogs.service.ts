@@ -7,6 +7,7 @@ import {
   findAllBlogs,
   findAnyBlogBySlug,
   findPublishedBlogs,
+  getBlogTags,
   getDashboardSummary,
   incrementBlogViews,
   IsAdmin,
@@ -57,8 +58,14 @@ export const getDashboardSummaryService = async (userId: string) => {
 };
 
 export const getPublishedBlogsService = async (query: GetBlogsQueryInput) => {
-  const { page = 1, limit = 10, search } = query;
-  const { blogs, total } = await findPublishedBlogs({ page, limit, search });
+  const { page = 1, limit = 10, search, tag, sort } = query;
+  const { blogs, total } = await findPublishedBlogs({
+    page,
+    limit,
+    search,
+    tag,
+    sort,
+  });
 
   const totalPages = Math.ceil(total / limit);
 
@@ -74,6 +81,8 @@ export const getPublishedBlogsService = async (query: GetBlogsQueryInput) => {
     },
   };
 };
+
+export const getBlogTagsService = async () => getBlogTags();
 
 export const createBlogService = async (
   userId: string,

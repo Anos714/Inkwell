@@ -6,6 +6,7 @@ import {
   getAdminBlogBySlugService,
   getAdminBlogsService,
   getBlogBySlugService,
+  getBlogTagsService,
   getDashboardSummaryService,
   getPublishedBlogsService,
   incrementBlogViewsService,
@@ -168,5 +169,14 @@ export const getBlogsController = async (c: GetBlogsContext) => {
     message: "Published blogs fetched successfully",
     data: blogs,
     pagination,
+  });
+};
+
+export const getBlogTagsController = async (c: Context) => {
+  const tags = await getBlogTagsService();
+  return c.json({
+    success: true,
+    message: "Blog tags fetched successfully",
+    data: tags,
   });
 };

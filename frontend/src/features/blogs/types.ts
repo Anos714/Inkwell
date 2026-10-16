@@ -48,12 +48,17 @@ export type LikeResponse = {
 export type BlogComment = {
   id: string
   content: string
+  gifUrl: string | null
+  parentId: string | null
   createdAt: string
+  likesCount: number
+  likedByMe: boolean
   user: {
     id: string
     username: string
     avatarUrl: string | null
   } | null
+  replies: Omit<BlogComment, 'replies'>[]
 }
 
 export type CommentsResponse = {
@@ -62,7 +67,7 @@ export type CommentsResponse = {
   data: BlogComment[]
 }
 
-export type RecentComment = BlogComment & {
+export type RecentComment = Omit<BlogComment, 'replies'> & {
   blog: {
     id: string
     title: string

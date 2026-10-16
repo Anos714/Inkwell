@@ -1,14 +1,16 @@
 import { AppError } from "../../utils/AppError";
+import { verifyAccessToken } from "../../utils/auth";
 import { BlogCommentContext } from "./blog-comments.type";
 import * as BlogCommentService from "./blog-comments.service";
 import { Context } from "hono";
+import { ContentfulStatusCode } from "hono/utils/http-status";
 
 export const createCommentController = async (c: BlogCommentContext) => {
   const payload = c.get("user");
 
   const blogId = c.req.param("blogId");
 
-  const { content } = c.req.valid("json");
+  const body = c.req.valid("json");
 
   if (!payload) {
     throw AppError.Unauthorized("Unauthorized");
@@ -21,7 +23,7 @@ export const createCommentController = async (c: BlogCommentContext) => {
   const comment = await BlogCommentService.createCommentService(
     payload.id,
     blogId,
-    content,
+    body,
   );
 
   return c.json({
@@ -31,6 +33,19 @@ export const createCommentController = async (c: BlogCommentContext) => {
   });
 };
 
+// The list is public, but when a valid Bearer token rides along each
+// comment also carries likedByMe — one optional-auth read, no extra calls.
+const getOptionalViewerId = async (c: Context) => {
+  const header = c.req.header("Authorization");
+  if (!header?.startsWith("Bearer ")) return undefined;
+  try {
+    const payload = await verifyAccessToken(header.slice("Bearer ".length));
+    return typeof payload.id === "string" ? payload.id : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
 export const getCommentsController = async (c: Context) => {
   const blogId = c.req.param("blogId");
 
@@ -38,13 +53,42 @@ export const getCommentsController = async (c: Context) => {
     throw AppError.BadRequest("Blog ID is required");
   }
 
-  const comments = await BlogCommentService.getCommentsService(blogId);
+  const viewerId = await getOptionalViewerId(c);
+  const comments = await BlogCommentService.getCommentsService(blogId, viewerId);
 
   return c.json({
     success: true,
     message: "Comment fetched successfully",
     data: comments,
   });
+};
+
+export const toggleCommentLikeController = async (c: Context) => {
+  const payload = c.get("user");
+  const commentId = c.req.param("commentId");
+
+  if (!payload) {
+    throw AppError.Unauthorized("Unauthorized");
+  }
+
+  if (!commentId) {
+    throw AppError.BadRequest("Comment ID is required");
+  }
+
+  const result = await BlogCommentService.toggleCommentLikeService(
+    payload.id,
+    commentId,
+  );
+
+  return c.json(
+    {
+      success: true,
+      liked: result.liked,
+      totalLikes: result.totalLikes,
+      message: result.liked ? "Comment liked" : "Comment unliked",
+    },
+    result.statusCode as ContentfulStatusCode,
+  );
 };
 
 export const getRecentCommentsController = async (c: Context) => {
