@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { getPublishedBlogs } from "../api/blog-api";
+import { getBlogTags, getPublishedBlogs, type BlogSort } from "../api/blog-api";
 import { BlogGridSkeleton } from "./blog-skeleton";
 import { ThemeToggle } from "../../../components/theme-toggle";
 import { BrandLogo } from "../../../components/brand-logo";
@@ -27,14 +27,22 @@ export function BlogListPage() {
 
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
+  const [tag, setTag] = useState("");
+  const [sort, setSort] = useState<BlogSort>("latest");
   const [page, setPage] = useState(1);
   const limit = 9;
   const blogsQuery = useQuery({
-    queryKey: ["blogs", "all", { search, page, limit }],
-    queryFn: () => getPublishedBlogs({ search, page, limit }),
+    queryKey: ["blogs", "all", { search, tag, sort, page, limit }],
+    queryFn: () => getPublishedBlogs({ search, tag, sort, page, limit }),
   });
   const blogs = blogsQuery.data?.data ?? [];
   const pagination = blogsQuery.data?.pagination;
+  const tagsQuery = useQuery({
+    queryKey: ["blogs", "tags"],
+    queryFn: getBlogTags,
+    staleTime: 5 * 60_000,
+  });
+  const tags = tagsQuery.data?.data ?? [];
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
@@ -43,6 +51,15 @@ export function BlogListPage() {
     }, 300);
     return () => window.clearTimeout(timeout);
   }, [searchInput]);
+
+  const hasFilters = Boolean(search || tag || sort !== "latest");
+  const clearAll = () => {
+    setSearchInput("");
+    setSearch("");
+    setTag("");
+    setSort("latest");
+    setPage(1);
+  };
 
   return (
     <main className="min-h-screen bg-inkwell-950 text-inkwell-cream">
@@ -76,16 +93,81 @@ export function BlogListPage() {
               Search through essays, experiments, and notes from the desk.
             </p>
           </div>
-          <label className="w-full md:max-w-sm">
-            <span className="sr-only">Search posts</span>
-            <input
-              value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
-              placeholder="Search title or description…"
-              className="w-full rounded-xl border border-inkwell-cream/15 bg-inkwell-900/70 px-4 py-3 text-sm text-inkwell-cream outline-none placeholder:text-inkwell-dim focus:border-inkwell-gold"
-            />
-          </label>
+          <div className="w-full md:max-w-sm">
+            <label className="block">
+              <span className="sr-only">Search posts</span>
+              <input
+                value={searchInput}
+                onChange={(event) => setSearchInput(event.target.value)}
+                placeholder="Search title or description…"
+                className="w-full rounded-xl border border-inkwell-cream/15 bg-inkwell-900/70 px-4 py-3 text-sm text-inkwell-cream outline-none placeholder:text-inkwell-dim focus:border-inkwell-gold"
+              />
+            </label>
+            <div className="mt-3 flex items-center gap-3">
+              <label className="flex flex-1 items-center gap-2 text-xs text-inkwell-muted">
+                <span className="sr-only">Sort posts</span>
+                <select
+                  value={sort}
+                  onChange={(event) => {
+                    setSort(event.target.value as BlogSort);
+                    setPage(1);
+                  }}
+                  className="w-full rounded-xl border border-inkwell-cream/15 bg-inkwell-900/70 px-3 py-2.5 text-xs text-inkwell-cream outline-none focus:border-inkwell-gold"
+                >
+                  <option value="latest">Latest first</option>
+                  <option value="oldest">Oldest first</option>
+                  <option value="most_viewed">Most viewed</option>
+                </select>
+              </label>
+              {hasFilters && (
+                <button
+                  type="button"
+                  onClick={clearAll}
+                  className="shrink-0 rounded-full border border-inkwell-cream/15 px-4 py-2 text-xs text-inkwell-muted transition hover:border-inkwell-gold/60 hover:text-inkwell-gold"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
         </div>
+        {tags.length > 0 && (
+          <div className="mt-8 flex flex-wrap gap-2" role="group" aria-label="Filter by tag">
+            <button
+              type="button"
+              onClick={() => {
+                setTag("");
+                setPage(1);
+              }}
+              aria-pressed={!tag}
+              className={`rounded-full border px-4 py-1.5 font-mono text-[11px] uppercase tracking-wider transition ${
+                !tag
+                  ? "border-inkwell-gold bg-inkwell-gold text-inkwell-950"
+                  : "border-inkwell-cream/15 text-inkwell-muted hover:border-inkwell-gold/60 hover:text-inkwell-gold"
+              }`}
+            >
+              All
+            </button>
+            {tags.map((item) => (
+              <button
+                key={item.tag}
+                type="button"
+                onClick={() => {
+                  setTag((current) => (current === item.tag ? "" : item.tag));
+                  setPage(1);
+                }}
+                aria-pressed={tag === item.tag}
+                className={`rounded-full border px-4 py-1.5 font-mono text-[11px] uppercase tracking-wider transition ${
+                  tag === item.tag
+                    ? "border-inkwell-gold bg-inkwell-gold text-inkwell-950"
+                    : "border-inkwell-cream/15 text-inkwell-muted hover:border-inkwell-gold/60 hover:text-inkwell-gold"
+                }`}
+              >
+                #{item.tag} · {item.count}
+              </button>
+            ))}
+          </div>
+        )}
         {blogsQuery.isLoading && (
           <div className="mt-12">
             <BlogGridSkeleton count={6} />
@@ -109,8 +191,17 @@ export function BlogListPage() {
           <div className="mt-12 rounded-2xl border border-dashed border-inkwell-cream/15 p-10 text-center">
             <p className="font-display text-2xl">No entries found.</p>
             <p className="mt-3 text-sm text-inkwell-muted">
-              Try a different search.
+              Try a different search or clear the filters.
             </p>
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={clearAll}
+                className="mt-6 inline-flex items-center gap-2 rounded-xl border border-inkwell-gold/60 px-5 py-2.5 text-sm font-semibold text-inkwell-gold transition hover:bg-inkwell-gold hover:text-inkwell-950"
+              >
+                Clear search & filters
+              </button>
+            )}
           </div>
         )}
         <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">

@@ -156,7 +156,14 @@ export const getRecentComments = async (limit = 12) => {
     .select({
       id: blogComments.id,
       content: blogComments.content,
+      gifUrl: blogComments.gifUrl,
+      parentId: blogComments.parentId,
       createdAt: blogComments.createdAt,
+      likesCount: sql<number>`(
+        select count(*)::int from ${commentLikes}
+        where ${commentLikes.commentId} = ${blogComments.id}
+      )`.as("likesCount"),
+      likedByMe: sql<boolean>`false`.as("likedByMe"),
       user: {
         id: users.id,
         username: users.username,

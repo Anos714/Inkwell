@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { apiRequest } from "../../../lib/api";
 import type { BlogsResponse } from "../types";
-import type { Blog, BlogInput, CommentsResponse, DashboardSummary, LikeResponse, RecentCommentsResponse } from "../types";
+import type { Blog, BlogComment, BlogInput, CommentsResponse, DashboardSummary, LikeResponse, RecentCommentsResponse } from "../types";
 
 const blogSchema = z.object({
   id: z.string(),
@@ -69,10 +69,18 @@ const dashboardResponseSchema = z.object({
   data: dashboardSummarySchema,
 });
 
-const commentSchema = z.object({
+export type BlogSort = 'latest' | 'oldest' | 'most_viewed'
+
+type FlatComment = Omit<BlogComment, 'replies'>
+
+const flatCommentSchema = z.object({
   id: z.string(),
   content: z.string(),
+  gifUrl: z.string().nullable(),
+  parentId: z.string().nullable(),
   createdAt: z.string(),
+  likesCount: z.number(),
+  likedByMe: z.boolean(),
   user: z
     .object({
       id: z.string(),
@@ -80,7 +88,11 @@ const commentSchema = z.object({
       avatarUrl: z.string().nullable(),
     })
     .nullable(),
-});
+}) satisfies z.ZodType<FlatComment>
+
+const commentSchema = flatCommentSchema.extend({
+  replies: z.array(flatCommentSchema),
+}) satisfies z.ZodType<BlogComment>
 
 const commentsResponseSchema = z.object({
   success: z.boolean(),
@@ -88,7 +100,7 @@ const commentsResponseSchema = z.object({
   data: z.array(commentSchema),
 });
 
-const recentCommentSchema = commentSchema.extend({
+const recentCommentSchema = flatCommentSchema.extend({
   blog: z
     .object({
       id: z.string(),
@@ -112,8 +124,16 @@ const commentMutationResponseSchema = z.object({
     userId: z.string(),
     blogId: z.string(),
     content: z.string(),
+    gifUrl: z.string().nullable().optional(),
+    parentId: z.string().nullable().optional(),
     createdAt: z.string(),
   }),
+});
+
+const blogTagsResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.array(z.object({ tag: z.string(), count: z.number() })),
 });
 
 function authHeaders(token: string) {
@@ -121,16 +141,25 @@ function authHeaders(token: string) {
 }
 
 export function getPublishedBlogs(
-  options: { search?: string; page?: number; limit?: number } = {},
+  options: { search?: string; page?: number; limit?: number; tag?: string; sort?: BlogSort } = {},
 ) {
   const params = new URLSearchParams();
   if (options.search) params.set("search", options.search);
   if (options.page) params.set("page", String(options.page));
   if (options.limit) params.set("limit", String(options.limit));
+  if (options.tag) params.set("tag", options.tag);
+  if (options.sort) params.set("sort", options.sort);
   const query = params.toString() ? `?${params.toString()}` : "";
   return apiRequest<BlogsResponse>(
     `/api/v1/blogs${query}`,
     blogsResponseSchema,
+  );
+}
+
+export function getBlogTags() {
+  return apiRequest<{ success: boolean; message: string; data: { tag: string; count: number }[] }>(
+    "/api/v1/blogs/tags",
+    blogTagsResponseSchema,
   );
 }
 
@@ -223,10 +252,11 @@ export function getBlogLikeStatus(token: string, blogId: string) {
   );
 }
 
-export function getBlogComments(blogId: string) {
+export function getBlogComments(blogId: string, token?: string) {
   return apiRequest<CommentsResponse>(
     `/api/v1/blog-comments/${blogId}/comments`,
     commentsResponseSchema,
+    token ? { headers: authHeaders(token) } : undefined,
   );
 }
 
@@ -237,11 +267,20 @@ export function getRecentComments(limit = 12) {
   );
 }
 
+export type NewCommentInput = {
+  content: string
+  parentId?: string
+  gifUrl?: string
+}
+
 export function createBlogComment(
   token: string,
   blogId: string,
-  content: string,
+  input: NewCommentInput,
 ) {
+  const body: Record<string, string> = { content: input.content }
+  if (input.parentId) body.parentId = input.parentId
+  if (input.gifUrl) body.gifUrl = input.gifUrl
   return apiRequest<{
     success: boolean;
     message: string;
@@ -258,8 +297,16 @@ export function createBlogComment(
     {
       method: "POST",
       headers: authHeaders(token),
-      body: JSON.stringify({ content }),
+      body: JSON.stringify(body),
     },
+  );
+}
+
+export function toggleCommentLike(token: string, commentId: string) {
+  return apiRequest<LikeResponse>(
+    `/api/v1/blog-comments/comments/${commentId}/like`,
+    likeResponseSchema,
+    { method: "POST", headers: authHeaders(token) },
   );
 }
 
