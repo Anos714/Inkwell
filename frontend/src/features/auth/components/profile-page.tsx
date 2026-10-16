@@ -151,12 +151,12 @@ export function ProfilePage() {
           </form>
 
           {message && <p className="text-sm text-inkwell-gold">{message}</p>}
-          {error && <p className="text-sm text-red-300">{error}</p>}
+          {error && <p className="text-sm danger-error">{error}</p>}
 
-          <div className="rounded-2xl border border-red-400/20 bg-red-950/20 p-6">
-            <h2 className="text-xl font-semibold text-red-200">Delete account</h2>
-            <p className="mt-1 text-sm text-red-200/70">This permanently deletes your account and cannot be undone.</p>
-            <button type="button" onClick={() => setIsDeleteModalOpen(true)} disabled={isDeleting} className="mt-5 rounded-xl border border-red-300/40 px-5 py-3 text-sm font-semibold text-red-200 hover:bg-red-400/10 disabled:opacity-60">Delete my account</button>
+          <div className="danger-card rounded-2xl p-6">
+            <h2 className="danger-title text-xl font-semibold">Delete account</h2>
+            <p className="danger-body mt-1 text-sm">This permanently deletes your account and cannot be undone.</p>
+            <button type="button" onClick={() => setIsDeleteModalOpen(true)} disabled={isDeleting} className="danger-outline mt-5 rounded-xl px-5 py-3 text-sm font-semibold disabled:opacity-60">Delete my account</button>
           </div>
         </div>
       </section>
@@ -173,12 +173,12 @@ export function ProfilePage() {
             aria-describedby="delete-account-description"
             className="w-full max-w-md rounded-3xl border border-red-300/25 bg-inkwell-900 p-7 shadow-2xl shadow-black/60"
           >
-            <div className="grid size-14 place-items-center rounded-2xl border border-red-300/25 bg-red-400/10 text-2xl text-red-200" aria-hidden="true">
+            <div className="danger-icon grid size-14 place-items-center rounded-2xl text-2xl" aria-hidden="true">
               !
             </div>
-            <p className="mt-6 font-mono text-[10px] uppercase tracking-[.18em] text-red-200/70">Permanent action</p>
-            <h2 id="delete-account-title" className="mt-3 font-display text-3xl text-red-100">Delete your account?</h2>
-            <p id="delete-account-description" className="mt-3 text-sm leading-6 text-red-100/65">
+            <p className="danger-eyebrow mt-6 font-mono text-[10px] uppercase tracking-[.18em]">Permanent action</p>
+            <h2 id="delete-account-title" className="danger-title mt-3 font-display text-3xl">Delete your account?</h2>
+            <p id="delete-account-description" className="danger-body mt-3 text-sm leading-6">
               Your profile and account access will be permanently removed. This action cannot be undone.
             </p>
             <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -194,7 +194,7 @@ export function ProfilePage() {
                 type="button"
                 onClick={handleDeleteAccount}
                 disabled={isDeleting}
-                className="rounded-xl bg-red-300 px-5 py-3 text-sm font-bold text-red-950 hover:bg-red-200 disabled:opacity-60"
+                className="danger-solid rounded-xl px-5 py-3 text-sm font-bold disabled:opacity-60"
               >
                 {isDeleting ? 'Deleting…' : 'Yes, delete account'}
               </button>

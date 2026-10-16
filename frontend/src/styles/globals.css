@@ -457,6 +457,32 @@ button { font: inherit; }
   .blog-content h3 { font-size: 1.25rem; }
 }
 
+/* ── Danger zone — readable in both themes ──────────────────────────────────
+   Raw red-200/300 text washes out on the light paper theme, so destructive
+   surfaces go through these tokens instead of raw Tailwind reds. */
+
+.danger-card { border: 1px solid rgb(248 113 113 / 22%); background: rgb(127 29 29 / 18%); }
+.danger-title { color: #fecaca; }
+.danger-body { color: rgb(254 202 202 / 72%); }
+.danger-outline { border: 1px solid rgb(252 165 165 / 40%); color: #fecaca; transition: background-color var(--dur-base) var(--ease-out-soft); }
+.danger-outline:hover { background: rgb(248 113 113 / 12%); }
+.danger-solid { background: #fca5a5; color: #450a0a; transition: background-color var(--dur-base) var(--ease-out-soft); }
+.danger-solid:hover { background: #fecaca; }
+.danger-icon { border: 1px solid rgb(252 165 165 / 25%); background: rgb(248 113 113 / 10%); color: #fecaca; }
+.danger-eyebrow { color: rgb(254 202 202 / 70%); }
+.danger-error { color: #fca5a5; }
+
+[data-theme='light'] .danger-card { border-color: rgb(179 38 30 / 32%); background: rgb(179 38 30 / 7%); }
+[data-theme='light'] .danger-title { color: #8f1d17; }
+[data-theme='light'] .danger-body { color: rgb(143 29 23 / 82%); }
+[data-theme='light'] .danger-outline { border-color: rgb(179 38 30 / 45%); color: #8f1d17; }
+[data-theme='light'] .danger-outline:hover { background: rgb(179 38 30 / 8%); }
+[data-theme='light'] .danger-solid { background: #b3261e; color: #fff; }
+[data-theme='light'] .danger-solid:hover { background: #8f1d17; }
+[data-theme='light'] .danger-icon { border-color: rgb(179 38 30 / 30%); background: rgb(179 38 30 / 8%); color: #8f1d17; }
+[data-theme='light'] .danger-eyebrow { color: rgb(143 29 23 / 70%); }
+[data-theme='light'] .danger-error { color: #b3261e; }
+
 /* ── Landing: sticky glassmorphism navbar ─────────────────────────────────── */
 
 .glass-nav {

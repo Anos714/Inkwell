@@ -191,7 +191,7 @@ export function AdminDashboard() {
       </p>
 
       {summaryQuery.isError && (
-        <p className="mb-8 rounded-2xl border border-red-300/20 bg-red-400/10 p-4 text-sm text-red-200">
+        <p className="danger-card danger-title mb-8 rounded-2xl p-4 text-sm">
           The dashboard data could not be loaded. Please try again.
         </p>
       )}

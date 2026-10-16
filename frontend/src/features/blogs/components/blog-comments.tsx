@@ -255,7 +255,7 @@ function CommentComposer({
             <GifMedia url={gifUrl} alt="GIF preview" />
           )}
           {gifUrl && !isValidGifUrl(gifUrl) && (
-            <p className="mt-1 text-xs text-red-300" role="alert">
+            <p className="danger-error mt-1 text-xs" role="alert">
               That GIF link needs to start with https://
             </p>
           )}
@@ -263,11 +263,11 @@ function CommentComposer({
       )}
       {expanded && (
         <div className="mt-2 flex items-center gap-2">
-          {createMutation.isError && (
-            <p className="text-xs text-red-300" role="alert">
-              Could not post. Try again.
-            </p>
-          )}
+        {createMutation.isError && (
+          <p className="danger-error text-xs" role="alert">
+            Could not post. Try again.
+          </p>
+        )}
           <span className="text-xs text-inkwell-dim">{content.length}/2000</span>
           <button
             type="button"
@@ -627,7 +627,7 @@ export function BlogComments({ blogId }: { blogId: string }) {
       )}
       {commentsQuery.isError && (
         <div className="mt-8" role="alert">
-          <p className="text-sm text-red-300">Comments could not be loaded.</p>
+          <p className="danger-error text-sm">Comments could not be loaded.</p>
           <button
             type="button"
             onClick={() => commentsQuery.refetch()}

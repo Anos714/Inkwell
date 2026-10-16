@@ -36,7 +36,7 @@ export function AuthPage() {
             <FcGoogle aria-hidden="true" size={20} />
             {isLoading ? 'Connecting…' : 'Sign in with Google'}
           </button>
-          {notice && <p className="mt-4 text-xs text-red-300" role="alert">{notice}</p>}
+          {notice && <p className="danger-error mt-4 text-xs" role="alert">{notice}</p>}
           <p className="mt-5 text-[10px] text-inkwell-dim">◈ Secure passwordless authentication.</p>
         </div>
         <p className="text-center font-mono text-[10px] text-inkwell-dim">Private by design · Made for the long draft</p>
