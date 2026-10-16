@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { getBlogTags, getPublishedBlogs, type BlogSort } from "../api/blog-api";
+import { ElegantMenu } from "../../../components/elegant-menu";
 import { BlogGridSkeleton } from "./blog-skeleton";
 import { ThemeToggle } from "../../../components/theme-toggle";
 import { BrandLogo } from "../../../components/brand-logo";
@@ -104,21 +105,21 @@ export function BlogListPage() {
               />
             </label>
             <div className="mt-3 flex items-center gap-3">
-              <label className="flex flex-1 items-center gap-2 text-xs text-inkwell-muted">
-                <span className="sr-only">Sort posts</span>
-                <select
-                  value={sort}
-                  onChange={(event) => {
-                    setSort(event.target.value as BlogSort);
-                    setPage(1);
-                  }}
-                  className="w-full rounded-xl border border-inkwell-cream/15 bg-inkwell-900/70 px-3 py-2.5 text-xs text-inkwell-cream outline-none focus:border-inkwell-gold"
-                >
-                  <option value="latest">Latest first</option>
-                  <option value="oldest">Oldest first</option>
-                  <option value="most_viewed">Most viewed</option>
-                </select>
-              </label>
+              <ElegantMenu
+                label="Sort posts"
+                variant="field"
+                value={sort}
+                options={[
+                  { value: 'latest', label: 'Latest first' },
+                  { value: 'oldest', label: 'Oldest first' },
+                  { value: 'most_viewed', label: 'Most viewed' },
+                ]}
+                onChange={(next) => {
+                  setSort(next);
+                  setPage(1);
+                }}
+                className="flex-1"
+              />
               {hasFilters && (
                 <button
                   type="button"
