@@ -35,6 +35,8 @@ export function Hero() {
 
   return (
     <section className="relative isolate overflow-hidden">
+      {/* The field itself, washed to paper so the masthead stays legible. */}
+      <div aria-hidden="true" className="hero-field" />
       {/* A quiet wash of field colour, no glow. */}
       <div
         aria-hidden="true"

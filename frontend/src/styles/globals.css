@@ -809,6 +809,29 @@ section[id] { scroll-margin-top: 6rem; }
     radial-gradient(50% 70% at 92% 100%, color-mix(in srgb, var(--inverse-accent) 8%, transparent), transparent 65%);
 }
 
+/* ── The field behind the opening ─────────────────────────────────────────── */
+/* The landscape sits behind the hero at a paper-washed strength: present enough
+   to set the scene, quiet enough for the headline to stay ink-black. */
+
+.hero-field {
+  position: absolute;
+  inset: 0;
+  z-index: -10;
+  background: url('/images/field-note.webp') center 64% / cover no-repeat;
+}
+.hero-field::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--base) 70%, transparent) 0%,
+    color-mix(in srgb, var(--base) 84%, transparent) 52%,
+    color-mix(in srgb, var(--base) 96%, transparent) 88%,
+    var(--base) 100%
+  );
+}
+
 /* ── Reduced motion guard for the landing art ─────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
