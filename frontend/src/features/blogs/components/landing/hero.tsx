@@ -69,7 +69,7 @@ export function Hero() {
           <span className="folio col-start-2 justify-self-end sm:col-start-3">Est. MMXXV</span>
         </motion.div>
 
-        <div className="grid gap-12 pt-10 sm:pt-14 xl:grid-cols-[1.6fr_.8fr] xl:items-end xl:gap-12 xl:pt-16">
+        <div className="grid gap-12 pt-10 sm:pt-14 xl:grid-cols-[1.6fr_.8fr] xl:items-center xl:gap-12 xl:pt-16">
           <div>
             <motion.p
               initial={{ opacity: 0, y: 10 }}
