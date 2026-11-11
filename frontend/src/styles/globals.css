@@ -809,6 +809,33 @@ section[id] { scroll-margin-top: 6rem; }
 }
 .index-row:hover .index-row__num { color: var(--gold); }
 
+/* ── Dashboard charts ─────────────────────────────────────────────────────── */
+
+/* Axis ticks and value labels are set in the journal's mono, quiet against
+   the rule work around them. */
+.dashboard-chart .recharts-cartesian-axis-tick text,
+.dashboard-chart .recharts-cartesian-axis-tick-value {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  fill: var(--text-dim);
+}
+.dashboard-chart .recharts-cartesian-axis-tick-value tspan { fill: var(--text-dim); }
+.dashboard-chart .chart-axis-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.03em;
+  fill: var(--text-muted);
+}
+.dashboard-chart .chart-value-label,
+.dashboard-chart .chart-value-label tspan {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  fill: var(--text-muted);
+}
+.dashboard-chart .recharts-surface { overflow: visible; }
+
 /* ── Reading room dark band ───────────────────────────────────────────────── */
 
 .ink-band {

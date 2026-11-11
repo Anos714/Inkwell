@@ -100,7 +100,8 @@ product, so they inherit the shell rather than a dashboard kit.
 | Piece | File | Notes |
 | --- | --- | --- |
 | Frame | `features/blogs/components/admin-pages.tsx` | Ruled masthead, running nav (`masthead-link[data-active]`), display heading on the broadsheet shell |
-| Overview | `admin-dashboard.tsx` | Six-cell ledger in hairline rules; no cards or glows |
+| Overview | `admin-dashboard.tsx` | Four-cell ledger in hairline rules; no cards or glows |
+| Charts | `dashboard-charts.tsx` | EvilCharts-inspired reads bars and edition donut, in brass and paper |
 | Entries | `admin-blog-manager.tsx` | Printed index rows — number, title, slug, draft stamp, reads, two quiet actions |
 | Editor | `admin-blog-form.tsx` | Underlined fields, square cover well, status switch, pill primary action |
 | Delete | `admin-blog-manager.tsx` | Square dialog, red top rule, Escape to close, autofocus on the safe action |
@@ -109,6 +110,12 @@ product, so they inherit the shell rather than a dashboard kit.
   brass on hover). Everything else is a letterpress link with a drawn rule.
 - Fields use `.field-line` / `.field-frame`: focus is a brass rule under the
   line, never the global boxed ring.
+- The overview keeps the landing page's editorial rhythm: a four-cell ledger
+  of reads, likes, comments and engagement, then two ruled figures — reads per
+  entry (rounded brass bars, hatched hover/selection from EvilCharts) and the
+  edition split (a solid brass donut against a hatched drawer slice).
+- Chart axes and value labels use the mono face at 10px; no grids, no boxes.
+  Recharts animations are disabled under `prefers-reduced-motion`.
 - The workspace boots from the httpOnly refresh cookie via
   `features/auth/store/session-bootstrap.ts`, so bookmarked admin URLs survive
   a hard reload; signed-out visitors go to `/login`.
