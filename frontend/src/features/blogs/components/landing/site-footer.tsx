@@ -6,8 +6,9 @@ const FOOTER_LINKS = [
     heading: 'Read',
     links: [
       { label: 'Journal', href: '/blogs' },
-      { label: 'Recent posts', href: '#journal' },
-      { label: 'Features', href: '#features' },
+      { label: 'Recent entries', href: '#journal' },
+      { label: 'Topics', href: '#topics' },
+      { label: 'Inside', href: '#reading-room' },
     ],
   },
   {
@@ -37,7 +38,7 @@ const SOCIALS = [
 function SocialIcon({ kind }: { kind: 'x' | 'linkedin' | 'github' | 'portfolio' | 'email' }) {
   const common = {
     'aria-hidden': true,
-    className: 'size-4',
+    className: 'size-3.5',
     viewBox: '0 0 24 24',
   } as const
 
@@ -90,19 +91,20 @@ function SocialIcon({ kind }: { kind: 'x' | 'linkedin' | 'github' | 'portfolio' 
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-inkwell-cream/10">
-      <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_.75fr_.75fr_.75fr_.75fr]">
-          {/* Brand */}
+    <footer className="border-t border-inkwell-rule">
+      <div className="mx-auto max-w-[86rem] px-5 pt-16 sm:px-8 sm:pt-20">
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.5fr_.6fr_.6fr_.6fr_.8fr]">
+          {/* Masthead */}
           <div>
             <Link to="/" className="flex items-center gap-2.5">
               <BrandLogo size="sm" />
-              <span className="font-display text-lg tracking-tight text-inkwell-cream">Inkwell</span>
+              <span className="font-display text-xl tracking-tight text-inkwell-cream">Inkwell</span>
             </Link>
-            <p className="mt-4 max-w-xs font-serif text-base leading-8 text-inkwell-muted">
-              Rooted in the slow web. Essays, notes, and field guides — written to last.
+            <p className="mt-5 max-w-xs font-serif text-base leading-8 text-inkwell-muted">
+              Rooted in the slow web. Essays, field notes, and marginalia —
+              written to be read slowly and kept.
             </p>
-            <div className="mt-6 flex flex-wrap items-center gap-2.5">
+            <div className="mt-6 flex flex-wrap items-center gap-2">
               {SOCIALS.map((social) => (
                 <a
                   key={social.kind}
@@ -111,7 +113,7 @@ export function SiteFooter() {
                   rel="noreferrer"
                   aria-label={social.label}
                   title={social.label}
-                  className="grid size-9 place-items-center rounded-full border border-inkwell-cream/15 text-inkwell-muted transition duration-300 hover:-translate-y-0.5 hover:border-inkwell-gold/60 hover:text-inkwell-gold"
+                  className="grid size-8 place-items-center rounded-full border border-inkwell-rule text-inkwell-muted transition duration-300 hover:-translate-y-0.5 hover:border-inkwell-brass/60 hover:text-inkwell-brass"
                 >
                   <SocialIcon kind={social.kind} />
                 </a>
@@ -119,27 +121,18 @@ export function SiteFooter() {
             </div>
           </div>
 
-          {/* Link columns */}
           {FOOTER_LINKS.map((column) => (
             <div key={column.heading}>
-              <h3 className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">
-                {column.heading}
-              </h3>
+              <h3 className="eyebrow">{column.heading}</h3>
               <ul className="mt-5 space-y-3">
                 {column.links.map((link) => (
                   <li key={link.label}>
                     {link.href.startsWith('#') ? (
-                      <a
-                        href={link.href}
-                        className="nav-link text-sm text-inkwell-muted transition hover:text-inkwell-cream"
-                      >
+                      <a href={link.href} className="text-sm text-inkwell-muted transition hover:text-inkwell-cream">
                         {link.label}
                       </a>
                     ) : (
-                      <Link
-                        to={link.href}
-                        className="nav-link text-sm text-inkwell-muted transition hover:text-inkwell-cream"
-                      >
+                      <Link to={link.href} className="text-sm text-inkwell-muted transition hover:text-inkwell-cream">
                         {link.label}
                       </Link>
                     )}
@@ -149,27 +142,27 @@ export function SiteFooter() {
             </div>
           ))}
 
-          {/* Signature column */}
           <div>
-            <h3 className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">
-              Ethos
-            </h3>
-            <ul className="mt-5 space-y-3 text-sm text-inkwell-muted">
-              <li>Slow web</li>
-              <li>No trackers</li>
-              <li>Open to everyone</li>
+            <h3 className="eyebrow">Colophon</h3>
+            <ul className="mt-5 space-y-3 font-serif text-sm leading-6 text-inkwell-muted">
+              <li>Set in Cormorant Garamond, Newsreader &amp; DM Mono.</li>
+              <li>Printed on warm paper, day and night.</li>
+              <li>No trackers. No noise.</li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-inkwell-cream/10 pt-8 sm:flex-row">
-          <p className="font-mono text-[10px] uppercase tracking-wider text-inkwell-dim">
-            © {new Date().getFullYear()} Inkwell · Private by design
-          </p>
-          <p className="font-mono text-[10px] uppercase tracking-wider text-inkwell-dim">
-            Made for the long draft
-          </p>
+        <div className="mt-16 flex flex-col items-start justify-between gap-3 border-t border-inkwell-rule py-7 sm:flex-row sm:items-center">
+          <p className="folio">© {new Date().getFullYear()} Inkwell · Private by design</p>
+          <p className="folio">Made for the long draft</p>
         </div>
+      </div>
+
+      {/* Signature — the wordmark, pressed into the bottom of the page. */}
+      <div aria-hidden="true" className="overflow-hidden">
+        <p className="display -mb-[0.18em] translate-y-[0.08em] whitespace-nowrap text-center text-[clamp(4.5rem,19vw,17rem)] leading-[0.8] text-inkwell-cream/[0.07]">
+          Inkwell
+        </p>
       </div>
     </footer>
   )

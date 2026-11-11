@@ -10,15 +10,15 @@
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Outfit:wght@300;400;500;600;700&display=swap" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Outfit:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
-    <meta name="theme-color" content="#0b100e" />
-    <meta name="description" content="Inkwell — a personal blog by Rahul. Stories, ideas, and honest notes on building, writing, and the web." />
+    <meta name="theme-color" content="#f2ecdd" />
+    <meta name="description" content="Inkwell — a quiet reading room of essays, field notes, and small observations on code, craft, and the creative life." />
     <meta name="author" content="Rahul" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://inkwell-blogs.pages.dev/" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Inkwell" />
     <meta property="og:title" content="Inkwell — Make space for good ideas" />
-    <meta property="og:description" content="Stories, ideas, and honest notes from Rahul's personal blog." />
+    <meta property="og:description" content="Essays, field notes, and small observations on code, craft, and the creative life." />
     <meta property="og:url" content="https://inkwell-blogs.pages.dev/" />
     <meta property="og:image" content="https://inkwell-blogs.pages.dev/og-image.png" />
     <meta property="og:image:width" content="1200" />
@@ -27,7 +27,7 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@rahul" />
     <meta name="twitter:title" content="Inkwell — Make space for good ideas" />
-    <meta name="twitter:description" content="Stories, ideas, and honest notes from Rahul's personal blog." />
+    <meta name="twitter:description" content="Essays, field notes, and small observations on code, craft, and the creative life." />
     <meta name="twitter:image" content="https://inkwell-blogs.pages.dev/og-image.png" />
     <meta name="twitter:image:alt" content="Inkwell — Make space for good ideas" />
     <title>Inkwell — Make space for good ideas</title>
@@ -36,6 +36,21 @@
     </script>
     <script type="application/ld+json" data-seo-jsonld>
       {"@context":"https://schema.org","@type":"WebSite","name":"Inkwell","alternateName":"Make space for good ideas","url":"https://inkwell-blogs.pages.dev","description":"Inkwell is a personal blog by Rahul — stories, ideas, and honest notes on building, writing, and the web.","publisher":{"@type":"Organization","name":"Inkwell"},"potentialAction":{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://inkwell-blogs.pages.dev/blogs?search={search_term_string}"},"query-input":"required name=search_term_string"}}
+    </script>
+    <script>
+      // Paint the stored theme before the first frame, so there is no flash.
+      (function () {
+        try {
+          var theme = localStorage.getItem('inkwell-theme') === 'dark' ? 'dark' : 'light'
+          var root = document.documentElement
+          root.dataset.theme = theme
+          root.style.colorScheme = theme
+          var meta = document.querySelector('meta[name="theme-color"]')
+          if (meta) meta.setAttribute('content', theme === 'dark' ? '#0d110d' : '#f2ecdd')
+        } catch (error) {
+          /* Private browsing can block storage; parchment is the fallback. */
+        }
+      })()
     </script>
   </head>
   <body>

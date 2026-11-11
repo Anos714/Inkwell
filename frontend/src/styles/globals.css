@@ -1,36 +1,52 @@
 /* ──────────────────────────────────────────────────────────────────────────
-    Inkwell — "Fern & Paper" design system
-    Deep forest ink, warm paper text, one fern accent. Tokens stay semantic
-    and swap per-theme at the CSS-variable level, so the `inkwell-*`
-    utilities stay theme-aware without any !important overrides.
-    Type: Cormorant Garamond (display) · Outfit (sans) ·
-          Newsreader (reading) · DM Mono (labels)
+    Inkwell — "The Reading Room" design system
+    Warm parchment, ink black, fern green and a single brass rule. The
+    landing page is composed like a printed field journal: broadsheet display
+    type, hairline rules, numbered indices and one full-bleed plate.
+    Type: Cormorant Garamond (display) · Newsreader (reading) ·
+          Outfit (UI sans) · DM Mono (labels & folios)
     ────────────────────────────────────────────────────────────────────────── */
 
 @import "tailwindcss";
 
-/* Semantic tokens — dark is the default. Light overrides the same variables,
-   so every utility resolves through one cascading source of truth. */
+/* Semantic tokens. Light (parchment) is the intended default; dark is the
+   same room after sunset. Every `inkwell-*` utility resolves through these. */
 :root {
-  /* Forest ink surfaces — deep green-charcoals */
-  --base: #0b100e;
-  --surface: #111713;
-  --surface-2: #182019;
-  --surface-3: #212a21;
-  --border: color-mix(in srgb, #ede9dc 7%, transparent);
-  --border-strong: color-mix(in srgb, #ede9dc 13%, transparent);
+  /* Night reading room — deep green-black surfaces */
+  --base: #0d110d;
+  --surface: #131913;
+  --surface-2: #1a2118;
+  --surface-3: #242b20;
+  --border: rgba(240, 232, 214, 0.1);
+  --border-strong: rgba(240, 232, 214, 0.18);
 
   /* Paper ink */
-  --text: #ede9dc;
-  --text-muted: #aaa89a;
-  --text-dim: #7f7e72;
+  --text: #f0e8d6;
+  --text-muted: #b3b2a1;
+  --text-dim: #85867a;
 
-  /* Accent — soft fern, used sparingly */
+  /* Fern accent, used sparingly */
   --accent: #a9c7a1;
-  --accent-strong: #d3e4cb;
-  --accent-soft: color-mix(in srgb, #a9c7a1 12%, transparent);
+  --accent-strong: #d6e5cd;
+  --accent-soft: rgba(169, 199, 161, 0.12);
   --sage: #7fa07b;
-  --sage-soft: color-mix(in srgb, #7fa07b 14%, transparent);
+  --sage-soft: rgba(127, 160, 123, 0.14);
+
+  /* Field accents lifted from the plate: brass grass, washed sky */
+  --gold: #c9a86c;
+  --gold-soft: rgba(201, 168, 108, 0.14);
+  --sky: #9dbccb;
+
+  /* Inverted bands (the page flips) */
+  --inverse-bg: #e9e1cf;
+  --inverse-text: #1b201a;
+  --inverse-muted: rgba(27, 32, 26, 0.68);
+  --inverse-rule: rgba(27, 32, 26, 0.2);
+  --inverse-accent: #6a4c22;
+
+  --rule: rgba(240, 232, 214, 0.14);
+  --rule-strong: rgba(240, 232, 214, 0.28);
+  --grain-opacity: 0.05;
 
   /* Motion — soft, spring-like easings for tactile calm */
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
@@ -44,22 +60,37 @@
 }
 
 [data-theme='light'] {
-  --base: #f5f2e8;
-  --surface: #fcfaf3;
-  --surface-2: #ede9db;
-  --surface-3: #e0dac7;
-  --border: #e2ddcc;
-  --border-strong: #cfc8b2;
+  /* Parchment page */
+  --base: #f2ecdd;
+  --surface: #faf5e9;
+  --surface-2: #eae2d1;
+  --surface-3: #ddd2bc;
+  --border: rgba(33, 38, 30, 0.12);
+  --border-strong: rgba(33, 38, 30, 0.22);
 
-  --text: #1d2521;
-  --text-muted: #5f655b;
-  --text-dim: #8f8e81;
+  --text: #21261e;
+  --text-muted: #5b6152;
+  --text-dim: #8a8b77;
 
-  --accent: #436b4b;
-  --accent-strong: #33543b;
-  --accent-soft: color-mix(in srgb, #436b4b 10%, transparent);
-  --sage: #55795c;
-  --sage-soft: color-mix(in srgb, #55795c 12%, transparent);
+  --accent: #4c6b4a;
+  --accent-strong: #34523a;
+  --accent-soft: rgba(76, 107, 74, 0.1);
+  --sage: #5f7d5c;
+  --sage-soft: rgba(95, 125, 92, 0.12);
+
+  --gold: #9a7234;
+  --gold-soft: rgba(154, 114, 52, 0.12);
+  --sky: #7fa4b8;
+
+  --inverse-bg: #1e241d;
+  --inverse-text: #f0e8d6;
+  --inverse-muted: rgba(240, 232, 214, 0.66);
+  --inverse-rule: rgba(240, 232, 214, 0.2);
+  --inverse-accent: #c9a86c;
+
+  --rule: rgba(33, 38, 30, 0.14);
+  --rule-strong: rgba(33, 38, 30, 0.28);
+  --grain-opacity: 0.05;
 }
 
 /* Register aliases as Tailwind utilities. `inkwell-*` names are retained so the
@@ -80,6 +111,9 @@
   --color-inkwell-gold: var(--accent);
   --color-inkwell-light: var(--accent-strong);
   --color-inkwell-sage: var(--sage);
+  --color-inkwell-brass: var(--gold);
+  --color-inkwell-inverse: var(--inverse-bg);
+  --color-inkwell-rule: var(--rule);
 }
 
 /* ── Base ─────────────────────────────────────────────────────────────────── */
@@ -121,6 +155,116 @@ button { font: inherit; }
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+/* ── Paper grain ────────────────────────────────────────────────────────────
+   One fixed, non-interactive layer of fractal noise gives every surface the
+   tooth of printed stock without tinting the palette. */
+.paper-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+/* ── Editorial primitives ──────────────────────────────────────────────────── */
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.folio {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.rule {
+  height: 1px;
+  width: 100%;
+  background: var(--rule);
+}
+
+.rule-strong {
+  height: 1px;
+  width: 100%;
+  background: var(--rule-strong);
+}
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 0.94;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+
+.display em {
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* A link that draws its own underline, like a pencil rule. */
+.link-rule {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.link-rule::after {
+  position: absolute;
+  left: 0;
+  bottom: -0.28em;
+  height: 1px;
+  width: 100%;
+  content: '';
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-slow) var(--ease-out-soft);
+}
+.link-rule:hover::after,
+.link-rule:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Inverted band — the page flips to ink (or paper, in dark mode). */
+.inverse-band {
+  background: var(--inverse-bg);
+  color: var(--inverse-text);
+}
+.inverse-band .eyebrow { color: var(--inverse-accent); }
+.inverse-band .folio { color: var(--inverse-muted); }
+.inverse-band .rule { background: var(--inverse-rule); }
+.inverse-band .rule-strong { background: var(--inverse-rule); }
+
+/* Plate: the single piece of art on the page, framed like a print. */
+.plate {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--rule-strong);
+  background: var(--surface-2);
+}
+.plate::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--base) 22%, transparent);
+}
+
+/* Anchor targets clear the sticky masthead. */
+section[id] { scroll-margin-top: 6rem; }
 
 /* Calm custom scrollbar */
 * {
@@ -483,28 +627,55 @@ button { font: inherit; }
 [data-theme='light'] .danger-eyebrow { color: rgb(143 29 23 / 70%); }
 [data-theme='light'] .danger-error { color: #b3261e; }
 
-/* ── Landing: sticky glassmorphism navbar ─────────────────────────────────── */
+/* ── Masthead navigation ──────────────────────────────────────────────────── */
 
 .glass-nav {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 80;
   border-bottom: 1px solid transparent;
-  background: color-mix(in srgb, var(--base) 68%, transparent);
-  backdrop-filter: blur(12px) saturate(130%);
-  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  background: color-mix(in srgb, var(--base) 82%, transparent);
+  backdrop-filter: blur(14px) saturate(115%);
+  -webkit-backdrop-filter: blur(14px) saturate(115%);
   transition:
     border-color var(--dur-base) var(--ease-out-soft),
-    background var(--dur-base) var(--ease-out-soft),
-    box-shadow var(--dur-slow) var(--ease-out-soft);
+    background var(--dur-base) var(--ease-out-soft);
 }
 .glass-nav[data-scrolled='true'] {
-  border-bottom-color: color-mix(in srgb, var(--text) 8%, transparent);
-  background: color-mix(in srgb, var(--base) 84%, transparent);
-  box-shadow: 0 8px 32px -16px rgb(0 0 0 / 40%);
+  border-bottom-color: var(--rule);
+  background: color-mix(in srgb, var(--base) 92%, transparent);
 }
 
-/* Animated link underline — draws in on hover */
+/* Masthead nav links sit in small caps with a brass underline. */
+.masthead-link {
+  position: relative;
+  padding-block: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color var(--dur-base) var(--ease-out-soft);
+}
+.masthead-link::after {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 1px;
+  width: 100%;
+  content: '';
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-slow) var(--ease-out-soft);
+}
+.masthead-link:hover { color: var(--text); }
+.masthead-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Legacy underline used by footers and editorial links. */
 .nav-link {
   position: relative;
 }
@@ -512,10 +683,10 @@ button { font: inherit; }
   position: absolute;
   left: 0;
   bottom: -4px;
-  height: 1.5px;
+  height: 1px;
   width: 100%;
   content: '';
-  background: var(--accent);
+  background: currentColor;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform var(--dur-slow) var(--ease-out-soft);
@@ -523,14 +694,25 @@ button { font: inherit; }
 .nav-link:hover::after,
 .nav-link[data-active='true']::after { transform: scaleX(1); }
 
-/* ── Landing: infinite marquee ─────────────────────────────────────────────── */
+/* Mobile masthead sheet */
+.masthead-sheet {
+  border-top: 1px solid var(--rule);
+  background: var(--base);
+  animation: sheet-in var(--dur-base) var(--ease-out-soft);
+}
+@keyframes sheet-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ── Infinite marquee ─────────────────────────────────────────────────────── */
 /* Pauses on hover; soft fade masks at both edges. */
 
 .marquee {
   position: relative;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
-  mask-image: linear-gradient(90deg, transparent, black 8%, black 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
 }
 .marquee-track {
   display: flex;
@@ -545,7 +727,10 @@ button { font: inherit; }
   to { transform: translateX(-50%); }
 }
 
-/* ── Landing: draw-in stroke animations for SVGs ───────────────────────────── */
+/* A slower, reversed ticker for the masthead band. */
+.marquee-reverse .marquee-track { animation-direction: reverse; }
+
+/* ── Draw-in stroke + slow float ──────────────────────────────────────────── */
 
 .draw-stroke {
   stroke-dasharray: 1;
@@ -556,13 +741,80 @@ button { font: inherit; }
   to { stroke-dashoffset: 0; }
 }
 
-/* Soft floating loop for hero ornaments */
 .float-slow {
   animation: float-slow 7s var(--ease-in-out-soft) infinite;
 }
 @keyframes float-slow {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
+}
+
+/* Slow rotary seal used in the closing band */
+.seal-spin {
+  animation: seal-spin 34s linear infinite;
+}
+@keyframes seal-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Editorial index rows ─────────────────────────────────────────────────── */
+/* Contents-page rows: number, name, leader line, count, arrow. */
+
+.index-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.75rem 1fr auto auto;
+  align-items: baseline;
+  gap: 1rem;
+  padding-block: 1.15rem;
+  border-top: 1px solid var(--rule);
+  transition: color var(--dur-base) var(--ease-out-soft);
+}
+.index-row:last-child { border-bottom: 1px solid var(--rule); }
+.index-row::before {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: linear-gradient(90deg, var(--gold-soft), transparent 70%);
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out-soft);
+}
+.index-row:hover::before,
+.index-row:focus-visible::before { opacity: 1; }
+.index-row > * { position: relative; }
+.index-row__num {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  color: var(--text-dim);
+  transition: color var(--dur-base);
+}
+.index-row:hover .index-row__num { color: var(--gold); }
+
+/* ── Reading room dark band ───────────────────────────────────────────────── */
+
+.ink-band {
+  background: var(--inverse-bg);
+  color: var(--inverse-text);
+  position: relative;
+  isolation: isolate;
+}
+.ink-band::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: '';
+  background:
+    radial-gradient(60% 90% at 12% 0%, color-mix(in srgb, var(--inverse-accent) 12%, transparent), transparent 60%),
+    radial-gradient(50% 70% at 92% 100%, color-mix(in srgb, var(--inverse-accent) 8%, transparent), transparent 65%);
+}
+
+/* ── Reduced motion guard for the landing art ─────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track { animation: none; }
+  .float-slow { animation: none; }
+  .seal-spin { animation: none; }
 }
 
 /* ── Blog reader chrome: share modal, TOC overlay, progress pill ───────────── */

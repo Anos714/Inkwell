@@ -4,8 +4,10 @@ import { useQuery } from '@tanstack/react-query'
 import { getRecentComments } from '../../api/blog-api'
 import type { RecentComment } from '../../types'
 
-function CommentCard({ comment, hidden = false }: { comment: RecentComment; hidden?: boolean }) {
-  const username = comment.user?.username?.trim() || 'Someone'
+const easeOutSoft = [0.22, 1, 0.36, 1] as [number, number, number, number]
+
+function CommentFolio({ comment, hidden = false }: { comment: RecentComment; hidden?: boolean }) {
+  const username = comment.user?.username?.trim() || 'A reader'
   const initials = username
     .split(/\s+/)
     .map((part) => part[0])
@@ -14,45 +16,48 @@ function CommentCard({ comment, hidden = false }: { comment: RecentComment; hidd
     .toUpperCase()
 
   return (
-    <figure aria-hidden={hidden || undefined} className="flex w-[20rem] shrink-0 flex-col gap-4 rounded-2xl border border-inkwell-cream/10 bg-inkwell-900/50 p-6 transition duration-300 hover:border-inkwell-gold/40 sm:w-[24rem]">
-      <div className="flex items-center gap-3">
+    <figure
+      aria-hidden={hidden || undefined}
+      className="flex w-[19rem] shrink-0 flex-col border-l border-inkwell-rule pl-6 sm:w-[25rem]"
+    >
+      <span aria-hidden="true" className="font-display text-5xl leading-[0.6] text-inkwell-brass/60">
+        &ldquo;
+      </span>
+
+      <blockquote className="mt-4 line-clamp-4 font-serif text-[1.05rem] italic leading-8 text-inkwell-cream/90 sm:text-lg sm:leading-9">
+        {comment.content}
+      </blockquote>
+
+      <div className="mt-auto flex items-center gap-3 pt-6">
         {comment.user?.avatarUrl ? (
-          <img
-            src={comment.user.avatarUrl}
-            alt=""
-            className="size-9 rounded-full object-cover"
-          />
+          <img src={comment.user.avatarUrl} alt="" loading="lazy" className="size-8 rounded-full object-cover" />
         ) : (
-          <span className="grid size-9 place-items-center rounded-full bg-inkwell-800 font-mono text-[10px] font-bold text-inkwell-gold">
+          <span className="grid size-8 place-items-center rounded-full border border-inkwell-rule font-mono text-[9px] font-semibold text-inkwell-brass">
             {initials}
           </span>
         )}
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-inkwell-cream">{username}</p>
-          <p className="font-mono text-[10px] uppercase tracking-wider text-inkwell-dim">
-            {new Date(comment.createdAt).toLocaleDateString()}
+          <p className="truncate font-mono text-[10px] uppercase tracking-[0.14em] text-inkwell-muted">
+            {username}
           </p>
+          {comment.blog && (
+            <Link
+              to={`/blogs/${comment.blog.slug}`}
+              className="mt-0.5 block truncate font-serif text-xs italic text-inkwell-dim transition hover:text-inkwell-brass"
+            >
+              on “{comment.blog.title.length > 34 ? `${comment.blog.title.slice(0, 34)}…` : comment.blog.title}”
+            </Link>
+          )}
         </div>
       </div>
-
-      <blockquote className="line-clamp-3 font-serif text-[0.95rem] leading-7 text-inkwell-muted">
-        “{comment.content}”
-      </blockquote>
-
-      {comment.blog && (
-        <figcaption className="mt-auto">
-          <Link
-            to={`/blogs/${comment.blog.slug}`}
-            className="font-mono text-[10px] uppercase tracking-wider text-inkwell-gold/80 transition hover:text-inkwell-gold"
-          >
-            on “{comment.blog.title.length > 32 ? `${comment.blog.title.slice(0, 32)}…` : comment.blog.title}”
-          </Link>
-        </figcaption>
-      )}
     </figure>
   )
 }
 
+/**
+ * Reader marginalia, running past the edge of the page like a line of notes
+ * left in the gutter of a shared book.
+ */
 export function CommentsMarquee() {
   const commentsQuery = useQuery({
     queryKey: ['comments', 'recent'],
@@ -60,49 +65,47 @@ export function CommentsMarquee() {
   })
   const comments = commentsQuery.data?.data ?? []
 
-  // Nothing to scroll through yet — keep the section quiet.
   if (!commentsQuery.isLoading && comments.length === 0) return null
 
-  // Duplicate the list so the track loops seamlessly (translateX(-50%)).
   const loop = [...comments, ...comments]
 
   return (
-    <section id="voices" className="overflow-hidden py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+    <section id="voices" className="border-y border-inkwell-rule py-20 sm:py-24 lg:py-28">
+      <div className="mx-auto max-w-[86rem] px-5 sm:px-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-14 max-w-xl"
+          transition={{ duration: 0.7, ease: easeOutSoft }}
+          className="flex flex-wrap items-end justify-between gap-6 pb-10"
         >
-          <span className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">
-            Voices from the margins
-          </span>
-          <h2 className="mt-4 font-display text-4xl font-medium leading-tight tracking-tight text-inkwell-cream sm:text-5xl">
-            What readers are<br />
-            <span className="italic text-inkwell-gold">saying.</span>
-          </h2>
+          <div className="max-w-xl">
+            <p className="eyebrow">Voices from the margin</p>
+            <h2 className="display mt-4 text-5xl text-inkwell-cream sm:text-6xl">
+              What readers <em className="text-inkwell-brass">left behind.</em>
+            </h2>
+          </div>
+          <p className="max-w-xs font-serif text-sm leading-7 text-inkwell-muted">
+            Notes, disagreements, and small kindnesses — the part of a journal
+            that keeps writing itself.
+          </p>
         </motion.div>
       </div>
 
       {commentsQuery.isLoading ? (
-        <div className="flex gap-4 px-6 lg:px-8">
-          {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="skeleton-shimmer h-44 w-[20rem] shrink-0 rounded-2xl sm:w-[24rem]"
-            />
+        <div className="mx-auto flex max-w-[86rem] gap-8 px-5 sm:px-8">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="skeleton-shimmer h-40 w-[19rem] shrink-0 border-l border-inkwell-rule pl-6 sm:w-[25rem]" />
           ))}
         </div>
       ) : (
         <div
-          className="marquee group"
-          style={{ ['--marquee-duration' as string]: `${Math.max(36, comments.length * 6)}s` }}
+          className="marquee"
+          style={{ ['--marquee-duration' as string]: `${Math.max(40, comments.length * 7)}s` }}
         >
-          <div className="marquee-track">
+          <div className="marquee-track gap-8">
             {loop.map((comment, index) => (
-              <CommentCard key={`${comment.id}-${index}`} comment={comment} hidden={index >= comments.length} />
+              <CommentFolio key={`${comment.id}-${index}`} comment={comment} hidden={index >= comments.length} />
             ))}
           </div>
         </div>

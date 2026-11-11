@@ -1,5 +1,12 @@
 export const themeKey = 'inkwell-theme'
 
+export type Theme = 'light' | 'dark'
+
+const THEME_COLOR: Record<Theme, string> = {
+  light: '#f2ecdd',
+  dark: '#0d110d',
+}
+
 function readStoredTheme(): string | null {
   try {
     return window.localStorage.getItem(themeKey)
@@ -8,14 +15,24 @@ function readStoredTheme(): string | null {
   }
 }
 
-export function initializeTheme() {
+/** Apply a theme to the document and keep the browser chrome in step. */
+export function applyTheme(theme: Theme) {
   if (typeof document === 'undefined') return
-  const savedTheme = readStoredTheme()
-  const isLight = savedTheme === 'light'
-  document.documentElement.dataset.theme = isLight ? 'light' : 'dark'
-  document.documentElement.style.colorScheme = isLight ? 'light' : 'dark'
+  document.documentElement.dataset.theme = theme
+  document.documentElement.style.colorScheme = theme
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', THEME_COLOR[theme])
 }
 
-export function getStoredTheme(): 'light' | 'dark' {
-  return readStoredTheme() === 'light' ? 'light' : 'dark'
+/**
+ * The reading room is paper-first: a first visit opens on parchment. Anyone
+ * who has chosen the night reading room keeps it.
+ */
+export function initializeTheme() {
+  applyTheme(getStoredTheme())
+}
+
+export function getStoredTheme(): Theme {
+  return readStoredTheme() === 'dark' ? 'dark' : 'light'
 }

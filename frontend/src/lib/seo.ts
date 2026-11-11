@@ -10,7 +10,7 @@ export const SITE_URL = (env.VITE_SITE_URL ?? 'https://inkwell-blogs.pages.dev')
 export const SITE_NAME = 'Inkwell'
 export const SITE_TAGLINE = 'Make space for good ideas'
 export const SITE_DESCRIPTION =
-  'Inkwell is a personal blog by Rahul — stories, ideas, and honest notes on building, writing, and the web.'
+  'Inkwell is a quiet reading room by Rahul — essays, field notes, and small observations on code, craft, and the creative life.'
 export const AUTHOR_NAME = env.VITE_AUTHOR_NAME ?? 'Rahul'
 export const AUTHOR_HANDLE = '@rahul'
 // Social scrapers (Twitter/X, Facebook, LinkedIn, Slack) do not render SVG, so

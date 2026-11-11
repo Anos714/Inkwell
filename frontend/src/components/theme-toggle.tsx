@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { FaMoon, FaSun } from 'react-icons/fa'
-import { themeKey } from './theme'
+import { applyTheme, themeKey } from './theme'
 
 export function ThemeToggle() {
   const [isLight, setIsLight] = useState(() => document.documentElement.dataset.theme === 'light')
@@ -8,8 +8,7 @@ export function ThemeToggle() {
   const toggleTheme = () => {
     const nextIsLight = !isLight
     setIsLight(nextIsLight)
-    document.documentElement.dataset.theme = nextIsLight ? 'light' : 'dark'
-    document.documentElement.style.colorScheme = nextIsLight ? 'light' : 'dark'
+    applyTheme(nextIsLight ? 'light' : 'dark')
     window.localStorage.setItem(themeKey, nextIsLight ? 'light' : 'dark')
   }
 
