@@ -28,8 +28,8 @@ export function HeroPlate() {
       >
         <div ref={frameRef} className="relative overflow-hidden">
           <motion.img
-            src="/images/field-note.webp"
-            alt="A wide, sunlit countryside with a lone farmhouse and two leaning trees at the end of a winding dirt road."
+            src="/images/dreamy-countryside.webp"
+            alt="A hand-painted Indian countryside beneath an enormous mango tree, with a charpai, a bicycle, a clay water pot and a dirt path leading toward distant blue hills."
             width={1672}
             height={941}
             loading="eager"
@@ -55,11 +55,11 @@ export function HeroPlate() {
           <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <span className="font-mono text-[9px] uppercase tracking-[0.22em] text-inkwell-dim">Plate I</span>
             <span className="font-display text-lg italic leading-none text-inkwell-cream sm:text-xl">
-              Where the road ends
+              Under the mango tree
             </span>
           </p>
           <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-inkwell-dim">
-            Golden grass · Quiet air · Somewhere far
+            Mango shade · Dusty road · Early light
           </p>
         </figcaption>
       </motion.div>

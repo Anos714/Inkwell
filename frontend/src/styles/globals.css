@@ -763,12 +763,18 @@ section[id] { scroll-margin-top: 6rem; }
 .index-row {
   position: relative;
   display: grid;
-  grid-template-columns: 2.75rem 1fr auto auto;
+  grid-template-columns: 2rem 1fr auto;
   align-items: baseline;
-  gap: 1rem;
+  gap: 0.75rem;
   padding-block: 1.15rem;
   border-top: 1px solid var(--rule);
   transition: color var(--dur-base) var(--ease-out-soft);
+}
+@media (min-width: 640px) {
+  .index-row {
+    grid-template-columns: 2.75rem 1fr auto auto;
+    gap: 1rem;
+  }
 }
 .index-row:last-child { border-bottom: 1px solid var(--rule); }
 .index-row::before {
@@ -813,6 +819,9 @@ section[id] { scroll-margin-top: 6rem; }
 /* The landscape sits behind the hero at a paper-washed strength: present enough
    to set the scene, quiet enough for the headline to stay ink-black. */
 
+.hero-masthead .folio {
+  color: var(--text-muted);
+}
 .hero-field {
   position: absolute;
   inset: 0;
@@ -828,6 +837,17 @@ section[id] { scroll-margin-top: 6rem; }
     color-mix(in srgb, var(--base) 70%, transparent) 0%,
     color-mix(in srgb, var(--base) 84%, transparent) 52%,
     color-mix(in srgb, var(--base) 96%, transparent) 88%,
+    var(--base) 100%
+  );
+}
+/* Parchment washes out the art faster than ink does, so light mode gets a
+   lighter hand with the scrim: the field should read as a place, not a ghost. */
+[data-theme='light'] .hero-field::after {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--base) 52%, transparent) 0%,
+    color-mix(in srgb, var(--base) 72%, transparent) 52%,
+    color-mix(in srgb, var(--base) 92%, transparent) 88%,
     var(--base) 100%
   );
 }
