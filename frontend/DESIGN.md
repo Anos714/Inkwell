@@ -92,6 +92,27 @@ at every width.
 | CTA | `landing/cta.tsx` | Inverted band with rotating letterpress seal |
 | Colophon | `landing/site-footer.tsx` | Link columns, socials, giant wordmark |
 
+## The workspace
+
+The admin screens are the back office of the same journal, not a separate
+product, so they inherit the shell rather than a dashboard kit.
+
+| Piece | File | Notes |
+| --- | --- | --- |
+| Frame | `features/blogs/components/admin-pages.tsx` | Ruled masthead, running nav (`masthead-link[data-active]`), display heading on the broadsheet shell |
+| Overview | `admin-dashboard.tsx` | Six-cell ledger in hairline rules; no cards or glows |
+| Entries | `admin-blog-manager.tsx` | Printed index rows — number, title, slug, draft stamp, reads, two quiet actions |
+| Editor | `admin-blog-form.tsx` | Underlined fields, square cover well, status switch, pill primary action |
+| Delete | `admin-blog-manager.tsx` | Square dialog, red top rule, Escape to close, autofocus on the safe action |
+
+- Primary actions are the only filled controls (`rounded-full`, cream on ink,
+  brass on hover). Everything else is a letterpress link with a drawn rule.
+- Fields use `.field-line` / `.field-frame`: focus is a brass rule under the
+  line, never the global boxed ring.
+- The workspace boots from the httpOnly refresh cookie via
+  `features/auth/store/session-bootstrap.ts`, so bookmarked admin URLs survive
+  a hard reload; signed-out visitors go to `/login`.
+
 ## Motion
 
 - Easing: `cubic-bezier(.22, 1, .36, 1)`; durations `180–500ms` for UI,
@@ -108,7 +129,8 @@ at every width.
 - Semantic landmarks: one `h1`, section `h2`s, `article`/`figure` for
   editorial units.
 - Focus uses a visible accent ring with a 2px offset; hover-only effects are
-  duplicated on `:focus-visible`.
+  duplicated on `:focus-visible`. Writing-desk fields replace the ring with a
+  brass rule (`.field-line` / `.field-frame`) so the page stays unboxed.
 - Decorative art is `aria-hidden`; the plate has a descriptive caption and
   `alt`.
 - Interactive targets are at least 36px tall on touch; the mobile sheet

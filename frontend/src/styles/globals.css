@@ -156,6 +156,16 @@ button { font: inherit; }
   border-radius: 4px;
 }
 
+/* Writing-desk fields: focus reads as a brass rule under the line, not a box. */
+.field-line:focus-visible {
+  outline: none;
+  box-shadow: 0 2px 0 0 var(--gold);
+}
+.field-frame:focus-within {
+  border-color: var(--gold);
+  box-shadow: 0 2px 0 0 var(--gold);
+}
+
 /* ── Paper grain ────────────────────────────────────────────────────────────
    One fixed, non-interactive layer of fractal noise gives every surface the
    tooth of printed stock without tinting the palette. */
@@ -671,6 +681,11 @@ section[id] { scroll-margin-top: 6rem; }
 }
 .masthead-link:hover { color: var(--text); }
 .masthead-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+.masthead-link[data-active='true'] { color: var(--text); }
+.masthead-link[data-active='true']::after {
   transform: scaleX(1);
   transform-origin: left;
 }

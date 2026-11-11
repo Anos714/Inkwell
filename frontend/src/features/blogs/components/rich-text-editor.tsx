@@ -69,10 +69,10 @@ export function RichTextEditor({ value, onChange }: Props) {
     return () => observer.disconnect()
   }, [])
 
-  if (!editor) return <div className="min-h-56 rounded-xl border border-inkwell-cream/15 bg-inkwell-950 md:col-span-2" />
+  if (!editor) return <div className="min-h-56 border border-inkwell-rule bg-inkwell-950 md:col-span-2" />
 
   return (
-    <div className={`rich-text-editor ${theme === 'light' ? 'rich-text-editor-light' : 'rich-text-editor-dark'} overflow-hidden rounded-xl border md:col-span-2`}>
+    <div className={`rich-text-editor ${theme === 'light' ? 'rich-text-editor-light' : 'rich-text-editor-dark'} overflow-hidden border md:col-span-2`}>
       <div className="rich-text-toolbar flex flex-wrap items-center gap-1 border-b p-2">
         <ToolbarButton label="↶" disabled={!editor.can().undo()} onClick={() => editor.chain().focus().undo().run()} />
         <ToolbarButton label="↷" disabled={!editor.can().redo()} onClick={() => editor.chain().focus().redo().run()} />
