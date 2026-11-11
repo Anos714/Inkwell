@@ -78,7 +78,9 @@ const flatCommentSchema = z.object({
   content: z.string(),
   gifUrl: z.string().nullable(),
   parentId: z.string().nullable(),
-  isPinned: z.boolean(),
+  // Tolerate an older API that does not send the pin flag yet (deploy order),
+  // while the pin endpoint itself still requires the new backend.
+  isPinned: z.boolean().optional().default(false),
   createdAt: z.string(),
   likesCount: z.number(),
   likedByMe: z.boolean(),
