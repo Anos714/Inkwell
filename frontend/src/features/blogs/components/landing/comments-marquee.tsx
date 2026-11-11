@@ -29,13 +29,21 @@ function CommentFolio({ comment, hidden = false }: { comment: RecentComment; hid
       </blockquote>
 
       <div className="mt-auto flex items-center gap-3 pt-6">
-        {comment.user?.avatarUrl ? (
-          <img src={comment.user.avatarUrl} alt="" loading="lazy" className="size-8 rounded-full object-cover" />
-        ) : (
-          <span className="grid size-8 place-items-center rounded-full border border-inkwell-rule font-mono text-[9px] font-semibold text-inkwell-brass">
-            {initials}
-          </span>
-        )}
+        <span className="relative grid size-8 shrink-0 place-items-center overflow-hidden rounded-full border border-inkwell-rule bg-inkwell-900 font-mono text-[9px] font-semibold text-inkwell-brass">
+          {initials}
+          {comment.user?.avatarUrl && (
+            <img
+              src={comment.user.avatarUrl}
+              alt=""
+              loading="lazy"
+              referrerPolicy="no-referrer"
+              onError={(event) => {
+                event.currentTarget.style.display = 'none'
+              }}
+              className="absolute inset-0 size-full object-cover"
+            />
+          )}
+        </span>
         <div className="min-w-0">
           <p className="truncate font-mono text-[10px] uppercase tracking-[0.14em] text-inkwell-muted">
             {username}
@@ -63,7 +71,9 @@ export function CommentsMarquee() {
     queryKey: ['comments', 'recent'],
     queryFn: () => getRecentComments(12),
   })
-  const comments = commentsQuery.data?.data ?? []
+  // A pull-quote needs words. Comments that carry only a GIF (or nothing) are
+  // left out rather than printed as an empty column.
+  const comments = (commentsQuery.data?.data ?? []).filter((comment) => (comment.content ?? '').trim().length > 0)
 
   if (!commentsQuery.isLoading && comments.length === 0) return null
 
@@ -100,7 +110,7 @@ export function CommentsMarquee() {
         </div>
       ) : (
         <div
-          className="marquee"
+          className="marquee pl-5 sm:pl-8"
           style={{ ['--marquee-duration' as string]: `${Math.max(40, comments.length * 7)}s` }}
         >
           <div className="marquee-track gap-8">

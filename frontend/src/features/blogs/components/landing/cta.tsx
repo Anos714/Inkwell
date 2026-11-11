@@ -44,13 +44,13 @@ function Seal() {
 
 export function CallToAction() {
   return (
-    <section className="px-5 py-16 sm:px-8 lg:py-20">
+    <section className="py-16 lg:py-20">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.25 }}
         transition={{ duration: 0.8, ease: easeOutSoft }}
-        className="ink-band mx-auto max-w-[86rem] overflow-hidden rounded-[1.25rem] px-6 py-14 sm:px-12 sm:py-20 lg:px-16"
+        className="ink-band mx-auto max-w-[86rem] overflow-hidden px-5 py-14 sm:rounded-[1.25rem] sm:px-8 sm:py-20"
       >
         <div className="grid items-center gap-14 lg:grid-cols-[1.25fr_.75fr]">
           <div>

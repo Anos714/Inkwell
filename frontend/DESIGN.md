@@ -10,8 +10,9 @@ card.
 
 1. **Paper first.** Warm parchment is the default surface. Dark mode is the
    same room after sunset, not an inverted UI.
-2. **One piece of art.** The landscape plate is the only image on the landing
-   page. Type, rules, and space carry the rest.
+2. **One scene, two treatments.** The opening carries the field as a
+   paper-washed backdrop; the plate below is the same idea as a full-colour
+   print. Type, rules, and space carry everything else.
 3. **Read, don't scan.** Measure, leading, and hierarchy are tuned for long
    prose. Labels are small, tracked, and monospaced; headlines are large,
    serif, and tightly leaded.
@@ -54,7 +55,7 @@ Loaded in `index.html`.
 | UI | Outfit | 400–600, small sizes, no tracking |
 | Labels | DM Mono | 9–10px, uppercase, tracking `.16–.26em` |
 
-Display sizes use `clamp()`; the hero runs from `3.5rem` to `8.75rem`. Body
+Display sizes use `clamp()`; the hero runs from `2.9rem` to `8rem`. Body
 copy stays between `0.95rem` and `1.125rem` so the page reads like a journal
 at every width.
 
@@ -63,6 +64,11 @@ at every width.
 - Page gutter: `1.25rem` mobile, `2rem` from `sm`.
 - Content width: `86rem` (the broadsheet measure); prose columns cap at
   `68ch` or `max-w-md/lg` for standfirsts.
+- Every section's content starts on the same left rule. Full-bleed bands
+  (ticker, CTA) may extend past it, but their inner copy stays on the shell.
+- The opening is a single editorial column below `1280px` and a
+  `1.6fr / .8fr` spread above it; the headline is set to break in two lines
+  from `320px` upward.
 - Sticky masthead is `4.5rem` tall; `section[id]` carries a `6rem` scroll
   margin so anchor links land below it.
 - Sections alternate between open parchment and a barely-tinted
@@ -75,9 +81,10 @@ at every width.
 | Piece | File | Notes |
 | --- | --- | --- |
 | Masthead | `components/site-header.tsx` | Sticky, hairline base, numbered mobile sheet, theme toggle, account menu |
-| Hero | `landing/hero.tsx` | Staggered line reveal, brass underline draw, ruled-paper wash |
+| Hero | `landing/hero.tsx` | Two-line reveal, brass underline draw, paper-washed field backdrop |
+| Hero preview | `landing/hero-preview.tsx` | Latest-entry note card and brass sprig in the opening's right margin |
 | Ticker | `landing/ticker.tsx` | Slow, reversed category marquee; pauses on hover |
-| Plate | `landing/hero-plate.tsx` | Matted landscape, parallax, caption and folio |
+| Plate | `landing/hero-plate.tsx` | Matted dreamy countryside, parallax, caption and folio |
 | Contents | `landing/topics-strip.tsx` | Numbered index of real tags with counts |
 | Journal | `landing/recent-posts.tsx` | Lead story spread + hairline contents list |
 | Reading room | `landing/reading-room.tsx` | Four rule-separated features, drawn icons, marginalia |
@@ -110,7 +117,8 @@ at every width.
 
 ## Assets
 
-- `public/images/field-note.webp` — 1672×941 landscape plate (~255 KB).
+- `public/images/field-note.webp` — 1672×941 landscape used as the washed hero backdrop (~255 KB).
+- `public/images/dreamy-countryside.webp` — 1672×941 hand-painted orchard plate (~443 KB).
 - `public/og-image.png` — social card.
 - Paper grain is an inline SVG turbulence layer at 5% opacity, fixed above
   content and pointer-transparent.
