@@ -44,6 +44,17 @@ blogCommentsRoute.post(
   BlogCommentController.toggleCommentLikeController,
 );
 
+blogCommentsRoute.patch(
+  "/comments/:commentId/pin",
+  requireAuth,
+  zValidator("param", commentIdParamSchema, (result, _) => {
+    if (!result.success) {
+      throw result.error;
+    }
+  }),
+  BlogCommentController.toggleCommentPinController,
+);
+
 blogCommentsRoute.delete(
   "/comments/:commentId",
   requireAuth,

@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, or, sql } from "drizzle-orm";
 import { db } from "../../db/db";
 import { blogComments, blogs, commentLikes, users } from "../../db/schema";
 
@@ -49,6 +49,7 @@ const commentAuthorShape = {
   content: blogComments.content,
   gifUrl: blogComments.gifUrl,
   parentId: blogComments.parentId,
+  isPinned: blogComments.isPinned,
   createdAt: blogComments.createdAt,
   likesCount: likesCountColumn,
   user: {
@@ -69,10 +70,14 @@ export const getTopLevelComments = async (
   const sort = params?.sort ?? "newest";
   const orderBy =
     sort === "oldest"
-      ? [asc(blogComments.createdAt)]
+      ? [desc(blogComments.isPinned), asc(blogComments.createdAt)]
       : sort === "top"
-        ? [desc(likesCountExpr), desc(blogComments.createdAt)]
-        : [desc(blogComments.createdAt)];
+        ? [
+            desc(blogComments.isPinned),
+            desc(likesCountExpr),
+            desc(blogComments.createdAt),
+          ]
+        : [desc(blogComments.isPinned), desc(blogComments.createdAt)];
   return db
     .select(commentAuthorShape)
     .from(blogComments)
@@ -145,6 +150,42 @@ export const unlikeComment = async (userId: string, commentId: string) => {
       ),
     );
 };
+
+/**
+ * Pinning is editorial and exclusive per blog. The neon-http driver has no
+ * transactions, so exclusivity is enforced in a single UPDATE: the target row
+ * becomes the only pinned one and any previous pin in this blog is released
+ * in the same statement.
+ */
+export const setCommentPinned = async (
+  blogId: string,
+  commentId: string,
+  pinned: boolean,
+) => {
+  if (!pinned) {
+    const [comment] = await db
+      .update(blogComments)
+      .set({ isPinned: false })
+      .where(and(eq(blogComments.id, commentId), eq(blogComments.blogId, blogId)))
+      .returning();
+
+    return comment;
+  }
+
+  const rows = await db
+    .update(blogComments)
+    .set({ isPinned: sql<boolean>`(${blogComments.id} = ${commentId})` })
+    .where(
+      and(
+        eq(blogComments.blogId, blogId),
+        or(eq(blogComments.isPinned, true), eq(blogComments.id, commentId)),
+      ),
+    )
+    .returning();
+
+  return rows.find((row) => row.id === commentId);
+};
+
 export const deleteComment = async (
   userId: string,
   role: string,
@@ -169,6 +210,7 @@ export const getRecentComments = async (limit = 12) => {
       content: blogComments.content,
       gifUrl: blogComments.gifUrl,
       parentId: blogComments.parentId,
+      isPinned: blogComments.isPinned,
       createdAt: blogComments.createdAt,
       likesCount: sql<number>`(
         select count(*)::int from ${commentLikes}

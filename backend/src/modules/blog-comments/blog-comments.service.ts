@@ -120,6 +120,36 @@ export const getRecentCommentsService = async (limit?: number) => {
   return commentRepository.getRecentComments(limit);
 };
 
+export const toggleCommentPinService = async (
+  role: string,
+  commentId: string,
+) => {
+  if (role !== "admin") {
+    throw AppError.Forbidden("Only an editor can pin comments");
+  }
+
+  const comment = await commentRepository.getCommentById(commentId);
+  if (!comment) throw AppError.NotFound("Comment not found");
+
+  // Replies live inside their thread; only a top-level note can head the room.
+  if (comment.parentId) {
+    throw AppError.BadRequest("Only top-level comments can be pinned");
+  }
+
+  const pinned = !comment.isPinned;
+  const updated = await commentRepository.setCommentPinned(
+    comment.blogId,
+    comment.id,
+    pinned,
+  );
+
+  if (!updated) {
+    throw AppError.InternalServerError("Failed to update comment pin");
+  }
+
+  return updated;
+};
+
 export const deleteCommentService = async (
   userId: string,
   role: string,

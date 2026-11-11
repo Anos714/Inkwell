@@ -113,6 +113,30 @@ export const getRecentCommentsController = async (c: Context) => {
   });
 };
 
+export const toggleCommentPinController = async (c: Context) => {
+  const payload = c.get("user");
+  const commentId = c.req.param("commentId");
+
+  if (!payload) {
+    throw AppError.Unauthorized("Unauthorized");
+  }
+
+  if (!commentId) {
+    throw AppError.BadRequest("Comment ID is required");
+  }
+
+  const comment = await BlogCommentService.toggleCommentPinService(
+    payload.role,
+    commentId,
+  );
+
+  return c.json({
+    success: true,
+    message: comment.isPinned ? "Comment pinned" : "Comment unpinned",
+    data: comment,
+  });
+};
+
 export const deleteCommentController = async (c: Context) => {
   const payload = c.get("user");
   const commentId = c.req.param("commentId");

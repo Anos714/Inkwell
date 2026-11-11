@@ -117,6 +117,10 @@ export const blogComments = pgTable("blog_comments", {
   // Optional attached GIF (Tenor/Giphy direct link), rendered by the client.
   gifUrl: text("gif_url"),
 
+  // Editor's pin: top-level comments only, one per blog. Pinned comments sort
+  // first in every ordering so the room's chosen note stays in view.
+  isPinned: boolean("is_pinned").default(false).notNull(),
+
   createdAt: timestamp("created_at", {
     withTimezone: true,
   })

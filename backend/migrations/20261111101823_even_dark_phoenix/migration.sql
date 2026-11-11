@@ -1,0 +1,1 @@
+ALTER TABLE "blog_comments" ADD COLUMN "is_pinned" boolean DEFAULT false NOT NULL;
