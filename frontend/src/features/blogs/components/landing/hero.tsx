@@ -12,13 +12,20 @@ function ArrowUpRight() {
   )
 }
 
+/**
+ * The mask needs room below the baseline for descenders — the g in "good"
+ * hangs lower than the line box on some font-metric/browser combinations.
+ * The extra padding buys that room; the negative margin gives the leading
+ * back, so the headline's rhythm is unchanged. The reveal offset clears the
+ * taller mask so nothing peeks in while the line rises.
+ */
 function RevealLine({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
   const reduce = useReducedMotion()
   return (
-    <span className="block overflow-hidden pb-[0.07em]">
+    <span className="-mb-[0.19em] block overflow-hidden pb-[0.26em]">
       <motion.span
         className="block"
-        initial={reduce ? { y: 0, opacity: 1 } : { y: '115%' }}
+        initial={reduce ? { y: 0, opacity: 1 } : { y: '135%' }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 1.05, delay, ease: easeOutSoft }}
       >
@@ -55,11 +62,11 @@ export function Hero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="hero-masthead flex items-baseline justify-between gap-4 border-b border-inkwell-rule pb-3"
+          className="hero-masthead grid grid-cols-2 items-baseline gap-4 border-b border-inkwell-rule pb-3 sm:grid-cols-3"
         >
-          <span className="folio">Vol. I &nbsp;·&nbsp; Issue 01</span>
-          <span className="folio hidden sm:block">A journal of the slow web</span>
-          <span className="folio">Est. MMXXV</span>
+          <span className="folio justify-self-start">Vol. I &nbsp;·&nbsp; Issue 01</span>
+          <span className="folio hidden justify-self-center sm:block">A journal of the slow web</span>
+          <span className="folio col-start-2 justify-self-end sm:col-start-3">Est. MMXXV</span>
         </motion.div>
 
         <div className="grid gap-12 pt-10 sm:pt-14 xl:grid-cols-[1.6fr_.8fr] xl:items-end xl:gap-12 xl:pt-16">
@@ -75,7 +82,7 @@ export function Hero() {
               <span className="hidden min-[360px]:inline">&nbsp;· Essays &amp; field notes</span>
             </motion.p>
 
-            <h1 className="display text-[clamp(2.9rem,12vw,8rem)] text-inkwell-cream">
+            <h1 className="display flex flex-col text-[clamp(2.9rem,12vw,8rem)] text-inkwell-cream">
               <RevealLine delay={0.34}>Make space</RevealLine>
               <RevealLine delay={0.46}>
                 for good{' '}
