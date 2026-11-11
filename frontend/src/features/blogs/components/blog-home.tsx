@@ -1,7 +1,9 @@
 import { SiteHeader } from '../../../components/site-header'
 import { Hero } from './landing/hero'
+import { ReadingTicker } from './landing/ticker'
+import { HeroPlate } from './landing/hero-plate'
 import { TopicsStrip } from './landing/topics-strip'
-import { BentoFeatures } from './landing/bento-features'
+import { ReadingRoom } from './landing/reading-room'
 import { RecentPosts } from './landing/recent-posts'
 import { CommentsMarquee } from './landing/comments-marquee'
 import { CallToAction } from './landing/cta'
@@ -24,14 +26,19 @@ export function BlogHome() {
   })
 
   return (
-    <div className="min-h-screen bg-inkwell-950">
+    <div className="relative min-h-screen bg-inkwell-950">
+      <div aria-hidden="true" className="paper-grain" />
       <SiteHeader />
-      <Hero />
-      <TopicsStrip />
-      <BentoFeatures />
-      <RecentPosts />
-      <CommentsMarquee />
-      <CallToAction />
+      <main>
+        <Hero />
+        <ReadingTicker />
+        <HeroPlate />
+        <TopicsStrip />
+        <RecentPosts />
+        <ReadingRoom />
+        <CommentsMarquee />
+        <CallToAction />
+      </main>
       <SiteFooter />
     </div>
   )

@@ -3,117 +3,207 @@ import { Link } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import { getPublishedBlogs } from '../../api/blog-api'
 import { BlogGridSkeleton } from '../blog-skeleton'
+import type { Blog } from '../../types'
 
-function ArrowUpRight() {
+const easeOutSoft = [0.22, 1, 0.36, 1] as [number, number, number, number]
+
+function Arrow() {
   return (
     <svg aria-hidden="true" className="size-4" fill="none" viewBox="0 0 16 16">
-      <path d="M3 13 13 3M5 3h8v8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" />
+      <path d="M3 13 13 3M5 3h8v8" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.25" />
     </svg>
   )
 }
 
-export function RecentPosts() {
-  const blogsQuery = useQuery({
-    queryKey: ['blogs', 'published', { limit: 6 }],
-    queryFn: () => getPublishedBlogs({ limit: 6 }),
+function formatDate(blog: Blog) {
+  return new Date(blog.publishedAt ?? blog.createdAt).toLocaleDateString(undefined, {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
   })
-  const blogs = blogsQuery.data?.data ?? []
+}
+
+function LeadCover({ blog }: { blog: Blog }) {
+  if (blog.coverImage) {
+    return (
+      <div className="plate overflow-hidden bg-inkwell-800">
+        <img
+          src={blog.coverImage}
+          alt={`${blog.title} — cover image`}
+          loading="lazy"
+          decoding="async"
+          width={1200}
+          height={800}
+          className="aspect-[4/3] w-full object-cover transition duration-[900ms] ease-out group-hover:scale-[1.03]"
+        />
+      </div>
+    )
+  }
 
   return (
-    <section id="journal" className="border-y border-inkwell-cream/10 bg-inkwell-900/30">
-      <div className="mx-auto max-w-7xl px-6 py-24 lg:px-8 lg:py-32">
+    <div className="plate flex aspect-[4/3] items-center justify-center overflow-hidden bg-inkwell-800">
+      <span className="px-10 text-center font-display text-4xl italic leading-tight text-inkwell-brass/70">
+        {blog.title}
+      </span>
+    </div>
+  )
+}
+
+/**
+ * The lead story plus a contents list — a magazine spread, not a card grid.
+ */
+export function RecentPosts() {
+  const blogsQuery = useQuery({
+    queryKey: ['blogs', 'published', { limit: 5 }],
+    queryFn: () => getPublishedBlogs({ limit: 5 }),
+  })
+  const blogs = blogsQuery.data?.data ?? []
+  const [lead, ...rest] = blogs
+
+  return (
+    <section id="journal" className="border-t border-inkwell-rule bg-inkwell-900/45">
+      <div className="mx-auto max-w-[86rem] px-5 py-20 sm:px-8 sm:py-24 lg:py-28">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.4 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="mb-14 flex items-end justify-between gap-6"
+          transition={{ duration: 0.7, ease: easeOutSoft }}
+          className="flex flex-wrap items-end justify-between gap-6 border-b border-inkwell-rule pb-8"
         >
           <div>
-            <span className="font-mono text-[10px] uppercase tracking-[.18em] text-inkwell-gold">
-              From the journal
-            </span>
-            <h2 className="mt-4 font-display text-4xl font-medium leading-tight tracking-tight text-inkwell-cream sm:text-5xl">
-              Recent posts.
+            <p className="eyebrow">From the journal</p>
+            <h2 className="display mt-4 text-5xl text-inkwell-cream sm:text-6xl lg:text-7xl">
+              Recent <em className="text-inkwell-brass">entries.</em>
             </h2>
           </div>
           <Link
             to="/blogs"
-            className="hidden font-mono text-[10px] uppercase tracking-wider text-inkwell-gold transition hover:text-inkwell-light sm:block"
+            className="link-rule mb-1 font-mono text-[10px] uppercase tracking-[0.18em] text-inkwell-muted transition hover:text-inkwell-cream"
           >
-            View all posts →
+            The full journal <Arrow />
           </Link>
         </motion.div>
 
-        {blogsQuery.isLoading && <BlogGridSkeleton count={6} />}
-
-        {blogsQuery.isError && (
-          <p className="danger-error text-sm">The journal could not be loaded. Please try again.</p>
-        )}
-
-        {!blogsQuery.isLoading && blogs.length === 0 && (
-          <div className="rounded-3xl border border-dashed border-inkwell-cream/15 p-12 text-center">
-            <p className="font-display text-2xl text-inkwell-cream">The first entry is still being written.</p>
-            <p className="mt-3 text-sm text-inkwell-muted">Come back soon for new ideas.</p>
+        {blogsQuery.isLoading && (
+          <div className="mt-10">
+            <BlogGridSkeleton count={3} />
           </div>
         )}
 
-        {blogs.length > 0 && (
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {blogs.map((blog, index) => (
-              <motion.article
-                key={blog.id}
-                initial={{ opacity: 0, y: 22 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.15 }}
-                transition={{ duration: 0.6, delay: index * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                className="group overflow-hidden rounded-3xl border border-inkwell-cream/10 bg-inkwell-950/60 shadow-[0_2px_16px_-8px_rgb(0_0_0/0.35)] transition duration-300 hover:-translate-y-0.5 hover:border-inkwell-gold/40 hover:shadow-xl hover:shadow-black/20"
+        {blogsQuery.isError && (
+          <p className="danger-error mt-8 text-sm">The journal could not be loaded. Please try again.</p>
+        )}
+
+        {!blogsQuery.isLoading && !blogsQuery.isError && blogs.length === 0 && (
+          <div className="mt-10 border-y border-inkwell-rule py-20 text-center">
+            <p className="font-display text-3xl italic text-inkwell-cream sm:text-4xl">The first entry is still being written.</p>
+            <p className="mt-3 font-serif text-base text-inkwell-muted">Come back soon — the ink is drying.</p>
+          </div>
+        )}
+
+        {lead && (
+          <motion.article
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.8, ease: easeOutSoft }}
+            className="group mt-10 grid gap-8 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:gap-14"
+          >
+            <Link to={`/blogs/${lead.slug}`} className="block" aria-label={`Read ${lead.title}`}>
+              <LeadCover blog={lead} />
+            </Link>
+
+            <div>
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 font-mono text-[9px] uppercase tracking-[0.18em] text-inkwell-dim">
+                <span className="text-inkwell-brass">Lead entry</span>
+                <span aria-hidden="true" className="h-px w-6 bg-inkwell-rule" />
+                <span>{formatDate(lead)}</span>
+                <span>{lead.views.toLocaleString()} reads</span>
+              </div>
+
+              <Link to={`/blogs/${lead.slug}`}>
+                <h3 className="display mt-5 text-4xl text-inkwell-cream transition duration-500 group-hover:text-inkwell-brass sm:text-5xl lg:text-[3.6rem]">
+                  {lead.title}
+                </h3>
+              </Link>
+
+              {lead.description && (
+                <p className="mt-5 max-w-lg font-serif text-base leading-8 text-inkwell-muted sm:text-lg sm:leading-9">
+                  {lead.description}
+                </p>
+              )}
+
+              <div className="mt-7 flex flex-wrap items-center gap-2">
+                {lead.tags.slice(0, 4).map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-inkwell-rule px-3 py-1 font-mono text-[9px] uppercase tracking-[0.14em] text-inkwell-muted"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <Link
+                to={`/blogs/${lead.slug}`}
+                className="link-rule mt-8 inline-flex font-mono text-[10px] uppercase tracking-[0.18em] text-inkwell-cream"
               >
-                {blog.coverImage && (
-                  <div className="overflow-hidden">
-                    <img
-                      src={blog.coverImage}
-                      alt={`${blog.title} — cover image`}
-                      loading="lazy"
-                      decoding="async"
-                      width={800}
-                      height={450}
-                      className="aspect-[16/9] w-full object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
-                    />
-                  </div>
-                )}
-                <Link to={`/blogs/${blog.slug}`} className="block p-6">
-                  <div className="flex flex-wrap gap-x-3 gap-y-1">
-                    {blog.tags.slice(0, 3).map((tag) => (
-                      <span key={tag} className="font-mono text-[10px] uppercase tracking-wider text-inkwell-gold">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                  <h3 className="mt-4 font-display text-2xl font-medium leading-tight text-inkwell-cream transition group-hover:text-inkwell-gold">
-                    {blog.title}
-                  </h3>
-                  {blog.description && (
-                    <p className="mt-3 line-clamp-3 text-sm leading-7 text-inkwell-muted">
-                      {blog.description}
-                    </p>
-                  )}
-                  <p className="mt-6 font-mono text-[10px] uppercase tracking-wider text-inkwell-dim">
-                    {new Date(blog.publishedAt ?? blog.createdAt).toLocaleDateString()}
-                  </p>
+                Read this entry <Arrow />
+              </Link>
+            </div>
+          </motion.article>
+        )}
+
+        {rest.length > 0 && (
+          <div className="mt-14">
+            {rest.map((blog, index) => (
+              <motion.div
+                key={blog.id}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.6, delay: index * 0.06, ease: easeOutSoft }}
+              >
+                <Link
+                  to={`/blogs/${blog.slug}`}
+                  className="group grid grid-cols-[2rem_1fr_auto] items-baseline gap-4 border-t border-inkwell-rule py-6 transition sm:grid-cols-[2.75rem_1fr_auto_auto] sm:gap-6"
+                >
+                  <span className="font-mono text-[10px] tracking-[0.16em] text-inkwell-dim transition group-hover:text-inkwell-brass">
+                    {String(index + 2).padStart(2, '0')}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block font-display text-2xl leading-snug text-inkwell-cream transition duration-300 group-hover:translate-x-1 group-hover:text-inkwell-brass sm:text-[1.7rem]">
+                      {blog.title}
+                    </span>
+                    <span className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[9px] uppercase tracking-[0.14em] text-inkwell-dim">
+                      <span>{formatDate(blog)}</span>
+                      {blog.tags[0] && (
+                        <>
+                          <span aria-hidden="true" className="size-0.5 rounded-full bg-inkwell-brass/70" />
+                          <span>{blog.tags[0]}</span>
+                        </>
+                      )}
+                    </span>
+                  </span>
+                  <span className="hidden font-mono text-[9px] uppercase tracking-[0.14em] text-inkwell-dim md:block">
+                    {blog.views.toLocaleString()} reads
+                  </span>
+                  <span className="justify-self-end text-inkwell-dim transition duration-300 group-hover:-translate-y-0.5 group-hover:text-inkwell-brass">
+                    <Arrow />
+                  </span>
                 </Link>
-              </motion.article>
+              </motion.div>
             ))}
           </div>
         )}
 
         {blogs.length > 0 && (
-          <div className="mt-12 text-center">
+          <div className="mt-12 flex justify-center">
             <Link
               to="/blogs"
-              className="inline-flex items-center gap-2 rounded-xl border border-inkwell-gold/60 px-6 py-3 text-sm font-semibold text-inkwell-gold transition duration-300 hover:-translate-y-0.5 hover:bg-inkwell-gold hover:text-inkwell-950"
+              className="inline-flex items-center gap-2.5 rounded-full border border-inkwell-rule px-6 py-3 text-sm font-semibold text-inkwell-cream transition duration-300 hover:-translate-y-0.5 hover:border-inkwell-brass/60 hover:text-inkwell-brass"
             >
-              Explore all posts <ArrowUpRight />
+              Explore every entry <Arrow />
             </Link>
           </div>
         )}
