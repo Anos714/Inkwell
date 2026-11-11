@@ -5,6 +5,7 @@ import {
   FaRegThumbsUp,
   FaRegTrashAlt,
   FaThumbsUp,
+  FaThumbtack,
 } from 'react-icons/fa'
 import { Link } from 'react-router'
 import { useAuthStore } from '../../auth/store/auth-store'
@@ -13,6 +14,7 @@ import {
   deleteBlogComment,
   getBlogComments,
   toggleCommentLike,
+  toggleCommentPin,
   type CommentSort,
   type NewCommentInput,
 } from '../api/blog-api'
@@ -414,8 +416,15 @@ function CommentRow({
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ['blog-comments', blogId] }),
   })
+  const pinMutation = useMutation({
+    mutationFn: () => toggleCommentPin(token ?? '', comment.id),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ['blog-comments', blogId] }),
+  })
   const canDelete =
     token && (user?.role === 'admin' || user?.id === comment.user?.id)
+  // Only the editor pins, and only a top-level note — replies stay in their thread.
+  const canPin = token && user?.role === 'admin' && !comment.parentId
 
   return (
     <article className="flex gap-3">
@@ -435,6 +444,12 @@ function CommentRow({
           >
             {timeAgo(comment.createdAt)}
           </time>
+          {comment.isPinned && (
+            <span className="inline-flex items-center gap-1 self-center rounded-full border border-inkwell-gold/40 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-inkwell-gold">
+              <FaThumbtack aria-hidden="true" className="size-2.5" />
+              Pinned
+            </span>
+          )}
         </div>
         {parentAuthor && (
           <p className="mt-0.5 text-xs text-inkwell-gold/90">@{parentAuthor}</p>
@@ -460,6 +475,23 @@ function CommentRow({
               className="rounded-full px-3 py-1.5 text-xs font-semibold text-inkwell-muted transition hover:bg-inkwell-cream/10 hover:text-inkwell-cream"
             >
               Reply
+            </button>
+          )}
+          {canPin && (
+            <button
+              type="button"
+              aria-label={comment.isPinned ? 'Unpin this comment' : 'Pin this comment'}
+              aria-pressed={comment.isPinned}
+              title={comment.isPinned ? 'Unpin this comment' : 'Pin this comment'}
+              onClick={() => pinMutation.mutate()}
+              disabled={pinMutation.isPending}
+              className={`rounded-full p-1.5 transition disabled:opacity-50 ${
+                comment.isPinned
+                  ? 'bg-inkwell-gold/10 text-inkwell-gold hover:bg-inkwell-gold/20'
+                  : 'text-inkwell-dim hover:bg-inkwell-cream/10 hover:text-inkwell-cream'
+              }`}
+            >
+              <FaThumbtack aria-hidden="true" className="size-3.5" />
             </button>
           )}
           {canDelete && (

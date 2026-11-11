@@ -78,6 +78,7 @@ const flatCommentSchema = z.object({
   content: z.string(),
   gifUrl: z.string().nullable(),
   parentId: z.string().nullable(),
+  isPinned: z.boolean(),
   createdAt: z.string(),
   likesCount: z.number(),
   likedByMe: z.boolean(),
@@ -127,6 +128,15 @@ const commentMutationResponseSchema = z.object({
     gifUrl: z.string().nullable().optional(),
     parentId: z.string().nullable().optional(),
     createdAt: z.string(),
+  }),
+});
+
+const commentPinResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string(),
+  data: z.object({
+    id: z.string(),
+    isPinned: z.boolean(),
   }),
 });
 
@@ -310,6 +320,21 @@ export function toggleCommentLike(token: string, commentId: string) {
     `/api/v1/blog-comments/comments/${commentId}/like`,
     likeResponseSchema,
     { method: "POST", headers: authHeaders(token) },
+  );
+}
+
+export function toggleCommentPin(token: string, commentId: string) {
+  return apiRequest<{
+    success: boolean;
+    message: string;
+    data: {
+      id: string;
+      isPinned: boolean;
+    };
+  }>(
+    `/api/v1/blog-comments/comments/${commentId}/pin`,
+    commentPinResponseSchema,
+    { method: "PATCH", headers: authHeaders(token) },
   );
 }
 

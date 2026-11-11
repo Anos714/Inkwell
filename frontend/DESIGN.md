@@ -119,6 +119,12 @@ product, so they inherit the shell rather than a dashboard kit.
 - The workspace boots from the httpOnly refresh cookie via
   `features/auth/store/session-bootstrap.ts`, so bookmarked admin URLs survive
   a hard reload; signed-out visitors go to `/login`.
+- An editor can pin one comment per entry from the public thread. The pinned
+  note rises above every sort order with a brass `Pinned` stamp; pinning
+  another releases the previous one, replies cannot be pinned, and the pin is
+  enforced server-side (admin role only).
+- The blog page boots the same session on mount, so an editor's pin controls
+  and a reader's likes survive a hard reload.
 
 ## Motion
 

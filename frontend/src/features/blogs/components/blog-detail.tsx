@@ -7,6 +7,7 @@ import {
   toggleBlogLike,
 } from "../api/blog-api";
 import { useAuthStore } from "../../auth/store/auth-store";
+import { ensureSession } from "../../auth/store/session-bootstrap";
 import DOMPurify from "dompurify";
 import { readingTime } from "reading-time-estimator";
 import { FaHeart, FaShareAlt } from "react-icons/fa";
@@ -35,6 +36,7 @@ import {
 export function BlogDetail() {
   const { slug } = useParams<{ slug: string }>();
   const token = useAuthStore((state) => state.token);
+  const user = useAuthStore((state) => state.user);
   const [shareOpen, setShareOpen] = useState(false);
   const [tocOpen, setTocOpen] = useState(false);
   const shareButtonRef = useRef<HTMLButtonElement>(null);
@@ -55,6 +57,14 @@ export function BlogDetail() {
 
   const blog = blogQuery.data?.data;
   const blogId = blog?.id;
+
+  // The access token lives in memory only. After a hard reload the profile is
+  // still in storage but the token is not, so re-boot the session here too —
+  // readers keep their likes and notes, and an editor keeps the pin controls
+  // on the public page.
+  useEffect(() => {
+    if (user) void ensureSession();
+  }, [user]);
 
   const viewMutation = useMutation({
     mutationFn: () => recordBlogView(slug ?? ""),

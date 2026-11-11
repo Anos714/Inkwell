@@ -50,6 +50,7 @@ export type BlogComment = {
   content: string
   gifUrl: string | null
   parentId: string | null
+  isPinned: boolean
   createdAt: string
   likesCount: number
   likedByMe: boolean
