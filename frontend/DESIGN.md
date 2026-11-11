@@ -65,7 +65,7 @@ at every width.
 - Content width: `86rem` (the broadsheet measure); prose columns cap at
   `68ch` or `max-w-md/lg` for standfirsts.
 - Every section's content starts on the same left rule. Full-bleed bands
-  (ticker, CTA) may extend past it, but their inner copy stays on the shell.
+  (departments band, CTA) may extend past it, but their inner copy stays on the shell.
 - The opening is a single editorial column below `1280px` and a
   `1.6fr / .8fr` spread above it; the headline is set to break in two lines
   from `320px` upward.
@@ -83,7 +83,7 @@ at every width.
 | Masthead | `components/site-header.tsx` | Sticky, hairline base, numbered mobile sheet, theme toggle, account menu |
 | Hero | `landing/hero.tsx` | Two-line reveal, brass underline draw, paper-washed field backdrop |
 | Hero preview | `landing/hero-preview.tsx` | Latest-entry note card and brass sprig in the opening's right margin |
-| Ticker | `landing/ticker.tsx` | Slow, reversed category marquee; pauses on hover |
+| Departments | `landing/departments.tsx` | Still running head of journal sections, set on the shell |
 | Plate | `landing/hero-plate.tsx` | Matted dreamy countryside, parallax, caption and folio |
 | Contents | `landing/topics-strip.tsx` | Numbered index of real tags with counts |
 | Journal | `landing/recent-posts.tsx` | Lead story spread + hairline contents list |

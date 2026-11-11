@@ -727,9 +727,6 @@ section[id] { scroll-margin-top: 6rem; }
   to { transform: translateX(-50%); }
 }
 
-/* A slower, reversed ticker for the masthead band. */
-.marquee-reverse .marquee-track { animation-direction: reverse; }
-
 /* ── Draw-in stroke + slow float ──────────────────────────────────────────── */
 
 .draw-stroke {

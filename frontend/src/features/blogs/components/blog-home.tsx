@@ -1,6 +1,6 @@
 import { SiteHeader } from '../../../components/site-header'
 import { Hero } from './landing/hero'
-import { ReadingTicker } from './landing/ticker'
+import { DepartmentsBand } from './landing/departments'
 import { HeroPlate } from './landing/hero-plate'
 import { TopicsStrip } from './landing/topics-strip'
 import { ReadingRoom } from './landing/reading-room'
@@ -31,7 +31,7 @@ export function BlogHome() {
       <SiteHeader />
       <main>
         <Hero />
-        <ReadingTicker />
+        <DepartmentsBand />
         <HeroPlate />
         <TopicsStrip />
         <RecentPosts />
